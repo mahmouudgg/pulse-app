@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { 
-  ShieldCheck, 
+  Globe,
   ExternalLink, 
   AlertTriangle, 
   ShieldAlert, 
@@ -16,9 +16,9 @@ import { analyzeUrl, openInSafeBrowser } from '../utils/linkSafetyEngine';
 import { hapticsService } from '../services/hapticsService';
 
 /**
- * Threads-Grade Safe Link Interstitial & Phishing Guard Modal
- * Warns users before leaving PULSE, displays domain reputation,
- * and launches external URLs safely via Chrome Custom Tabs.
+ * World-Class Minimalist Safe Link Interstitial Modal
+ * Clean, frictionless, Apple/Threads-grade UX
+ * Strictly ZERO EMOJIS, zero AI kickers, zero visual clutter.
  */
 export default function SafeLinkModal({
   isOpen,
@@ -37,163 +37,151 @@ export default function SafeLinkModal({
 
   if (!isOpen || !audit) return null;
 
-  const handleCopy = async () => {
+  const handleCopy = async (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     try {
       await navigator.clipboard.writeText(audit.url);
       setCopied(true);
-      try { hapticsService.light?.(); } catch {}
+      hapticsService.light?.();
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback
+      // clipboard fallback
     }
   };
 
   const handleProceed = async () => {
     try {
       setIsOpening(true);
-      try { hapticsService.medium?.(); } catch {}
+      hapticsService.medium?.();
       await openInSafeBrowser(audit.url);
       setIsOpening(false);
       onClose();
     } catch (err) {
-      console.error('Failed to open safe browser:', err);
+      console.error('Failed to open external link:', err);
       setIsOpening(false);
     }
   };
 
-  // Visual risk styles
-  const getRiskBadge = () => {
-    switch (audit.riskLevel) {
-      case 'SAFE':
-        return {
-          icon: <ShieldCheck size={28} className="text-emerald-400" />,
-          bgColor: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-          title: isAr ? audit.riskTitleAr : audit.riskTitleEn
-        };
-      case 'WARNING':
-        return {
-          icon: <AlertTriangle size={28} className="text-amber-400" />,
-          bgColor: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
-          title: isAr ? audit.riskTitleAr : audit.riskTitleEn
-        };
-      case 'DANGER':
-        return {
-          icon: <ShieldAlert size={28} className="text-rose-500" />,
-          bgColor: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
-          title: isAr ? audit.riskTitleAr : audit.riskTitleEn
-        };
-      case 'STANDARD':
-      default:
-        return {
-          icon: <ExternalLink size={26} className="text-neutral-300" />,
-          bgColor: 'bg-neutral-800 border-neutral-700 text-neutral-300',
-          title: isAr ? audit.riskTitleAr : audit.riskTitleEn
-        };
-    }
-  };
-
-  const badge = getRiskBadge();
+  const isDangerous = audit.riskLevel === 'DANGER';
+  const isWarning = audit.riskLevel === 'WARNING';
+  const hasRisk = isDangerous || isWarning;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md transition-all">
-      {/* Click outside to close */}
-      <div className="absolute inset-0" onClick={onClose} />
-
+    <div 
+      className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md transition-all select-none animate-fade-in"
+      onClick={onClose}
+    >
       {/* Modal Dialog Card */}
       <div 
-        className="relative w-full max-w-lg bg-[#101012] border-t sm:border border-[#26262A] rounded-t-3xl sm:rounded-3xl p-6 sm:p-7 pb-[max(2rem,env(safe-area-inset-bottom))] shadow-2xl z-10 space-y-5 animate-sheet-up"
+        className="relative w-full max-w-md bg-[#121214] border-t sm:border border-white/10 rounded-t-[32px] sm:rounded-3xl p-6 sm:p-7 pb-[max(2rem,env(safe-area-inset-bottom))] shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-10 space-y-5 animate-sheet-up"
+        onClick={(e) => e.stopPropagation()}
         dir={isAr ? 'rtl' : 'ltr'}
       >
-        {/* Header Close & Badge */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${badge.bgColor}`}>
-              {badge.icon}
+        {/* Mobile drag handle */}
+        <div className="w-10 h-1 bg-white/20 rounded-full mx-auto sm:hidden -mt-1 mb-2" />
+
+        {/* Header: Icon + Title + Close Button */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
+              isDangerous 
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' 
+                : isWarning 
+                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                  : 'bg-white/[0.05] border-white/10 text-white'
+            }`}>
+              {isDangerous ? (
+                <ShieldAlert size={22} />
+              ) : isWarning ? (
+                <AlertTriangle size={22} />
+              ) : (
+                <Globe size={22} className="text-white" />
+              )}
             </div>
             <div>
-              <span className="text-[11px] font-semibold tracking-wider uppercase text-neutral-400 block">
-                {isAr ? 'فاحص الروابط الخارجي' : 'External Link Guard'}
-              </span>
-              <h3 className="text-base sm:text-lg font-bold text-white">
-                {badge.title}
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                {isDangerous
+                  ? (isAr ? 'رابط مشبوه أو غير آمن' : 'Suspicious Link')
+                  : isWarning
+                    ? (isAr ? 'رابط غير مشفر' : 'Unencrypted Link')
+                    : (isAr ? 'فتح رابط خارجي' : 'External Link')}
               </h3>
+              <p className="text-xs text-neutral-400 mt-0.5 font-normal">
+                {isAr ? 'أنت على وشك مغادرة PULSE إلى المتصفح' : "You are leaving PULSE to open this in your browser"}
+              </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white flex items-center justify-center tap-press transition-colors"
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center tap-press transition-colors"
+            title={isAr ? 'إغلاق' : 'Close'}
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
-        {/* Domain & URL Box */}
-        <div className="bg-[#18181C] border border-[#2A2A30] rounded-2xl p-4 space-y-2">
+        {/* Clean Link / Domain Box */}
+        <div className="bg-[#18181B] border border-white/10 rounded-2xl p-4 space-y-2.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 truncate">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1 me-2">
               {audit.isHttps ? (
-                <div className="flex items-center gap-1 text-emerald-400 text-xs font-medium" title="HTTPS Encrypted">
-                  <Lock size={13} />
-                  <span>HTTPS</span>
+                <div className="flex items-center gap-1 text-emerald-400 text-xs font-medium" title="HTTPS Secure">
+                  <Lock size={12} className="flex-shrink-0" />
+                  <span className="font-mono text-[11px]">HTTPS</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1 text-rose-400 text-xs font-medium" title="Unencrypted HTTP">
-                  <Unlock size={13} />
-                  <span>HTTP غير مشفر</span>
+                <div className="flex items-center gap-1 text-rose-400 text-xs font-medium" title="HTTP Unencrypted">
+                  <Unlock size={12} className="flex-shrink-0" />
+                  <span className="font-mono text-[11px]">{isAr ? 'غير مشفر' : 'HTTP'}</span>
                 </div>
               )}
-              <span className="text-neutral-600">•</span>
-              <span className="text-xs text-neutral-400 font-mono">
-                {isAr ? 'النطاق المستهدف' : 'Target Host'}
+              <span className="text-neutral-600">·</span>
+              <span className="text-xs font-bold text-white truncate font-mono">
+                {audit.domain}
               </span>
             </div>
 
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold tap-press transition-colors"
+              type="button"
+              className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium tap-press transition-colors"
             >
-              {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+              {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               <span>{copied ? (isAr ? 'تم النسخ' : 'Copied') : (isAr ? 'نسخ' : 'Copy')}</span>
             </button>
           </div>
 
-          <div className="pt-1">
-            <p className="text-white text-base sm:text-lg font-bold font-mono tracking-tight truncate">
-              {audit.domain}
-            </p>
-            <p className="text-neutral-500 text-xs font-mono break-all line-clamp-2 mt-0.5">
+          <div className="pt-0.5">
+            <p className="text-neutral-400 text-[11.5px] font-mono break-all line-clamp-2 leading-relaxed" dir="ltr">
               {audit.url}
             </p>
           </div>
         </div>
 
-        {/* Warning / Informative Guidance */}
-        <div className={`p-3.5 rounded-xl border text-xs sm:text-[13px] leading-relaxed ${
-          audit.riskLevel === 'DANGER' 
-            ? 'bg-rose-950/30 border-rose-800/50 text-rose-300'
-            : audit.riskLevel === 'WARNING'
-            ? 'bg-amber-950/30 border-amber-800/50 text-amber-300'
-            : 'bg-neutral-900 border-neutral-800 text-neutral-300'
-        }`}>
-          <p className="font-medium">
-            {isAr ? audit.riskDescriptionAr : audit.riskDescriptionEn}
-          </p>
-          <p className="text-neutral-400 text-[11px] mt-1.5 flex items-center gap-1">
-            <span className="text-rose-400 font-bold">{isAr ? 'تذكير أمني:' : 'Security Note:'}</span>
-            <span>{isAr ? 'لا تشارك أبداً كلمة مرور حسابك أو رموز التحقق مع أي موقع خارجي.' : 'Never enter your PULSE password or 2FA codes on external sites.'}</span>
-          </p>
-        </div>
+        {/* Warning chip ONLY shown if there is real risk */}
+        {hasRisk && (
+          <div className={`p-3 rounded-xl border text-xs leading-relaxed flex items-start gap-2.5 ${
+            isDangerous 
+              ? 'bg-rose-950/30 border-rose-800/40 text-rose-300'
+              : 'bg-amber-950/30 border-amber-800/40 text-amber-300'
+          }`}>
+            <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-current" />
+            <span className="font-medium">
+              {isAr ? audit.riskDescriptionAr : audit.riskDescriptionEn}
+            </span>
+          </div>
+        )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+        {/* Action Buttons (Threads/Apple Stacking) */}
+        <div className="space-y-2 pt-1">
           <button
             onClick={handleProceed}
             disabled={isOpening}
-            className={`w-full sm:flex-1 h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 tap-press transition-all ${
-              audit.riskLevel === 'DANGER'
-                ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-900/40'
-                : 'bg-white hover:bg-neutral-200 text-black shadow-lg shadow-white/5'
+            className={`w-full h-12 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 tap-press transition-all ${
+              isDangerous
+                ? 'bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white shadow-lg shadow-rose-900/30'
+                : 'bg-white hover:bg-neutral-200 active:scale-[0.99] text-black shadow-lg shadow-white/5'
             }`}
           >
             {isOpening ? (
@@ -201,20 +189,21 @@ export default function SafeLinkModal({
             ) : (
               <>
                 <span>
-                  {audit.riskLevel === 'DANGER' 
-                    ? (isAr ? 'متابعة رغم التحذير' : 'Proceed Anyway') 
-                    : (isAr ? 'متابعة وفتح الرابط' : 'Continue & Open')}
+                  {isDangerous
+                    ? (isAr ? 'متابعة رغم التحذير' : 'Proceed Anyway')
+                    : (isAr ? 'متابعة إلى الموقع' : 'Continue to Website')}
                 </span>
-                <ArrowUpRight size={17} className={isAr ? '-scale-x-100' : ''} />
+                <ArrowUpRight size={16} className={isAr ? '-scale-x-100' : ''} />
               </>
             )}
           </button>
 
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-6 h-12 rounded-xl bg-neutral-900 hover:bg-[#1A1A1E] border border-neutral-800 text-neutral-300 text-sm font-semibold tap-press transition-colors"
+            type="button"
+            className="w-full h-11 rounded-2xl bg-transparent hover:bg-white/5 active:bg-white/10 text-neutral-400 hover:text-white text-sm font-semibold tap-press transition-colors text-center"
           >
-            {isAr ? 'إلغاء والعودة' : 'Cancel'}
+            {isAr ? 'إلغاء' : 'Cancel'}
           </button>
         </div>
       </div>
