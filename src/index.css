@@ -1,0 +1,584 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+html, body {
+  overscroll-behavior-y: contain;
+}
+
+body {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: 'Readex Pro', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Bidirectional plaintext for smooth Arabic/English reading */
+.bidi-plain {
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+/* Enforce fixed typebars - No manual resizing */
+textarea {
+  resize: none !important;
+}
+
+/* Absolute Global Scrollbar Elimination — Zero scrollbars visible across the entire app */
+html, body, #root, *, *::before, *::after {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+section::-webkit-scrollbar,
+main::-webkit-scrollbar,
+ul::-webkit-scrollbar,
+ol::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+header::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  max-width: 0px !important;
+  max-height: 0px !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner,
+::-webkit-resizer,
+*::-webkit-resizer {
+  display: none !important;
+  background: transparent !important;
+  border: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Touch micro-physics */
+.tap-press {
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
+}
+.tap-press:active {
+  transform: scale(0.93);
+  opacity: 0.88;
+}
+
+.spring-bounce {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Like Heart Pop */
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.4) rotate(-8deg); }
+  65% { transform: scale(0.88) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.animate-heart-pop {
+  animation: heartPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Repost Twist */
+/* High-Performance 120 FPS / 144 Hz Hardware Acceleration */
+:root {
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring-snappy: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-bounce-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sheet-snap: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Touch micro-physics */
+.tap-press {
+  transition: transform 0.14s var(--ease-spring), opacity 0.14s ease;
+  transform: translateZ(0);
+}
+.tap-press:active {
+  transform: scale3d(0.94, 0.94, 1);
+  opacity: 0.86;
+}
+
+.card-press {
+  transition: transform 0.15s var(--ease-spring), background-color 0.15s ease;
+  transform: translateZ(0);
+}
+.card-press:active {
+  transform: scale3d(0.985, 0.985, 1);
+}
+
+.spring-bounce {
+  transition: transform 0.35s var(--ease-bounce-pop);
+}
+
+/* Like Heart Pop + Concentric Ripple */
+@keyframes heartPop {
+  0% { transform: scale3d(1, 1, 1); }
+  25% { transform: scale3d(1.35, 1.35, 1) rotate(-6deg); }
+  60% { transform: scale3d(0.88, 0.88, 1) rotate(3deg); }
+  100% { transform: scale3d(1, 1, 1) rotate(0deg); }
+}
+.animate-heart-pop {
+  animation: heartPop 0.4s var(--ease-bounce-pop) forwards;
+  will-change: transform;
+}
+
+@keyframes heartRipple {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.animate-heart-ripple {
+  animation: heartRipple 0.45s ease-out forwards;
+}
+
+/* Repost Twist with Elastic Snap */
+@keyframes repostTwist {
+  0% { transform: rotate(0deg) scale3d(1, 1, 1); }
+  45% { transform: rotate(180deg) scale3d(1.3, 1.3, 1); }
+  80% { transform: rotate(375deg) scale3d(0.92, 0.92, 1); }
+  100% { transform: rotate(360deg) scale3d(1, 1, 1); }
+}
+.animate-repost-twist {
+  animation: repostTwist 0.5s var(--ease-bounce-pop) forwards;
+  will-change: transform;
+}
+
+/* Bookmark Elastic Bounce */
+@keyframes bookmarkBounce {
+  0% { transform: scale3d(1, 1, 1) translateY(0); }
+  30% { transform: scale3d(1.25, 0.85, 1) translateY(2px); }
+  60% { transform: scale3d(0.9, 1.15, 1) translateY(-3px); }
+  100% { transform: scale3d(1, 1, 1) translateY(0); }
+}
+.animate-bookmark-bounce {
+  animation: bookmarkBounce 0.45s var(--ease-bounce-pop) forwards;
+  will-change: transform;
+}
+
+/* Tab Icon Spring Pop */
+@keyframes tabIconPop {
+  0% { transform: scale3d(0.85, 0.85, 1); }
+  50% { transform: scale3d(1.22, 1.22, 1); }
+  100% { transform: scale3d(1, 1, 1); }
+}
+.animate-tab-pop {
+  animation: tabIconPop 0.35s var(--ease-bounce-pop) forwards;
+  will-change: transform;
+}
+
+/* Staggered Feed Cascade Entry */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.32s var(--ease-spring) forwards;
+  will-change: transform, opacity;
+}
+
+/* Smooth Modal & Sheet Animations */
+@keyframes sheetSlideUp {
+  0% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+.animate-sheet-up,
+.animate-slide-up {
+  animation: sheetSlideUp 0.38s var(--ease-sheet-snap) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes sheetSlideDown {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+  }
+}
+.animate-sheet-down {
+  animation: sheetSlideDown 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes modalScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.92, 0.92, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+.animate-modal-scale-in,
+.animate-scale-up {
+  animation: modalScaleIn 0.26s var(--ease-spring) forwards;
+  will-change: transform, opacity;
+}
+
+/* Breathing Glow on Floating Actions */
+@keyframes breathingPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+  }
+}
+.glow-breathing {
+  animation: breathingPulse 2.6s infinite ease-in-out;
+}
+
+@keyframes equalizerBar {
+  0%, 100% { height: 6px; }
+  50% { height: 16px; }
+}
+.equalizer-bar-1 {
+  animation: equalizerBar 0.8s ease-in-out infinite;
+}
+.equalizer-bar-2 {
+  animation: equalizerBar 0.8s ease-in-out infinite 0.2s;
+}
+.equalizer-bar-3 {
+  animation: equalizerBar 0.8s ease-in-out infinite 0.4s;
+}
+
+/* Frosted glass */
+.glass-nav {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Heart Burst Animation for Double Tap Like */
+@keyframes heartBurst {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
+    opacity: 0;
+  }
+  20% {
+    transform: translate3d(-50%, -50%, 0) scale3d(1.3, 1.3, 1);
+    opacity: 1;
+  }
+  40% {
+    transform: translate3d(-50%, -50%, 0) scale3d(0.95, 0.95, 1);
+    opacity: 1;
+  }
+  70% {
+    transform: translate3d(-50%, -50%, 0) scale3d(1.08, 1.08, 1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale3d(1.4, 1.4, 1);
+    opacity: 0;
+  }
+}
+.animate-heart-burst {
+  animation: heartBurst 0.75s var(--ease-bounce-pop) forwards;
+  will-change: transform, opacity;
+}
+
+/* Harmonic Pulse Wave for Logo Bars */
+@keyframes pulseWaveBar {
+  0%, 100% {
+    transform: scaleY(0.7);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1.15);
+    opacity: 1;
+  }
+}
+.animate-pulse-bar-1 { animation: pulseWaveBar 1.4s infinite ease-in-out; transform-origin: center; }
+.animate-pulse-bar-2 { animation: pulseWaveBar 1.4s infinite ease-in-out 0.15s; transform-origin: center; }
+.animate-pulse-bar-3 { animation: pulseWaveBar 1.4s infinite ease-in-out 0.3s; transform-origin: center; }
+.animate-pulse-bar-4 { animation: pulseWaveBar 1.4s infinite ease-in-out 0.45s; transform-origin: center; }
+.animate-pulse-bar-5 { animation: pulseWaveBar 1.4s infinite ease-in-out 0.6s; transform-origin: center; }
+
+/* Dynamic Equalizer Waveform */
+@keyframes equalizerBar {
+  0% { height: 20%; }
+  33% { height: 95%; }
+  66% { height: 40%; }
+  100% { height: 80%; }
+}
+.animate-equalizer-1 { animation: equalizerBar 0.9s infinite ease-in-out alternate; }
+.animate-equalizer-2 { animation: equalizerBar 1.1s infinite ease-in-out alternate 0.2s; }
+.animate-equalizer-3 { animation: equalizerBar 0.8s infinite ease-in-out alternate 0.4s; }
+.animate-equalizer-4 { animation: equalizerBar 1.0s infinite ease-in-out alternate 0.1s; }
+
+/* Ambient Resonance Background Glow */
+@keyframes ambientWave {
+  0% {
+    transform: translate3d(-10%, -10%, 0) scale(1);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translate3d(10%, 10%, 0) scale(1.2);
+    opacity: 0.16;
+  }
+  100% {
+    transform: translate3d(-10%, -10%, 0) scale(1);
+    opacity: 0.08;
+  }
+}
+.animate-ambient-wave {
+  animation: ambientWave 12s infinite ease-in-out;
+  will-change: transform, opacity;
+}
+
+/* SVG Chart Path Draw-in */
+@keyframes chartDrawIn {
+  from {
+    stroke-dashoffset: 1200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.animate-chart-draw {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: chartDrawIn 1.1s var(--ease-spring) forwards;
+}
+
+/* Back Swipe Edge Shadow */
+.back-swipe-shadow {
+  box-shadow: -15px 0 35px rgba(0, 0, 0, 0.85);
+}
+.back-swipe-shadow-rtl {
+  box-shadow: 15px 0 35px rgba(0, 0, 0, 0.85);
+}
+
+/* PULSE Core 1:1 Shimmer Skeleton for Media */
+@keyframes threadsShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-pulse-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #121215;
+}
+
+.animate-pulse-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 20%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.04) 80%,
+    transparent 100%
+  );
+  animation: threadsShimmer 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Futuristic QR Laser Scanner Animation */
+@keyframes laserScan {
+  0% {
+    top: 5%;
+    opacity: 0.3;
+  }
+  50% {
+    top: 92%;
+    opacity: 1;
+  }
+  100% {
+    top: 5%;
+    opacity: 0.3;
+  }
+}
+
+.animate-laser {
+  animation: laserScan 2.4s ease-in-out infinite;
+  will-change: top, opacity;
+}
+
+/* ================= PULSE Official ULTRA-SMOOTH SPRING ENGINE ================= */
+:root {
+  --sv-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --sv-sheet-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Screen / Tab Silk Transition (Smooth mount without pop-in) */
+.screen-transition {
+  animation: svScreenSlideFade 0.28s var(--sv-spring) both;
+  will-change: transform, opacity;
+}
+
+@keyframes svScreenSlideFade {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale3d(0.99, 0.99, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  }
+}
+
+/* Post & Feed Card Smooth Cascade */
+.post-mount-smooth {
+  animation: svPostCascade 0.32s var(--sv-spring) both;
+  will-change: transform, opacity;
+}
+
+@keyframes svPostCascade {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Modal Backdrop Smooth Silk Blur */
+.sv-backdrop {
+  animation: svBackdropFade 0.24s var(--sv-spring) forwards;
+}
+
+@keyframes svBackdropFade {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Universal Phone-Screen Constraints for ALL Modals, Sheets, and Dialogs */
+.fixed.inset-0 .max-w-lg,
+.fixed.inset-0 .max-w-xl,
+.fixed.inset-0 .max-w-2xl,
+.fixed.inset-0 .max-w-3xl,
+.fixed.inset-0 .max-w-4xl {
+  max-width: 440px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Centered Desktop Shell with Mobile Precision */
+.app-viewport-shell {
+  max-width: 480px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .app-viewport-shell {
+    max-width: 620px;
+    padding-top: 64px;
+    padding-bottom: 24px;
+  }
+}
+
+/* PULSE Signature Animated Number Ticker */
+@keyframes tickerRoll {
+  0% {
+    transform: translateY(80%) scale(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-8%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-ticker-roll {
+  animation: tickerRoll 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+

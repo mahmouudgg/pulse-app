@@ -1,0 +1,903 @@
+{
+  "rules": {
+    "app_release": {
+      ".read": true,
+      ".write": "!newData.exists() || (newData.hasChildren(['versionCode', 'versionName']) && newData.child('versionCode').isNumber() && newData.child('versionCode').val() > 0)",
+      ".indexOn": [
+        "versionCode",
+        "versionName",
+        "releaseDate",
+        "isMandatory",
+        "channel",
+        "platform"
+      ]
+    },
+    "users": {
+      ".read": true,
+      ".indexOn": [
+        "username",
+        "email",
+        "googleUid",
+        "authProvider",
+        "phone",
+        "fullPhone",
+        "countryCode",
+        "displayName",
+        "role",
+        "isBanned",
+        "bannedAt",
+        "banReason",
+        "isVerified",
+        "verificationStatus",
+        "isFounder",
+        "isPioneer",
+        "pioneerNumber",
+        "isPro",
+        "appIcon",
+        "proSubscribedAt",
+        "proExpiryDate",
+        "vipTier",
+        "isAI",
+        "isPrivate",
+        "badgeTitle",
+        "deviceFingerprint",
+        "trustScore",
+        "trustTier",
+        "birthDate",
+        "birthDatePrivacy",
+        "twoFactorEnabled",
+        "fcmToken",
+        "usernameLastChangedAt",
+        "followersCount",
+        "followingCount",
+        "postsCount",
+        "location",
+        "showLocation",
+        "profileViews",
+        "viewsCount",
+        "city",
+        "createdAt",
+        "updatedAt",
+        "lastActive",
+        "lastSeen",
+        "uid",
+        "id"
+      ],
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || !newData.hasChild('username') || (newData.child('username').isString() && newData.child('username').val().length >= 1 && newData.child('username').val().length <= 35)",
+        "passwordResetOtp": {
+          ".read": true,
+          ".write": true,
+          ".validate": "!newData.exists() || (newData.hasChildren(['code', 'expiresAt']) && newData.child('code').isString() && newData.child('code').val().length == 6)"
+        },
+        "sessions": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": [
+            "sessionId",
+            "loginTime",
+            "firstLogin",
+            "lastActive",
+            "status",
+            "revoked",
+            "revokedAt",
+            "deviceType",
+            "platform",
+            "ip",
+            "loginMethod",
+            "updatedAt",
+            "location",
+            "browser"
+          ],
+          "$sessionId": {
+            ".read": true,
+            ".write": true
+          }
+        },
+        "followers": {
+          ".read": true,
+          ".write": true
+        },
+        "following": {
+          ".read": true,
+          ".write": true
+        },
+        "bookmarks": {
+          ".read": true,
+          ".write": true
+        },
+        "fcmToken": {
+          ".read": true,
+          ".write": true
+        },
+        "saved_accounts": {
+          ".read": true,
+          ".write": true
+        },
+        "saved_sounds": {
+          ".read": true,
+          ".write": true
+        },
+        "blockedUsers": {
+          ".read": true,
+          ".write": true
+        },
+        "blockedBy": {
+          ".read": true,
+          ".write": true
+        },
+        "blocks": {
+          ".read": true,
+          ".write": true
+        },
+        "restrictedUsers": {
+          ".read": true,
+          ".write": true
+        },
+        "mutedUsers": {
+          ".read": true,
+          ".write": true
+        },
+        "privacySettings": {
+          ".read": true,
+          ".write": true
+        },
+        "contentFilters": {
+          ".read": true,
+          ".write": true
+        },
+        "security_alerts": {
+          ".read": true,
+          ".write": true
+        },
+        "appIcon": {
+          ".read": true,
+          ".write": true
+        },
+        "isPro": {
+          ".read": true,
+          ".write": true
+        },
+        "proSubscribedAt": {
+          ".read": true,
+          ".write": true
+        },
+        "proExpiryDate": {
+          ".read": true,
+          ".write": true
+        },
+        "vipTier": {
+          ".read": true,
+          ".write": true
+        },
+        "isVerified": {
+          ".read": true,
+          ".write": true
+        },
+        "verificationStatus": {
+          ".read": true,
+          ".write": true
+        },
+        "notificationPreferences": {
+          ".read": true,
+          ".write": true
+        },
+        "hapticsSettings": {
+          ".read": true,
+          ".write": true
+        },
+        "drafts": {
+          ".read": true,
+          ".write": true
+        },
+        "followersCount": {
+          ".read": true,
+          ".write": true
+        },
+        "followingCount": {
+          ".read": true,
+          ".write": true
+        },
+        "postsCount": {
+          ".read": true,
+          ".write": true
+        },
+        "profileViews": {
+          ".read": true,
+          ".write": true
+        },
+        "views": {
+          ".read": true,
+          ".write": true
+        },
+        "showLocation": {
+          ".read": true,
+          ".write": true
+        },
+        "location": {
+          ".read": true,
+          ".write": true
+        },
+        "googleProfile": {
+          ".read": true,
+          ".write": true
+        },
+        "googleUid": {
+          ".read": true,
+          ".write": true
+        },
+        "twoFactorEnabled": {
+          ".read": true,
+          ".write": true
+        },
+        "twoFactorSecret": {
+          ".read": true,
+          ".write": true
+        },
+        "backupCodes": {
+          ".read": true,
+          ".write": true
+        },
+        "weakPasswordNotice": {
+          ".read": true,
+          ".write": true
+        },
+        "lastActive": {
+          ".read": true,
+          ".write": true
+        },
+        "lastSeen": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "supervision": {
+      ".read": true,
+      ".indexOn": [
+        "guardianUid",
+        "guardianUsername",
+        "isTeen",
+        "linkedAt",
+        "updatedAt"
+      ],
+      "$userId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "posts": {
+      ".read": true,
+      ".indexOn": [
+        "createdAt",
+        "timestamp",
+        "authorId",
+        "author/uid",
+        "author/username",
+        "author/displayName",
+        "author/isVerified",
+        "userId",
+        "voiceListens",
+        "viewsCount",
+        "sharesCount",
+        "likesCount",
+        "repostsCount",
+        "repliesCount",
+        "hasVoice",
+        "hasPoll",
+        "isEdited",
+        "isPinned",
+        "isRepost",
+        "replyToId",
+        "originalPostId",
+        "repostedBy/uid",
+        "isAIReply",
+        "isAutonomousAI",
+        "topic",
+        "category",
+        "status",
+        "visibility",
+        "replyControl",
+        "videoUrl",
+        "imageUrl",
+        "audioUrl",
+        "music/id",
+        "isCrossPost",
+        "perspective",
+        "location",
+        "city",
+        "type",
+        "isPromoted",
+        "sponsorBadge",
+        "parentId"
+      ],
+      "$postId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChild('createdAt') || newData.hasChild('timestamp') || newData.hasChild('content') || newData.hasChild('authorId') || newData.hasChild('viewsCount') || newData.hasChild('voiceListens') || newData.hasChild('repliesCount') || newData.hasChild('likesCount') || newData.hasChild('repostsCount') || newData.hasChild('isEdited') || newData.hasChild('topic') || newData.hasChild('views') || newData.hasChild('likes') || newData.hasChild('reposts')",
+        "likes": {
+          ".read": true,
+          ".write": true
+        },
+        "likesCount": {
+          ".read": true,
+          ".write": true
+        },
+        "reposts": {
+          ".read": true,
+          ".write": true
+        },
+        "repostsCount": {
+          ".read": true,
+          ".write": true
+        },
+        "poll": {
+          ".read": true,
+          ".write": true
+        },
+        "bookmarks": {
+          ".read": true,
+          ".write": true
+        },
+        "music": {
+          ".read": true,
+          ".write": true
+        },
+        "quotePost": {
+          ".read": true,
+          ".write": true
+        },
+        "replyToId": {
+          ".read": true,
+          ".write": true
+        },
+        "topic": {
+          ".read": true,
+          ".write": true
+        },
+        "location": {
+          ".read": true,
+          ".write": true
+        },
+        "showLocation": {
+          ".read": true,
+          ".write": true
+        },
+        "views": {
+          ".read": true,
+          ".write": true
+        },
+        "viewsCount": {
+          ".read": true,
+          ".write": true
+        },
+        "sharesCount": {
+          ".read": true,
+          ".write": true
+        },
+        "voiceListens": {
+          ".read": true,
+          ".write": true
+        },
+        "repliesCount": {
+          ".read": true,
+          ".write": true
+        },
+        "isEdited": {
+          ".read": true,
+          ".write": true
+        },
+        "editedAt": {
+          ".read": true,
+          ".write": true
+        },
+        "content": {
+          ".read": true,
+          ".write": true
+        },
+        "media": {
+          ".read": true,
+          ".write": true
+        },
+        "isPinned": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "custom_sounds": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "createdAt",
+        "usesCount",
+        "creatorUid",
+        "isCustom",
+        "title",
+        "artist",
+        "id"
+      ],
+      "$soundId": {
+        ".read": true,
+        ".write": true,
+        "usesCount": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "push_queue": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "timestamp",
+        "createdAt",
+        "status",
+        "targetUid",
+        "senderUid"
+      ],
+      "$pushId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "comments": {
+      ".read": true,
+      ".write": true,
+      "$postId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "timestamp",
+          "authorId",
+          "author/uid",
+          "author/username",
+          "userId",
+          "hasVoice",
+          "likesCount",
+          "parentId",
+          "replyTo/id",
+          "replyTo/username",
+          "isAIReply",
+          "id"
+        ],
+        "$commentId": {
+          ".read": true,
+          ".write": true,
+          "likes": {
+            ".read": true,
+            ".write": true
+          },
+          "likesCount": {
+            ".read": true,
+            ".write": true
+          },
+          "repliesCount": {
+            ".read": true,
+            ".write": true
+          },
+          "isEdited": {
+            ".read": true,
+            ".write": true
+          }
+        }
+      }
+    },
+    "follow_requests": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "requesterUid",
+        "requesterUsername",
+        "targetUserId",
+        "status",
+        "createdAt",
+        "timestamp",
+        "id"
+      ],
+      "$targetUserId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "requesterUid",
+          "requesterUsername",
+          "status",
+          "createdAt",
+          "timestamp",
+          "id"
+        ],
+        "$requesterUid": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "conversations": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "updatedAt",
+        "createdAt",
+        "id",
+        "lastMessageTime",
+        "lastMessage/timestamp",
+        "participant1",
+        "participant2",
+        "isRequest",
+        "isAccepted",
+        "requestedBy",
+        "status"
+      ],
+      "$conversationId": {
+        ".read": true,
+        ".write": true,
+        "unread": {
+          ".read": true,
+          ".write": true
+        },
+        "participants": {
+          ".read": true,
+          ".write": true
+        },
+        "participantDetails": {
+          ".read": true,
+          ".write": true
+        },
+        "lastMessage": {
+          ".read": true,
+          ".write": true
+        },
+        "isRequest": {
+          ".read": true,
+          ".write": true
+        },
+        "isAccepted": {
+          ".read": true,
+          ".write": true
+        },
+        "requestedBy": {
+          ".read": true,
+          ".write": true
+        },
+        "updatedAt": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "messages": {
+      ".read": true,
+      ".write": true,
+      "$conversationId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "timestamp",
+          "createdAt",
+          "senderId",
+          "recipientId",
+          "isRead",
+          "type",
+          "status",
+          "id"
+        ],
+        "$messageId": {
+          ".read": true,
+          ".write": true,
+          ".validate": "!newData.exists() || newData.hasChild('isRead') || (newData.hasChildren(['senderId', 'recipientId']) && (!newData.child('content').exists() || (newData.child('content').isString() && newData.child('content').val().length <= 50000)))",
+          "isRead": {
+            ".read": true,
+            ".write": true
+          },
+          "status": {
+            ".read": true,
+            ".write": true
+          }
+        }
+      }
+    },
+    "typing": {
+      ".read": true,
+      ".write": true,
+      "$conversationId": {
+        ".read": true,
+        ".write": true,
+        "$userId": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "presence": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "isOnline",
+          "lastSeen",
+          "lastChanged"
+        ]
+      }
+    },
+    "notifications": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "timestamp",
+          "read",
+          "isRead",
+          "type",
+          "postId",
+          "actor/uid",
+          "actorId",
+          "status",
+          "requestId",
+          "id"
+        ],
+        "$notificationId": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "spaces": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "status",
+        "isLive",
+        "createdAt",
+        "topic",
+        "title",
+        "host/uid",
+        "host/username",
+        "endedAt",
+        "listenersCount",
+        "speakersCount"
+      ],
+      "$spaceId": {
+        ".read": true,
+        ".write": true,
+        "listenersCount": {
+          ".read": true,
+          ".write": true
+        },
+        "speakersCount": {
+          ".read": true,
+          ".write": true
+        },
+        "status": {
+          ".read": true,
+          ".write": true
+        },
+        "isLive": {
+          ".read": true,
+          ".write": true
+        },
+        "listeners": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": [
+            "joinedAt",
+            "username"
+          ],
+          "$listenerId": {
+            ".read": true,
+            ".write": true
+          }
+        },
+        "speakers": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": [
+            "isSpeaking",
+            "isMuted",
+            "joinedAt"
+          ],
+          "$speakerId": {
+            ".read": true,
+            ".write": true
+          }
+        },
+        "handRaises": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": [
+            "raisedAt",
+            "username"
+          ],
+          "$raiseId": {
+            ".read": true,
+            ".write": true
+          }
+        }
+      }
+    },
+    "hashtags": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "tag",
+        "count",
+        "lastUsed",
+        "category"
+      ],
+      "$tag": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || (newData.hasChildren(['tag', 'count']) && newData.child('count').isNumber())"
+      }
+    },
+    "verification_requests": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "status",
+        "requestedAt",
+        "userId",
+        "username",
+        "reviewedAt",
+        "documentType",
+        "id"
+      ],
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChild('userId') || newData.hasChild('username') || newData.hasChild('status')"
+      }
+    },
+    "reports": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "createdAt",
+        "postId",
+        "reporterId",
+        "targetUserId",
+        "reason",
+        "status",
+        "type",
+        "id"
+      ],
+      "$reportId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChildren(['reporterId', 'reason']) || newData.hasChildren(['targetUserId', 'reason']) || newData.hasChild('status')"
+      }
+    },
+    "appeals": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "userId",
+        "username",
+        "category",
+        "status",
+        "createdAt",
+        "id"
+      ],
+      "$appealId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChildren(['userId', 'category']) || newData.hasChild('status')"
+      }
+    },
+    "ads": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "createdAt",
+        "status",
+        "brandName",
+        "ownerId",
+        "expiresAt",
+        "placement",
+        "targetCountry",
+        "objective",
+        "budgetRemaining",
+        "impressionsCount",
+        "clicksCount",
+        "id"
+      ],
+      "$adId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChildren(['brandName', 'ownerId']) || newData.hasChild('status') || newData.hasChild('impressionsCount') || newData.hasChild('clicksCount')",
+        "status": {
+          ".read": true,
+          ".write": true
+        },
+        "approvedAt": {
+          ".read": true,
+          ".write": true
+        },
+        "rejectionReason": {
+          ".read": true,
+          ".write": true
+        },
+        "impressionsCount": {
+          ".read": true,
+          ".write": true
+        },
+        "clicksCount": {
+          ".read": true,
+          ".write": true
+        },
+        "budgetRemaining": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "qr_auth": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "status",
+        "pairingCode",
+        "token",
+        "sessionId",
+        "createdAt",
+        "expiresAt",
+        "authorizedAt",
+        "authorizedBy",
+        "userId"
+      ],
+      "$token": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChild('pairingCode') || newData.hasChild('token') || newData.hasChild('status')"
+      }
+    },
+    "system": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "maintenance",
+        "minAppVersion",
+        "updatedAt",
+        "google_ads_config"
+      ]
+    },
+    "banned_devices": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "deviceFingerprint",
+        "bannedUntil",
+        "bannedAt",
+        "durationDays",
+        "targetAccount"
+      ],
+      "$deviceFingerprint": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || (newData.hasChildren(['bannedUntil', 'bannedAt']) && newData.child('bannedUntil').isNumber())"
+      }
+    },
+    "account_lockouts": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": [
+        "target",
+        "failedCount",
+        "lockedUntil",
+        "lockedAt"
+      ],
+      "$target": {
+        ".read": true,
+        ".write": true,
+        ".validate": "!newData.exists() || (newData.hasChildren(['target', 'failedCount', 'lockedUntil']) && newData.child('failedCount').isNumber() && newData.child('lockedUntil').isNumber())"
+      }
+    }
+  }
+}

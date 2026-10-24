@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/jpeg" href="./logo.jpg" />
+    <link rel="apple-touch-icon" href="./pulse_logo_clean.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PULSE" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="canonical" href="https://pulseeg.wuaze.com/" />
+    <title>PULSE — نبض الأفكار الحية</title>
+    <meta name="description" content="منصة PULSE للتواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي. تصفح المنصة مباشرة عبر الويب أو حمّل تطبيق الأندرويد الرسمي." />
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PULSE" />
+    <meta property="og:url" content="https://pulseeg.wuaze.com/" />
+    <meta property="og:title" content="PULSE — نبض الأفكار الحية" />
+    <meta property="og:description" content="منصة PULSE للتواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي." />
+    <meta property="og:image" content="https://pulseeg.wuaze.com/assets/pulse_mockup_feed.jpg" />
+    <meta property="og:locale" content="ar_EG" />
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PULSE — نبض الأفكار الحية" />
+    <meta name="twitter:description" content="منصة النبضات الصوتية والمحادثات المباشرة في الوقت الفعلي." />
+    <meta name="twitter:image" content="https://pulseeg.wuaze.com/assets/pulse_mockup_feed.jpg" />
+
+    <!-- Schema.org SoftwareApplication Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PULSE",
+      "operatingSystem": "Android, Web",
+      "applicationCategory": "SocialNetworkingApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "منصة التواصل والمحادثات والنبضات الصوتية في الوقت الفعلي.",
+      "downloadUrl": "https://pulseeg.wuaze.com/Pulse-v1.0.apk"
+    }
+    </script>
+
+    <!-- Google Fonts: Readex Pro and Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Absolute Zero Scrollbar Policy */
+      *, *::before, *::after {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+      ::-webkit-scrollbar,
+      *::-webkit-scrollbar,
+      *::-webkit-scrollbar-thumb,
+      *::-webkit-scrollbar-track,
+      *::-webkit-scrollbar-corner,
+      *::-webkit-resizer {
+        display: none !important;
+        width: 0px !important;
+        height: 0px !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      /* Boot Splash Soundwave Animation */
+      .boot-bar {
+        background: #ffffff;
+        border-radius: 9999px;
+        transform-origin: center;
+        animation: bootWave 1.4s ease-in-out infinite alternate;
+      }
+      .boot-bar-1 { width: 5px; height: 22px; animation-delay: 0.0s; }
+      .boot-bar-2 { width: 5.5px; height: 38px; animation-delay: 0.15s; }
+      .boot-bar-3 { width: 6px; height: 56px; animation-delay: 0.3s; }
+      .boot-bar-4 { width: 5.5px; height: 38px; animation-delay: 0.45s; }
+      .boot-bar-5 { width: 5px; height: 22px; animation-delay: 0.6s; }
+
+      @keyframes bootWave {
+        0% { transform: scaleY(0.72); opacity: 0.65; }
+        100% { transform: scaleY(1.08); opacity: 1; }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CHOHQ-Dj.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Bdq10zoG.css">
+  </head>
+  <body class="bg-black text-white antialiased selection:bg-white selection:text-black min-h-screen overflow-x-hidden font-sans">
+    <!-- Immediate Startup Splash Screen (Zero Delay / High-Res Soundwave) -->
+    <div id="pulse-boot-splash" style="position:fixed;inset:0;background:#000000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;transition:opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;">
+      <!-- Centered Harmonic Soundwave Symbol matching PulseLogo -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:7px;height:56px;margin-bottom:26px;">
+        <span class="boot-bar boot-bar-1"></span>
+        <span class="boot-bar boot-bar-2"></span>
+        <span class="boot-bar boot-bar-3"></span>
+        <span class="boot-bar boot-bar-4"></span>
+        <span class="boot-bar boot-bar-5"></span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;letter-spacing:0.35em;color:#ffffff;text-indent:0.35em;">PULSE</span>
+        <span style="font-family:'Readex Pro',sans-serif;font-size:11px;font-weight:400;color:#71717a;letter-spacing:0.04em;">نبض الأفكار الحية</span>
+      </div>
+    </div>
+
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+App.jsx:19 [sovythos] -> import { sovythosService } from './services/sovythosService';
+App.jsx:667 [sovythos] -> // Check and trigger autonomous daily pulse by Sovythos
+App.jsx:671 [sovythos] -> sovythosService.checkAndTriggerDailyPulse().then((pulse) => {
+App.jsx:1609 [sovythos] -> // 3. Sovythos AI Mention Trigger
+App.jsx:1615 [sovythos] -> sovythosService.processMentionTrigger({ post: newPost, actor: currentUser });
+App.jsx:1621 [sovythos] -> console.warn('Sovythos mention trigger notice:', e);
+assets\sovythosAvatar.js:1 [sovythos] -> // Official Sovythos Avatar (Hosted on Cloudinary CDN with high-speed WebP/AVIF delivery)
+assets\sovythosAvatar.js:2 [sovythos] -> export const SOVYTHOS_AVATAR = 'https://res.cloudinary.com/dgskw7nki/image/upload/f_auto,q_auto/v179
+components\AnimatedCounter.jsx:5 [ticker] -> * PULSE-Style PULSE Official Animated Counter Ticker
+components\AnimatedCounter.jsx:61 [ticker] -> className="absolute inset-0 flex items-center justify-center leading-none animate-ticker-roll will-c
+components\CreateSpaceModal.jsx:3 [sparkle] -> import { X, Radio, Sparkles, Mic } from 'lucide-react';
+components\FeedsDrawerModal.jsx:3 [sparkle] -> import { X, Bookmark, Sparkles, Users, Mic, MapPin, Check } from 'lucide-react';
+components\FeedsDrawerModal.jsx:29 [sparkle] -> icon: Sparkles
+components\GifPickerModal.jsx:3 [sparkle] -> import { X, Search, Sparkles, Loader2, RefreshCw } from 'lucide-react';
+components\GifPickerModal.jsx:203 [sparkle] -> <Sparkles size={24} className="mb-2 text-neutral-600" />
+components\ImageEditorModal.jsx:4 [sparkle] -> X, Check, RotateCw, FlipHorizontal, Crop, Sparkles,
+components\ImageEditorModal.jsx:579 [sparkle] -> <Sparkles size={17} />
+components\MentionAutocomplete.jsx:3 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS } from '../services/storageService';
+components\MentionAutocomplete.jsx:15 [sovythos] -> // Ensure Sovythos is always present in candidate list
+components\MentionAutocomplete.jsx:16 [sovythos] -> const hasSovythos = all.some(u => u.uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === '
+components\MentionAutocomplete.jsx:17 [sovythos] -> const list = hasSovythos ? all : [OFFICIAL_SOVYTHOS, ...all];
+components\MentionAutocomplete.jsx:20 [sovythos] -> return [OFFICIAL_SOVYTHOS];
+components\MentionAutocomplete.jsx:27 [sovythos] -> if (!users || users.length === 0) return [OFFICIAL_SOVYTHOS];
+components\MentionAutocomplete.jsx:38 [sovythos] -> // Prioritize Sovythos & Founder
+components\MentionAutocomplete.jsx:39 [sovythos] -> const aIsSovy = a.uid === OFFICIAL_SOVYTHOS.uid || a.username?.toLowerCase() === 'sovythos';
+components\MentionAutocomplete.jsx:40 [sovythos] -> const bIsSovy = b.uid === OFFICIAL_SOVYTHOS.uid || b.username?.toLowerCase() === 'sovythos';
+components\MentionAutocomplete.jsx:75 [sovythos] -> const isSovy = user.uid === OFFICIAL_SOVYTHOS.uid || user.username?.toLowerCase() === 'sovythos';
+components\PioneerBadge.jsx:10 [sovythos] -> const isOfficial = username === 'my' || username === 'pulse' || username === 'sovythos' ||
+components\PostCard.jsx:3 [sparkle] -> import { Heart, MessageCircle, Repeat2, Share2, Check, Bookmark, MoreHorizontal, ShieldAlert, UserX,
+components\PostCard.jsx:456 [sparkle] -> <Sparkles size={10} className="text-white fill-white" />
+components\ProfileQrShareModal.jsx:5 [sparkle] -> Camera, Image as ImageIcon, Flashlight, RefreshCw, Sparkles, User, Search
+components\ProfileQrShareModal.jsx:642 [sparkle] -> <Sparkles size={18} className="text-white/80" />
+components\QuotePickerModal.jsx:3 [sparkle] -> import { X, Search, Quote, Link2, Sparkles, User, Loader2 } from 'lucide-react';
+components\SharePreviewModal.jsx:49 [sovythos] -> // Ensure Sovythos is in list with official account UID
+components\SharePreviewModal.jsx:51 [sovythos] -> if (!list.some((u) => u.username === 'sovythos' || u.uid === 'user_1789917894698')) {
+components\SharePreviewModal.jsx:54 [sovythos] -> username: 'sovythos',
+components\SharePreviewModal.jsx:55 [sovythos] -> displayName: 'Sovythos',
+context\AuthContext.jsx:437 [sovythos] -> const isOfficial = user.username === 'my' || user.username === 'pulse' || user.username === 'sovytho
+context\AuthContext.jsx:807 [sovythos] -> const isOfficial = targetUser.username === 'my' || targetUser.username === 'pulse' || targetUser.use
+data\curatedGifs250.js:75 [sparkle] -> "title": "Love Heart Sparkle",
+data\curatedGifs250.js:1131 [sparkle] -> "title": "Sparkler Firework Stick Hand",
+data\curatedGifs250.js:1132 [sparkle] -> "tags": "sparkler firework شمعة شرار احتفال عيد فرحة يد",
+data\curatedGifs250.js:1227 [sparkle] -> "title": "Diamond Jewel Shine Sparkle",
+data\curatedGifs250.js:1377 [sparkle] -> "title": "Magic Wand Sparkle Spell Star",
+pages\AccountCenterPage.jsx:5 [sparkle] -> AlertCircle, X, Lock, Calendar, Phone, Mail, User, Sparkles,
+pages\AdsManagerPage.jsx:4 [sparkle] -> ExternalLink, Eye, MousePointerClick, TrendingUp, Sparkles, X, Check,
+pages\AdsManagerPage.jsx:496 [sparkle] -> <Sparkles size={24} />
+pages\AppIconPage.jsx:3 [sparkle] -> ArrowRight, ArrowLeft, Check, Sparkles, Smartphone, Layers
+pages\ExplorePage.jsx:6 [sparkle] -> Users, UserCheck, Flame, Sparkles
+pages\FollowInvitePage.jsx:4 [sparkle] -> Mail, Smartphone, Search, UserPlus, Sparkles, Send, ExternalLink,
+pages\FollowInvitePage.jsx:184 [sparkle] -> <Sparkles size={14} className="text-white" />
+pages\LiveSpaceRoom.jsx:4 [sparkle] -> Users, Square, Volume2, Sparkles, Terminal, Check,
+pages\LiveSpaceRoom.jsx:19 [sparkle] -> { id: 'sparkles', Icon: Sparkles, label: 'Brilliant' }
+pages\PostDetailPage.jsx:30 [sovythos] -> import { sovythosService } from '../services/sovythosService';
+pages\PostDetailPage.jsx:406 [sovythos] -> sovythosService.processMentionTrigger({
+pages\ProfilePage.jsx:459 [sovythos] -> {!isFounder && profileUser?.username !== 'my' && profileUser?.username !== 'pulse' && profileUser?.u
+pages\SettingsPage.jsx:25 [sparkle] -> Eye, EyeOff, MessageCircle, Plus, Clock, Sparkles, Smartphone, Moon, Copy,
+pages\SettingsPage.jsx:129 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS } from '../services/storageService';
+pages\SettingsPage.jsx:9857 [sovythos] -> {/* Quick Sovythos AI Help Capsule (Developer Only) */}
+pages\SettingsPage.jsx:9877 [sparkle] -> <Sparkles size={20} />
+pages\SettingsPage.jsx:9889 [sovythos] -> <div className="text-sm font-semibold text-white">Sovythos</div>
+pages\SettingsPage.jsx:9893 [sovythos] -> <div className="text-xs text-neutral-400">{isAr ? 'تحدث مع سوفيثوس في أي وقت' : 'Chat with Sovythos 
+pages\SettingsPage.jsx:9913 [sovythos] -> showToast(isAr ? 'يمكنك التحدث مع Sovythos في أي وقت عبر الرسائل الخاصة!' : 'You can chat with Sovyt
+pages\SettingsPage.jsx:10309 [sparkle] -> icon: Sparkles,
+pages\SettingsPage.jsx:12525 [sovythos] -> placeholder={isAr ? 'مثال: sovythos أو user@domain.com' : 'e.g. username or email'}
+pages\SupervisionPage.jsx:5 [sparkle] -> Smartphone, EyeOff, Sparkles, HeartHandshake, CheckCircle2, UserCheck
+pages\VerificationPage.jsx:4 [sparkle] -> CheckCheck, Sparkles, ShieldCheck, Mic, Zap, Smartphone, ChevronRight, ChevronLeft
+pages\VerificationPage.jsx:271 [sparkle] -> <Sparkles size={13} />
+services\adService.js:25 [sovythos] -> 'ad_sovythos_enterprise'
+services\chatService.js:264 [sovythos] -> // Check if recipient is Sovythos — trigger witty auto-reply redirecting to public timeline
+services\chatService.js:265 [sovythos] -> const isRecipientSovythos = recipient.uid === 'user_1789917894698' || recipient.username?.toLowerCas
+services\chatService.js:266 [sovythos] -> if (isRecipientSovythos && sender.uid !== 'user_1789917894698') {
+services\chatService.js:267 [sovythos] -> this.triggerSovythosDmAutoReply(conversationId, sender);
+services\chatService.js:277 [sovythos] -> // Sovythos Witty DM Auto-Reply System (Redirects users to the public feed)
+services\chatService.js:278 [sovythos] -> async triggerSovythosDmAutoReply(conversationId, userSender) {
+services\chatService.js:287 [sovythos] -> 'خاص إيه يا باشا! إحنا بتوع التايم لاين المفتوح، اطلع في نبضة واكتب @sovythos وهتلاقيني في ثانية عند
+services\chatService.js:295 [sovythos] -> username: 'sovythos',
+services\chatService.js:296 [sovythos] -> displayName: 'Sovythos',
+services\chatService.js:315 [sovythos] -> isSovythosAutoReply: true
+services\chatService.js:340 [sovythos] -> console.warn('triggerSovythosDmAutoReply error:', err);
+services\multiAccountService.js:1 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS, OFFICIAL_PULSE } from './storageService';
+services\multiAccountService.js:63 [sovythos] -> const isOfficial = user.username === 'my' || user.username === 'pulse' || user.username === 'sovytho
+services\recommendationNotificationEngine.js:8 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS } from './storageService';
+services\recommendationNotificationEngine.js:84 [sovythos] -> // Priority 1: If user hasn't followed Sovythos yet, suggest Sovythos!
+services\recommendationNotificationEngine.js:85 [sovythos] -> if (!followingSet.has(OFFICIAL_SOVYTHOS.uid) && !pastSuggested.has(OFFICIAL_SOVYTHOS.uid)) {
+services\recommendationNotificationEngine.js:86 [sovythos] -> this.recordSuggestedHistory(SUGGESTED_CREATORS_HISTORY_KEY, OFFICIAL_SOVYTHOS.uid);
+services\recommendationNotificationEngine.js:90 [sovythos] -> actor: OFFICIAL_SOVYTHOS,
+services\recommendationNotificationEngine.js:91 [sovythos] -> text: 'اقترحنا لك متابعة Sovythos · صاحبك ورفيقك على منصة PULSE',
+services\recommendationNotificationEngine.js:92 [sovythos] -> preview: OFFICIAL_SOVYTHOS.bio || 'اسأله في أي وقت وهزر معاه بنقرة زر',
+services\sovythosRagEngine.js:2 [sovythos] -> * Sovythos RAG Engine (Real-Time Timeline Grounding & Context Retrieval)
+services\sovythosRagEngine.js:4 [sovythos] -> * Provides Sovythos with Grok-level situational awareness across PULSE:
+services\sovythosRagEngine.js:7 [sovythos] -> * - Author timeline memory (recent pulses from the person speaking to Sovythos)
+services\sovythosRagEngine.js:11 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS } from './storageService';
+services\sovythosRagEngine.js:42 [sovythos] -> export const sovythosRagEngine = {
+services\sovythosRagEngine.js:44 [sovythos] -> * Get public organic pulses, filtering out private/banned accounts and Sovythos itself
+services\sovythosRagEngine.js:54 [sovythos] -> // Don't index Sovythos's own pulses for query grounding to avoid echo chamber
+services\sovythosRagEngine.js:55 [sovythos] -> if (p.authorId === OFFICIAL_SOVYTHOS.uid || p.author?.username?.toLowerCase() === 'sovythos') return
+services\sovythosRagEngine.js:59 [sovythos] -> console.warn('[SovythosRagEngine] Error fetching public pulses:', err);
+services\sovythosRagEngine.js:125 [sovythos] -> * 3. Get recent pulses from the person speaking to Sovythos
+services\sovythosRagEngine.js:139 [sovythos] -> buildSovythosContext({ post = null, comment = null, caller = null }) {
+services\sovythosService.js:2 [sovythos] -> * Sovythos AI Service
+services\sovythosService.js:5 [sovythos] -> * Identity: Sovythos (سوفيثوس)
+services\sovythosService.js:11 [sovythos] -> import { storageService, OFFICIAL_SOVYTHOS } from './storageService';
+services\sovythosService.js:13 [sovythos] -> import { sovythosRagEngine } from './sovythosRagEngine';
+services\sovythosService.js:16 [sovythos] -> const STORAGE_CONFIG_KEY = 'pulse_sovythos_config';
+services\sovythosService.js:17 [sovythos] -> const LAST_POST_TIMESTAMP_KEY = 'pulse_sovythos_last_post_timestamp';
+services\sovythosService.js:19 [sovythos] -> export const SOVYTHOS_DEFAULTS = {
+services\sovythosService.js:28 [sovythos] -> const SYSTEM_PROMPT_BASE = `أنت "سوفيثوس" (Sovythos)، الرفيق المصري الذكي وصاحب المنصة على تطبيق نبض
+services\sovythosService.js:52 [sovythos] -> export const sovythosService = {
+services\sovythosService.js:59 [sovythos] -> parsed.model = SOVYTHOS_DEFAULTS.model;
+services\sovythosService.js:60 [sovythos] -> parsed.fallbackModel = SOVYTHOS_DEFAULTS.fallbackModel;
+services\sovythosService.js:62 [sovythos] -> return { ...SOVYTHOS_DEFAULTS, ...parsed };
+services\sovythosService.js:65 [sovythos] -> console.warn('Error reading Sovythos config:', e);
+services\sovythosService.js:67 [sovythos] -> return { ...SOVYTHOS_DEFAULTS };
+services\sovythosService.js:76 [sovythos] -> console.warn('Error saving Sovythos config:', e);
+services\sovythosService.js:87 [sovythos] -> throw new Error('Sovythos is currently disabled or missing API key.');
+services\sovythosService.js:91 [sovythos] -> model: options.model || config.model || SOVYTHOS_DEFAULTS.model,
+services\sovythosService.js:118 [sovythos] -> console.warn(`[Sovythos Native] Model ${payload.model} failed (${nativeRes.status}), switching to fa
+services\sovythosService.js:146 [sovythos] -> console.warn(`[Sovythos Web] Model ${payload.model} failed (${res.status}), switching to fallback: $
+services\sovythosService.js:157 [sovythos] -> console.warn(`[Sovythos Web] Fetch error on ${payload.model}, falling back to: ${config.fallbackMode
+services\sovythosService.js:168 [sovythos] -> console.warn(`[Sovythos] Error with ${payload.model}, attempting fallback: ${config.fallbackModel}`,
+services\sovythosService.js:171 [sovythos] -> console.error('[Sovythos] Completion error:', err);
+services\sovythosService.js:183 [sovythos] -> // 3. Strip AI label prefixes like "سوفيثوس:", "Sovythos:", "**الرد:**", "الرد:"
+services\sovythosService.js:184 [sovythos] -> cleaned = cleaned.replace(/^(?:\*{0,2}(?:سوفيثوس|Sovythos|الرد|تعليق|رد سوفيثوس)\*{0,2}\s*[:：\-–—]\s
+services\sovythosService.js:274 [sovythos] -> const liveDigest = sovythosRagEngine.getRecentPlatformDigest(5);
+services\sovythosService.js:307 [sovythos] -> const isDirectReplyToSovythos = Boolean(
+services\sovythosService.js:309 [sovythos] -> comment.replyTo?.username?.toLowerCase() === 'sovythos' ||
+services\sovythosService.js:310 [sovythos] -> String(comment.replyTo?.id || '').includes('sovythos') ||
+services\sovythosService.js:311 [sovythos] -> (comment.parentId && String(comment.parentId).includes('sovythos'))
+services\sovythosService.js:315 [sovythos] -> const isMentioned = /@sovythos\b/i.test(textToCheck) ||
+services\sovythosService.js:319 [sovythos] -> isDirectReplyToSovythos;
+services\sovythosService.js:323 [sovythos] -> if (actor?.uid === OFFICIAL_SOVYTHOS.uid || comment?.authorId === OFFICIAL_SOVYTHOS.uid) {
+services\sovythosService.js:328 [sovythos] -> console.log('[Sovythos] Mention or direct reply detected! Generating witty Egyptian reply...');
+services\sovythosService.js:333 [sovythos] -> id: 'comm_sovythos_' + Date.now(),
+services\sovythosService.js:334 [sovythos] -> authorId: OFFICIAL_SOVYTHOS.uid,
+services\sovythosService.js:335 [sovythos] -> author: OFFICIAL_SOVYTHOS,
+services\sovythosService.js:348 [sovythos] -> storageService.addComment(post.id, replyComment, OFFICIAL_SOVYTHOS);
+services\sovythosService.js:357 [sovythos] -> console.error('[Sovythos] Error generating mention reply:', err);
+services\storageService.js:21 [sovythos] -> import { SOVYTHOS_AVATAR } from '../assets/sovythosAvatar';
+services\storageService.js:95 [sovythos] -> // Official Account: Sovythos
+services\storageService.js:97 [sovythos] -> export const OFFICIAL_SOVYTHOS = {
+services\storageService.js:101 [sovythos] -> email: 'sovythos@pulse.app',
+services\storageService.js:103 [sovythos] -> username: 'sovythos',
+services\storageService.js:105 [sovythos] -> displayName: 'Sovythos',
+services\storageService.js:107 [sovythos] -> avatar: SOVYTHOS_AVATAR,
+services\storageService.js:127 [sovythos] -> badgeTitle: 'SOVYTHOS',
+services\storageService.js:347 [sovythos] -> this.safeSetItem(STORAGE_KEYS.USERS, [OFFICIAL_FOUNDER, OFFICIAL_SOVYTHOS]);
+services\storageService.js:487 [sovythos] -> (authorUid === OFFICIAL_SOVYTHOS.uid || authorUsername?.toLowerCase() === OFFICIAL_SOVYTHOS.username
+services\storageService.js:513 [sovythos] -> isAI: liveAuthor?.isAI || (liveAuthor?.uid === OFFICIAL_SOVYTHOS.uid) || Boolean(fallbackAuthor.isAI
+services\storageService.js:523 [sovythos] -> const isOfficialAuthor = finalAuthor.username === 'my' || finalAuthor.username === 'pulse' || finalA
+services\storageService.js:1203 [sovythos] -> const isSovy = u.uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
+services\storageService.js:1219 [sovythos] -> avatar: isSovy ? SOVYTHOS_AVATAR : isPulse ? OFFICIAL_PULSE_AVATAR : resolveAvatar(u.avatar),
+services\storageService.js:1255 [sovythos] -> if (!mapped.some((u) => u.username?.toLowerCase() === 'sovythos')) {
+services\storageService.js:1257 [sovythos] -> mapped.push(OFFICIAL_SOVYTHOS);
+services\storageService.js:1265 [sovythos] -> return [OFFICIAL_FOUNDER, OFFICIAL_PULSE, OFFICIAL_SOVYTHOS];
+services\storageService.js:1287 [sovythos] -> if (uid === OFFICIAL_SOVYTHOS.uid) return OFFICIAL_SOVYTHOS;
+services\storageService.js:1311 [sovythos] -> if (clean === OFFICIAL_SOVYTHOS.username.toLowerCase()) return OFFICIAL_SOVYTHOS;
+services\storageService.js:1333 [sovythos] -> if (clean === OFFICIAL_SOVYTHOS.email.toLowerCase()) return OFFICIAL_SOVYTHOS;
+services\storageService.js:1555 [sovythos] -> const isSovy = uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
+services\storageService.js:1569 [sovythos] -> avatar: isSovy ? SOVYTHOS_AVATAR : resolveAvatar(u.avatar),
+services\storageService.js:1595 [sovythos] -> mergedMap.set(OFFICIAL_SOVYTHOS.uid, OFFICIAL_SOVYTHOS);
+services\storageService.js:1673 [sovythos] -> const isSovy = raw === OFFICIAL_SOVYTHOS.uid || directVal.username?.toLowerCase() === 'sovythos';
+services\storageService.js:1685 [sovythos] -> avatar: isSovy ? SOVYTHOS_AVATAR : resolveAvatar(directVal.avatar),
+services\storageService.js:1737 [sovythos] -> const isSovy = uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
+services\storageService.js:1751 [sovythos] -> avatar: isSovy ? SOVYTHOS_AVATAR : resolveAvatar(u.avatar),
+services\storageService.js:2123 [sovythos] -> return uname !== 'my' && uname !== 'pulse' && uname !== 'sovythos' && u.uid !== 'dev_mahmoud_yasser'
+services\storageService.js:2153 [sovythos] -> if (uname === 'my' || uname === 'pulse' || uname === 'sovythos' || user.uid === 'dev_mahmoud_yasser'
+services\storageService.js:2169 [sovythos] -> return uName !== 'my' && uName !== 'pulse' && uName !== 'sovythos' && u.uid !== 'dev_mahmoud_yasser'
+services\storageService.js:4133 [sovythos] -> const isSovy = comm.authorId === OFFICIAL_SOVYTHOS.uid || comm.author?.username?.toLowerCase() === '
+services\storageService.js:4145 [sovythos] -> const authorRef = isSovy ? OFFICIAL_SOVYTHOS : liveAuthor;
+services\timeTrackerService.js:40 [ticker] -> // Start 60-second ticker when window is in foreground

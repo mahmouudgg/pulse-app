@@ -1,0 +1,61 @@
+{
+	"appId": "pulse.v1",
+	"appName": "Pulse",
+	"webDir": "dist",
+	"bundledWebRuntime": false,
+	"server": {
+		"androidScheme": "https"
+	},
+	"android": {
+		"backgroundColor": "#000000",
+		"allowMixedContent": true
+	},
+	"ios": {
+		"backgroundColor": "#000000",
+		"contentInset": "always"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		},
+		"SplashScreen": {
+			"launchShowDuration": 1200,
+			"launchAutoHide": true,
+			"backgroundColor": "#000000",
+			"androidSplashResourceName": "splash",
+			"androidScaleType": "CENTER_CROP",
+			"showSpinner": false
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		},
+		"LocalNotifications": {
+			"smallIcon": "ic_stat_pulse",
+			"iconColor": "#000000",
+			"sound": "default"
+		},
+		"GoogleAuth": {
+			"scopes": [
+				"profile",
+				"email"
+			],
+			"serverClientId": "455923436884-fjcpldhrojf4ic03h4cpmbscg97pvlce.apps.googleusercontent.com",
+			"forceCodeForRefreshToken": true
+		}
+	},
+	"packageClassList": [
+		"ContactsPlugin",
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"FilesystemPlugin",
+		"HapticsPlugin",
+		"LocalNotificationsPlugin",
+		"PushNotificationsPlugin",
+		"SharePlugin",
+		"GoogleAuth"
+	]
+}

@@ -1,0 +1,137 @@
+App.jsx:667 -> // Check and trigger autonomous daily pulse by Sovythos
+App.jsx:1609 -> // 3. Sovythos AI Mention Trigger
+App.jsx:1621 -> console.warn('Sovythos mention trigger notice:', e);
+App.jsx:2027 -> <main className="app-viewport-shell">
+App.jsx:2105 -> <PostDetailPage
+App.jsx:2547 -> </main>
+App.jsx:2841 -> <MainApp />
+assets\sovythosAvatar.js:1 -> // Official Sovythos Avatar (Hosted on Cloudinary CDN with high-speed WebP/AVIF delivery)
+components\AdCard.jsx:164 -> <p dir="auto" className="text-sm text-neutral-100 leading-relaxed mb-3 bidi-plain break-words">
+components\ComposeModal.jsx:990 -> <img src={attachedGif} alt="GIF" className="w-full h-full object-contain max-h-64" />
+components\ComposeModal.jsx:1374 -> <div key={chain.id} className="mt-4 pt-3 border-t border-[#1C1C20] flex gap-3 animate-fade-in">
+components\CreateSpaceModal.jsx:102 -> placeholder={isAr ? 'مثال: مستقبل التقنية والذكاء الاصطناعي...' : 'e.g. The future of AI and technology...'}
+components\DeviceBanScreen.jsx:118 -> <main className="w-full max-w-md mx-auto my-auto py-6 flex flex-col items-center text-center">
+components\DeviceBanScreen.jsx:227 -> </main>
+components\DraftsPage.jsx:170 -> <div className="flex-1 overflow-y-auto no-scrollbar" style={{ overscrollBehavior: 'contain' }}>
+components\ErrorBoundary.jsx:78 -> {this.state.showDetails ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+components\ImageEditorModal.jsx:23 -> { id: '4:5', labelAr: '4:5 عمودي', labelEn: '4:5 Portrait', ratio: 4 / 5 },
+components\LinkedDevicesModal.jsx:449 -> <span>{lang === 'ar' ? 'إدخال رمز الربط يدوياً' : 'Enter Pairing Code'}</span>
+components\MentionAutocomplete.jsx:15 -> // Ensure Sovythos is always present in candidate list
+components\MentionAutocomplete.jsx:16 -> const hasSovythos = all.some(u => u.uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos');
+components\MentionAutocomplete.jsx:17 -> const list = hasSovythos ? all : [OFFICIAL_SOVYTHOS, ...all];
+components\MentionAutocomplete.jsx:38 -> // Prioritize Sovythos & Founder
+components\MiniAudioPlayer.jsx:24 -> title: e.detail.title || 'نبضة صوتية',
+components\PostCard.jsx:786 -> <PulseMediaImage
+components\PostCard.jsx:852 -> <PulseMediaImage
+components\RealAudioPlayer.jsx:277 -> return `${mins}:${remainder < 10 ? '0' : ''}${remainder}`;
+components\RealAudioPlayer.jsx:386 -> <div dir="auto" className="mt-2 p-2.5 rounded-xl bg-[#141416] border border-[#242428] text-xs text-neutral-200 leading-relaxed font-normal bidi-plain">
+components\SharePreviewModal.jsx:49 -> // Ensure Sovythos is in list with official account UID
+components\SharePreviewModal.jsx:55 -> displayName: 'Sovythos',
+data\curatedGifs250.js:141 -> "title": "Money Rain Dollar",
+data\curatedGifs250.js:267 -> "title": "Ismail Yassine Salute",
+data\curatedGifs250.js:315 -> "title": "Koshary Feast Cairo",
+data\curatedGifs250.js:321 -> "title": "Nile River Cairo Sunset",
+data\curatedGifs250.js:333 -> "title": "TukTuk Cairo Drift",
+data\curatedGifs250.js:441 -> "title": "SpongeBob Rainbow Imagination",
+data\curatedGifs250.js:489 -> "title": "Matrix Rain Code Green",
+data\curatedGifs250.js:525 -> "title": "AI Robot Brain Think",
+data\curatedGifs250.js:543 -> "title": "Compiling Code Please Wait",
+data\curatedGifs250.js:657 -> "title": "Game Over Try Again",
+data\curatedGifs250.js:759 -> "title": "Rain On Window City Night",
+data\curatedGifs250.js:903 -> "title": "Mountain Peak Snowy Clouds",
+data\curatedGifs250.js:915 -> "title": "Writing Fountain Pen Ink Letter",
+data\curatedGifs250.js:927 -> "title": "Airplane Wing Clouds Sky Trip",
+data\curatedGifs250.js:945 -> "title": "Luggage Airport Rolling Fast",
+data\curatedGifs250.js:957 -> "title": "Train Metro Speeding Underground",
+data\curatedGifs250.js:1035 -> "title": "Pushups Training Hard Beast",
+data\curatedGifs250.js:1179 -> "title": "Graduation Cap Throw Air",
+data\curatedGifs250.js:1209 -> "title": "Gold Coin Flip In Air",
+data\curatedGifs250.js:1269 -> "title": "Live Broadcast On Air Red",
+data\curatedGifs250.js:1281 -> "title": "Message Sent Paper Airplane Send",
+data\curatedGifs250.js:1449 -> "title": "Mailbox Flag Up Delivery Arrived",
+data\curatedGifs250.js:1473 -> "title": "Receipt Printing Cash Register Paid",
+pages\AccountAppealPage.jsx:260 -> <span>{isAr ? 'ضمان العدالة والمراجعة البشرية المحايدة' : 'Fairness Guarantee & Human Review'}</span>
+pages\AccountCenterPage.jsx:141 -> { id: 'media', label: isAr ? 'السينما والترفيه' : 'Media & Entertainment', enabled: true }
+pages\AccountCenterPage.jsx:1486 -> {/* Main Title & Subtitle Matching Screenshot 1 */}
+pages\AdsManagerPage.jsx:363 -> <span>{isAr ? 'حملاتك الإعلانية' : 'Your Campaigns'} ({campaigns.length})</span>
+pages\AdsManagerPage.jsx:475 -> <span className="font-bold text-white font-mono">${ad.totalBudget || ad.dailyBudget * 7}</span>
+pages\AdsManagerPage.jsx:766 -> <form onSubmit={handleCreateCampaign} className="p-4 overflow-y-auto space-y-4 flex-1">
+pages\AdsManagerPage.jsx:901 -> <span className="text-[11px] text-neutral-400 block mb-1">{isAr ? 'الميزانية اليومية:' : 'Daily Budget:'}</span>
+pages\AdsManagerPage.jsx:920 -> <span className="text-[11px] text-neutral-400 block mb-1">{isAr ? 'مدة تشغيل الحملة:' : 'Campaign Duration:'}</span>
+pages\AuthPage.jsx:121 -> if (mode !== 'register' || !email || !email.includes('@') || email.trim().length < 5) {
+pages\AuthPage.jsx:429 -> <main className="w-full max-w-sm mx-auto my-auto py-4 relative z-10">
+pages\AuthPage.jsx:557 -> placeholder={isAr ? 'مثال: username أو user@email.com' : 'e.g. username or user@email.com'}
+pages\AuthPage.jsx:910 -> placeholder={isAr ? 'اسم المستخدم، البريد، أو رقم الهاتف' : 'Username, email, or phone'}
+pages\AuthPage.jsx:985 -> <span>{isAr ? 'جاري التحقق من التوفر...' : 'Checking availability...'}</span>
+pages\AuthPage.jsx:991 -> <span>{usernameAvailability.message}</span>
+pages\AuthPage.jsx:997 -> <span>{usernameAvailability.message}</span>
+pages\AuthPage.jsx:1011 -> placeholder={isAr ? 'البريد الإلكتروني' : 'Email address'}
+pages\AuthPage.jsx:1029 -> <span>{emailAvailability.message}</span>
+pages\AuthPage.jsx:1192 -> </main>
+pages\EditProfilePage.jsx:221 -> placeholder={isAr ? '+ أضف موقعك (مثال: Cairo, Egypt)' : '+ Add location (e.g. Cairo, Egypt)'}
+pages\FollowInvitePage.jsx:281 -> <Mail size={18} />
+pages\FollowInvitePage.jsx:284 -> <div className="text-sm font-semibold text-white">{isAr ? 'دعوة عبر البريد الإلكتروني' : 'Invite friends via Email'}</div>
+pages\FollowInvitePage.jsx:285 -> <div className="text-xs text-neutral-500 mt-0.5">{isAr ? 'إرسال دعوة رسمية أنيقة عبر الإيميل' : 'Send an official email invitation'}</div>
+pages\FollowListPage.jsx:169 -> <p dir="auto" className="text-xs text-neutral-400 mt-1 line-clamp-1 bidi-plain break-words">
+pages\InsightsPage.jsx:173 -> <span>{isAr ? 'الحملات الإعلانية' : 'Ads & Campaigns'}</span>
+pages\InsightsPage.jsx:444 -> <p className="text-[#77777A] text-sm">{isAr ? 'لا توجد نبضات متاحة في هذه الفترة' : 'No pulses available for this period'}</p>
+pages\InsightsPage.jsx:627 -> <span>{isAr ? 'الميزانية اليومية' : 'Daily Budget'}</span>
+pages\LiveSpaceRoom.jsx:18 -> { id: 'brain', Icon: Brain, label: 'Deep' },
+pages\LiveSpaceRoom.jsx:293 -> <span>طلبات الصعود للمنصة ({handRaisedCount})</span>
+pages\LiveSpaceRoom.jsx:482 -> <span>{isHandRaised ? (isAr ? 'تم طلب الكلمة' : 'Hand raised') : (isAr ? 'طلب الكلمة' : 'Raise hand')}</span>
+pages\NotificationsPage.jsx:703 -> <p dir="auto" className="text-xs text-neutral-200 mt-1 line-clamp-3 leading-relaxed bidi-plain break-words font-normal">
+pages\PostDetailPage.jsx:938 -> <img src={rootComm.gifUrl} alt="" className="w-full h-auto max-h-56 object-contain" />
+pages\PostDetailPage.jsx:1122 -> <img src={nested.gifUrl} alt="" className="w-full h-auto max-h-48 object-contain" />
+pages\PostDetailPage.jsx:1243 -> <img src={attachedCommentGif} alt="" className="h-14 object-contain" />
+pages\PrivacyPolicyPage.jsx:122 -> <main className="p-5 space-y-6">
+pages\PrivacyPolicyPage.jsx:169 -> </main>
+pages\SettingsPage.jsx:9857 -> {/* Quick Sovythos AI Help Capsule (Developer Only) */}
+pages\SettingsPage.jsx:9889 -> <div className="text-sm font-semibold text-white">Sovythos</div>
+pages\SettingsPage.jsx:9893 -> <div className="text-xs text-neutral-400">{isAr ? 'تحدث مع سوفيثوس في أي وقت' : 'Chat with Sovythos anytime'}</div>
+pages\SettingsPage.jsx:9913 -> showToast(isAr ? 'يمكنك التحدث مع Sovythos في أي وقت عبر الرسائل الخاصة!' : 'You can chat with Sovythos directly via DMs!');
+pages\SettingsPage.jsx:10005 -> placeholder={isAr ? 'اشرح ما حدث بالتفصيل وكيف يمكن إعادة تكراره...' : 'Explain in detail what happened...'}
+pages\SettingsPage.jsx:12525 -> placeholder={isAr ? 'مثال: sovythos أو user@domain.com' : 'e.g. username or email'}
+pages\SupervisionPage.jsx:419 -> placeholder={isAr ? 'مثال: my أو parent@pulse.app' : 'e.g. username or email'}
+pages\TermsOfServicePage.jsx:117 -> <main className="p-5 space-y-6">
+pages\TermsOfServicePage.jsx:161 -> </main>
+pages\TimeManagementPage.jsx:272 -> <span>{isAr ? 'تحديد الحد اليومي' : 'Set daily limit'}</span>
+services\adService.js:3 -> * - 100% Real User Campaigns (Zero fake placeholders)
+services\chatService.js:264 -> // Check if recipient is Sovythos — trigger witty auto-reply redirecting to public timeline
+services\chatService.js:265 -> const isRecipientSovythos = recipient.uid === 'user_1789917894698' || recipient.username?.toLowerCase() === 'sovythos';
+services\chatService.js:266 -> if (isRecipientSovythos && sender.uid !== 'user_1789917894698') {
+services\chatService.js:267 -> this.triggerSovythosDmAutoReply(conversationId, sender);
+services\chatService.js:277 -> // Sovythos Witty DM Auto-Reply System (Redirects users to the public feed)
+services\chatService.js:278 -> async triggerSovythosDmAutoReply(conversationId, userSender) {
+services\chatService.js:296 -> displayName: 'Sovythos',
+services\chatService.js:315 -> isSovythosAutoReply: true
+services\chatService.js:340 -> console.warn('triggerSovythosDmAutoReply error:', err);
+services\passwordResetService.js:12 -> if (name.length <= 2) return `${name[0]}*@${domain}`;
+services\recommendationNotificationEngine.js:84 -> // Priority 1: If user hasn't followed Sovythos yet, suggest Sovythos!
+services\recommendationNotificationEngine.js:91 -> text: 'اقترحنا لك متابعة Sovythos · صاحبك ورفيقك على منصة PULSE',
+services\sovythosRagEngine.js:2 -> * Sovythos RAG Engine (Real-Time Timeline Grounding & Context Retrieval)
+services\sovythosRagEngine.js:4 -> * Provides Sovythos with Grok-level situational awareness across PULSE:
+services\sovythosRagEngine.js:7 -> * - Author timeline memory (recent pulses from the person speaking to Sovythos)
+services\sovythosRagEngine.js:44 -> * Get public organic pulses, filtering out private/banned accounts and Sovythos itself
+services\sovythosRagEngine.js:54 -> // Don't index Sovythos's own pulses for query grounding to avoid echo chamber
+services\sovythosRagEngine.js:59 -> console.warn('[SovythosRagEngine] Error fetching public pulses:', err);
+services\sovythosRagEngine.js:125 -> * 3. Get recent pulses from the person speaking to Sovythos
+services\sovythosRagEngine.js:139 -> buildSovythosContext({ post = null, comment = null, caller = null }) {
+services\sovythosService.js:2 -> * Sovythos AI Service
+services\sovythosService.js:5 -> * Identity: Sovythos (سوفيثوس)
+services\sovythosService.js:28 -> const SYSTEM_PROMPT_BASE = `أنت "سوفيثوس" (Sovythos)، الرفيق المصري الذكي وصاحب المنصة على تطبيق نبض (PULSE).
+services\sovythosService.js:65 -> console.warn('Error reading Sovythos config:', e);
+services\sovythosService.js:76 -> console.warn('Error saving Sovythos config:', e);
+services\sovythosService.js:87 -> throw new Error('Sovythos is currently disabled or missing API key.');
+services\sovythosService.js:118 -> console.warn(`[Sovythos Native] Model ${payload.model} failed (${nativeRes.status}), switching to fallback: ${config.fallbackModel}`);
+services\sovythosService.js:146 -> console.warn(`[Sovythos Web] Model ${payload.model} failed (${res.status}), switching to fallback: ${config.fallbackModel}`);
+services\sovythosService.js:157 -> console.warn(`[Sovythos Web] Fetch error on ${payload.model}, falling back to: ${config.fallbackModel}`, fetchErr.message);
+services\sovythosService.js:168 -> console.warn(`[Sovythos] Error with ${payload.model}, attempting fallback: ${config.fallbackModel}`, err.message);
+services\sovythosService.js:171 -> console.error('[Sovythos] Completion error:', err);
+services\sovythosService.js:183 -> // 3. Strip AI label prefixes like "سوفيثوس:", "Sovythos:", "**الرد:**", "الرد:"
+services\sovythosService.js:184 -> cleaned = cleaned.replace(/^(?:\*{0,2}(?:سوفيثوس|Sovythos|الرد|تعليق|رد سوفيثوس)\*{0,2}\s*[:：\-–—]\s*)+/gi, '').trim();
+services\sovythosService.js:307 -> const isDirectReplyToSovythos = Boolean(
+services\sovythosService.js:319 -> isDirectReplyToSovythos;
+services\sovythosService.js:328 -> console.log('[Sovythos] Mention or direct reply detected! Generating witty Egyptian reply...');
+services\sovythosService.js:357 -> console.error('[Sovythos] Error generating mention reply:', err);
+services\storageService.js:95 -> // Official Account: Sovythos
+services\storageService.js:105 -> displayName: 'Sovythos',
