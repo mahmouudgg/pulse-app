@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowLeft, Send, Check, Trash2, Heart, MessageCircle, 
   X, Repeat2, MoreHorizontal, Eye, Bell, BellOff, Image as ImageIcon, 
   Loader2, Share2, Bookmark, ChevronDown, ChevronRight, ChevronLeft, ChevronUp,
-  Volume2, VolumeX, Play, Pause, BarChart2, ShieldCheck, Flag, Copy, Link2
+  Volume2, VolumeX, Play, Pause, BarChart2, ShieldCheck, Flag, Copy, Link2, Languages
 } from 'lucide-react';
 import PulseMediaViewer from '../components/PulseMediaViewer';
 import PulseVideoPlayer from '../components/PulseVideoPlayer';
@@ -23,6 +23,7 @@ import { ref, onValue } from 'firebase/database';
 import { moderationService } from '../services/moderationService';
 import { sanitizeInput } from '../utils/securityCrypto';
 import { compressImageToBase64 } from '../utils/imageCompressor';
+import { translationService } from '../services/translationService';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
 import { DEFAULT_AVATAR, resolveAvatar } from '../utils/defaultAvatar';
@@ -75,6 +76,49 @@ export default function PostDetailPage({
   const [commentSort, setCommentSort] = useState('top'); // 'top' | 'newest'
   const [expandedThreads, setExpandedThreads] = useState({});
   const [commentOptionsTarget, setCommentOptionsTarget] = useState(null);
+
+  // Real Translation State
+  const [isTranslatingPost, setIsTranslatingPost] = useState(false);
+  const [postTranslatedData, setPostTranslatedData] = useState(null);
+  const [showPostTranslation, setShowPostTranslation] = useState(false);
+
+  const handleTranslatePost = async () => {
+    setShowOptionsSheet(false);
+    if (!post?.content || !post.content.trim()) {
+      showToast(isAr ? 'لا يوجد نص للترجمة في هذه النبضة' : 'No text to translate', 'info');
+      return;
+    }
+
+    if (postTranslatedData && postTranslatedData.translatedText) {
+      setShowPostTranslation((prev) => !prev);
+      hapticsService.selection?.();
+      return;
+    }
+
+    try {
+      setIsTranslatingPost(true);
+      hapticsService.light?.();
+      const res = await translationService.translate(post.content);
+      if (res && res.success && res.translatedText) {
+        setPostTranslatedData(res);
+        setShowPostTranslation(true);
+        hapticsService.success?.();
+        showToast(
+          isAr
+            ? `تمت الترجمة من ${res.sourceLabel || 'اللغة الأصلية'}`
+            : `Translated from ${res.sourceLang === 'ar' ? 'Arabic' : 'English'}`,
+          'success'
+        );
+      } else {
+        showToast(isAr ? 'تعذر إتمام الترجمة حالياً' : 'Translation failed', 'error');
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      showToast(isAr ? 'حدث خطأ أثناء الترجمة' : 'Error during translation', 'error');
+    } finally {
+      setIsTranslatingPost(false);
+    }
+  };
 
   const postAuthorUid = post?.authorId || post?.author?.uid;
   const postAuthorUsername = post?.author?.username?.toLowerCase();
@@ -624,12 +668,65 @@ export default function PostDetailPage({
             )}
           </div>
 
-          {/* Post Text Body */}
-          <div className="text-[15.5px] text-white leading-relaxed my-3 select-text font-normal">
-            <RichTextRenderer
-              text={post.content}
-              onOpenUserProfile={onOpenUserProfile}
-            />
+          {/* Post Text Body with Translation */}
+          <div className="my-3 space-y-2">
+            <div className="text-[15.5px] text-white leading-relaxed select-text font-normal">
+              <RichTextRenderer
+                text={showPostTranslation && postTranslatedData?.translatedText ? postTranslatedData.translatedText : post.content}
+                onOpenUserProfile={onOpenUserProfile}
+              />
+            </div>
+
+            {/* Translation attribution & original toggle */}
+            {showPostTranslation && postTranslatedData?.translatedText && (
+              <div 
+                className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between text-xs text-neutral-300 animate-fade-in select-none"
+              >
+                <div className="flex items-center gap-2">
+                  <Languages size={14} className="text-white flex-shrink-0" />
+                  <span>
+                    {isAr
+                      ? `مترجم من ${postTranslatedData.sourceLabel || 'اللغة الأصلية'}`
+                      : `Translated from ${postTranslatedData.sourceLang === 'ar' ? 'Arabic' : 'English'}`}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPostTranslation(false);
+                    hapticsService.light?.();
+                  }}
+                  className="text-xs text-white underline hover:text-neutral-300 tap-press font-semibold"
+                >
+                  {isAr ? 'عرض الأصل' : 'Show original'}
+                </button>
+              </div>
+            )}
+
+            {/* Toggle back to translation if cached */}
+            {!showPostTranslation && postTranslatedData?.translatedText && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPostTranslation(true);
+                    hapticsService.light?.();
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white tap-press transition-colors font-medium"
+                >
+                  <Languages size={13} />
+                  <span>{isAr ? 'عرض الترجمة' : 'Show translation'}</span>
+                </button>
+              </div>
+            )}
+
+            {/* Translating in-flight indicator */}
+            {isTranslatingPost && (
+              <div className="flex items-center gap-2 text-xs text-neutral-400 animate-pulse">
+                <Loader2 size={13} className="animate-spin text-white" />
+                <span>{isAr ? 'جاري الترجمة...' : 'Translating pulse...'}</span>
+              </div>
+            )}
           </div>
 
           {/* Attached Audio Note */}
@@ -1401,6 +1498,27 @@ export default function PostDetailPage({
               <div className="w-12 h-1 bg-neutral-700/80 rounded-full mx-auto mb-3" />
               
               <div className="space-y-1.5">
+                {/* Translate Pulse Option */}
+                <button
+                  onClick={handleTranslatePost}
+                  disabled={isTranslatingPost}
+                  className="w-full p-3.5 rounded-2xl bg-[#18181B] hover:bg-[#202024] border border-[#26262B] flex items-center justify-between text-sm text-neutral-200 hover:text-white tap-press transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
+                      {isTranslatingPost ? <Loader2 size={16} className="animate-spin" /> : <Languages size={16} />}
+                    </div>
+                    <span className="font-semibold">
+                      {isTranslatingPost
+                        ? (isAr ? 'جاري الترجمة...' : 'Translating...')
+                        : showPostTranslation
+                          ? (isAr ? 'عرض النص الأصلي' : 'Show original')
+                          : (isAr ? 'ترجمة النبضة' : 'Translate pulse')}
+                    </span>
+                  </div>
+                  <Chevron size={16} className="text-neutral-500" />
+                </button>
+
                 <button
                   onClick={() => {
                     setShowOptionsSheet(false);
