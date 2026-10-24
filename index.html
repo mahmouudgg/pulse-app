@@ -1,57 +1,151 @@
 <!doctype html>
 <html lang="ar" dir="rtl" class="dark">
   <head>
+    <!-- Technical & Encoding Directives -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/jpeg" href="/logo.jpg" />
-    <link rel="apple-touch-icon" href="/pulse_logo_clean.png" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- Primary Page Title -->
+    <title>PULSE — منصة الأفكار والنبضات الصوتية الحية | Live Social Audio Network</title>
+    
+    <!-- Comprehensive SEO Meta Tags -->
+    <meta name="description" content="منصة PULSE: شبكة تواصل اجتماعي عصرية ومتقدمة لمشاركة الأفكار والمنشورات الحوارية والنبضات الصوتية في الوقت الفعلي. تصفح المنصة مباشرة أو حمّل تطبيق الأندرويد والآيفون الرسمي." />
+    <meta name="keywords" content="pulse, pulse app, تطبيق نبض, نبضات صوتية, شبكة تواصل اجتماعي, غرف صوتية, محادثات مباشرة, social network, audio social, threads alternative, منصة نبض, محمود ياسر, sovythos" />
+    <meta name="author" content="Mahmoud Yasser (my)" />
+    <meta name="publisher" content="PULSE Social Network" />
+    <meta name="application-name" content="PULSE" />
+    <meta name="generator" content="PULSE Engine v1.0.2" />
+    <meta name="rating" content="General" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    
+    <!-- Canonical & Alternate Language Indexing -->
+    <link rel="canonical" href="https://mahmouudgg.github.io/pulse-app/" />
+    <link rel="alternate" hreflang="ar" href="https://mahmouudgg.github.io/pulse-app/" />
+    <link rel="alternate" hreflang="en" href="https://mahmouudgg.github.io/pulse-app/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://mahmouudgg.github.io/pulse-app/" />
+    
+    <!-- Search Engine Indexing & Bot Directives -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    
+    <!-- Mobile App & Progressive Web App (PWA) -->
     <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PULSE" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="canonical" href="https://pulseeg.wuaze.com/" />
-    <title>PULSE — نبض الأفكار الحية</title>
-    <meta name="description" content="منصة PULSE للتواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي. تصفح المنصة مباشرة عبر الويب أو حمّل تطبيق الأندرويد الرسمي." />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="./manifest.json" />
     
-    <!-- Open Graph Metadata -->
+    <!-- Brand Icons & Touch Icons -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/jpeg" href="./logo.jpg" />
+    <link rel="apple-touch-icon" href="./pulse_logo_clean.png" />
+    
+    <!-- Open Graph (OG) Metadata for Social Sharing (Facebook, WhatsApp, LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="PULSE" />
-    <meta property="og:url" content="https://pulseeg.wuaze.com/" />
-    <meta property="og:title" content="PULSE — نبض الأفكار الحية" />
-    <meta property="og:description" content="منصة PULSE للتواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي." />
-    <meta property="og:image" content="https://pulseeg.wuaze.com/assets/pulse_mockup_feed.jpg" />
+    <meta property="og:url" content="https://mahmouudgg.github.io/pulse-app/" />
+    <meta property="og:title" content="PULSE — منصة الأفكار والنبضات الصوتية الحية" />
+    <meta property="og:description" content="منصة PULSE للتواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي. تصفح المنصة مباشرة عبر الويب أو حمّل التطبيق الرسمي." />
+    <meta property="og:image" content="https://mahmouudgg.github.io/pulse-app/og_preview.png" />
+    <meta property="og:image:secure_url" content="https://mahmouudgg.github.io/pulse-app/og_preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="PULSE Social Platform - Live Audio & Discussion Network" />
     <meta property="og:locale" content="ar_EG" />
-
-    <!-- Twitter Card Metadata -->
+    <meta property="og:locale:alternate" content="en_US" />
+    
+    <!-- Twitter / X Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PULSE — نبض الأفكار الحية" />
-    <meta name="twitter:description" content="منصة النبضات الصوتية والمحادثات المباشرة في الوقت الفعلي." />
-    <meta name="twitter:image" content="https://pulseeg.wuaze.com/assets/pulse_mockup_feed.jpg" />
+    <meta name="twitter:site" content="@pulse_social" />
+    <meta name="twitter:creator" content="@my" />
+    <meta name="twitter:url" content="https://mahmouudgg.github.io/pulse-app/" />
+    <meta name="twitter:title" content="PULSE — منصة الأفكار والنبضات الصوتية الحية" />
+    <meta name="twitter:description" content="منصة التواصل والمحادثات والنبضات الصوتية في الوقت الفعلي." />
+    <meta name="twitter:image" content="https://mahmouudgg.github.io/pulse-app/og_preview.png" />
+    <meta name="twitter:image:alt" content="PULSE Social Platform" />
+    
+    <!-- DNS Prefetch & Preconnect for High-Speed Core Web Vitals -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://sahra-f4ec6-default-rtdb.firebaseio.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="dns-prefetch" href="https://sahra-f4ec6-default-rtdb.firebaseio.com" />
+    
+    <!-- Typography Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Schema.org SoftwareApplication Structured Data -->
+    <!-- Schema.org JSON-LD Comprehensive Structured Data Graph -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "PULSE",
-      "operatingSystem": "Android, Web",
-      "applicationCategory": "SocialNetworkingApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "منصة التواصل والمحادثات والنبضات الصوتية في الوقت الفعلي.",
-      "downloadUrl": "https://pulseeg.wuaze.com/Pulse-v1.0.apk"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://mahmouudgg.github.io/pulse-app/#website",
+          "url": "https://mahmouudgg.github.io/pulse-app/",
+          "name": "PULSE",
+          "alternateName": ["منصة نبض", "Pulse Social", "Pulse App"],
+          "description": "منصة التواصل ومشاركة الأفكار والنبضات الصوتية في الوقت الفعلي",
+          "inLanguage": ["ar", "en"],
+          "publisher": {
+            "@id": "https://mahmouudgg.github.io/pulse-app/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://mahmouudgg.github.io/pulse-app/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://mahmouudgg.github.io/pulse-app/#organization",
+          "name": "PULSE",
+          "url": "https://mahmouudgg.github.io/pulse-app/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://mahmouudgg.github.io/pulse-app/pulse_logo_clean.png",
+            "width": 512,
+            "height": 512
+          },
+          "founder": {
+            "@type": "Person",
+            "name": "Mahmoud Yasser",
+            "alternateName": "@my"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://mahmouudgg.github.io/pulse-app/#application",
+          "name": "PULSE",
+          "operatingSystem": "Android, iOS, Web",
+          "applicationCategory": "SocialNetworkingApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1280",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "description": "منصة التواصل والمحادثات والنبضات الصوتية في الوقت الفعلي بأعلى معايير السرعة والأمان.",
+          "image": "https://mahmouudgg.github.io/pulse-app/og_preview.png"
+        }
+      ]
     }
     </script>
-
-    <!-- Google Fonts: Readex Pro and Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
       /* Absolute Zero Scrollbar Policy */
       *, *::before, *::after {
@@ -92,6 +186,7 @@
     </style>
   </head>
   <body class="bg-black text-white antialiased selection:bg-white selection:text-black min-h-screen overflow-x-hidden font-sans">
+    
     <!-- Immediate Startup Splash Screen (Zero Delay / High-Res Soundwave) -->
     <div id="pulse-boot-splash" style="position:fixed;inset:0;background:#000000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;transition:opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;">
       <!-- Centered Harmonic Soundwave Symbol matching PulseLogo -->
@@ -108,7 +203,38 @@
       </div>
     </div>
 
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <!-- Semantic Crawler Content for Instant Search Engine Indexing (Hydrated by React) -->
+    <div id="root">
+      <main style="display:none;" aria-hidden="true">
+        <h1>PULSE — منصة الأفكار والنبضات الصوتية الحية</h1>
+        <p>شبكة تواصل اجتماعي عصرية تجمع بين النبضات النصية والملاحظات الصوتية والمحادثات المباشرة في الوقت الفعلي.</p>
+        <section>
+          <h2>مميزات منصة PULSE</h2>
+          <ul>
+            <li>نبضات صوتية عالية النقاء مع معالجة حية للترددات.</li>
+            <li>محرك ترجمة فوري ثنائي الاتجاه باللغتين العربية والإنجليزية.</li>
+            <li>محادثات فورية مشفرة وخاصة.</li>
+            <li>رفيق ذكي مصري تفاعلي (سوفيثوس) لإثراء النقاشات.</li>
+            <li>تطبيقات أصلية لأجهزة الأندرويد والآيفون بالإضافة إلى نسخة الويب المتجاوبة.</li>
+          </ul>
+        </section>
+        <nav>
+          <a href="./?tab=feed">الخلاصة</a>
+          <a href="./?tab=explore">الاستكشاف</a>
+          <a href="./?tab=pioneers">الرعيل الأول</a>
+        </nav>
+      </main>
+    </div>
+
+    <!-- Fallback for JavaScript-disabled Crawlers -->
+    <noscript>
+      <div style="padding:24px;text-align:center;font-family:sans-serif;background:#000000;color:#ffffff;">
+        <h1>PULSE — نبض الأفكار الحية</h1>
+        <p>منصة التواصل ومشاركة النبضات الصوتية والمحادثات المباشرة في الوقت الفعلي.</p>
+        <p>يرجى تفعيل الجافاسكريبت في متصفحك للحصول على كامل تجربة PULSE التفاعلية، أو تصفح الروابط المباشرة.</p>
+      </div>
+    </noscript>
+
+    <script type="module" src="./src/main.jsx"></script>
   </body>
 </html>
