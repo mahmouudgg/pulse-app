@@ -861,7 +861,7 @@ export default function ProfilePage({
                             e.stopPropagation();
                             if (onRepost && parent.id) onRepost(parent.id);
                           }}
-                          className="hover:text-emerald-400 transition-colors flex items-center gap-1 text-xs"
+                          className="hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"
                         >
                           <Repeat2 size={16} />
                         </button>
@@ -970,7 +970,7 @@ export default function ProfilePage({
                             e.stopPropagation();
                             if (onRepost && parent.id) onRepost(parent.id);
                           }}
-                          className="hover:text-emerald-400 transition-colors flex items-center gap-1 text-xs"
+                          className="hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"
                         >
                           <Repeat2 size={16} />
                         </button>

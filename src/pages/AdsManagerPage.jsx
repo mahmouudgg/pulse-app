@@ -337,7 +337,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                   <TrendingUp size={12} />
                   <span>{isAr ? 'معدل CTR' : 'CTR%'}</span>
                 </div>
-                <div className="text-base font-extrabold text-emerald-400 font-mono">{avgCtr}%</div>
+                <div className="text-base font-extrabold text-blue-400 font-mono">{avgCtr}%</div>
               </div>
             </div>
 
@@ -361,7 +361,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between text-xs font-bold text-neutral-400 uppercase tracking-wider px-1">
                 <span>{isAr ? 'حملاتك الإعلانية' : 'Your Campaigns'} ({campaigns.length})</span>
-                <span className="text-[11px] font-mono text-emerald-400">{activeCount} {isAr ? 'معتمدة / نشطة' : 'Active'}</span>
+                <span className="text-[11px] font-mono text-blue-400">{activeCount} {isAr ? 'معتمدة / نشطة' : 'Active'}</span>
               </div>
 
               {campaigns.length > 0 ? (
@@ -386,9 +386,9 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                               <span className="text-sm font-bold text-white">{ad.brandName}</span>
                               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                 isApproved
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                                   : isPending
-                                  ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                                  ? 'bg-neutral-800/80 text-neutral-300 border border-neutral-700'
                                   : isRejected
                                   ? 'bg-red-500/10 text-red-400 border border-red-500/20'
                                   : 'bg-neutral-800 text-neutral-400'
@@ -413,8 +413,8 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                               onClick={() => handleToggleStatus(ad.id, ad.status)}
                               className={`p-2 rounded-xl text-xs font-bold flex items-center gap-1 tap-press transition-colors ${
                                 ad.status === 'active' || ad.status === 'approved'
-                                  ? 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20'
-                                  : 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/20'
+                                  ? 'bg-neutral-800/80 text-neutral-300 hover:bg-neutral-700 border border-neutral-700'
+                                  : 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20'
                               }`}
                               title={ad.status === 'active' ? 'إيقاف مؤقت' : 'استئناف'}
                             >
@@ -453,15 +453,15 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
 
                       {/* Pending Notice / Payment Ref */}
                       {isPending && (
-                        <div className="rounded-xl bg-amber-500/5 border border-amber-500/20 p-2.5 flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2 text-amber-300">
+                        <div className="rounded-xl bg-neutral-900 border border-neutral-700 p-2.5 flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2 text-neutral-300">
                             <Clock size={14} />
                             <span>{isAr ? 'رقم المرجع للحجز:' : 'Ref ID:'}</span>
                             <span className="font-mono font-bold">{ad.paymentReference || 'PAY-REF'}</span>
                           </div>
                           <button
                             onClick={() => setActiveInvoice(ad)}
-                            className="text-[11px] underline font-bold text-amber-200 tap-press hover:text-white"
+                            className="text-[11px] underline font-bold text-blue-400 tap-press hover:text-white"
                           >
                             {isAr ? 'عرض بيانات الدفع' : 'View Invoice'}
                           </button>
@@ -484,7 +484,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                         </div>
                         <div>
                           <span className="text-[10px] text-neutral-500 block">{isAr ? 'نسبة CTR' : 'CTR'}</span>
-                          <span className="font-bold text-emerald-400 font-mono">{ctr}%</span>
+                          <span className="font-bold text-blue-400 font-mono">{ctr}%</span>
                         </div>
                       </div>
                     </div>
@@ -544,9 +544,9 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                             <span className="text-sm font-bold text-white">{ad.brandName}</span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                               ad.status === 'active' || ad.status === 'approved'
-                                ? 'bg-emerald-500/10 text-emerald-400'
+                                ? 'bg-blue-500/10 text-blue-400'
                                 : ad.status === 'pending'
-                                ? 'bg-amber-500/10 text-amber-300'
+                                ? 'bg-neutral-800/80 text-neutral-300'
                                 : 'bg-neutral-800 text-neutral-400'
                             }`}>
                               {ad.status}
@@ -584,7 +584,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                           <>
                             <button
                               onClick={() => handleApproveAd(ad.id)}
-                              className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-black font-bold text-xs tap-press hover:bg-emerald-400 transition-colors flex items-center gap-1"
+                              className="px-3.5 py-1.5 rounded-xl bg-blue-500 text-black font-bold text-xs tap-press hover:bg-blue-400 transition-colors flex items-center gap-1"
                             >
                               <Check size={13} strokeWidth={2.5} />
                               <span>{isAr ? 'اعتماد الإعلان' : 'Approve'}</span>
@@ -627,7 +627,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
             <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <DollarSign size={18} className="text-emerald-400" />
+                  <DollarSign size={18} className="text-blue-400" />
                   <h3 className="text-sm font-bold text-white">{isAr ? 'شبكة إعلانات Google Ads / AdSense' : 'Google Ads Revenue Integration'}</h3>
                 </div>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-bold border border-blue-500/20">
@@ -893,7 +893,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                 <div className="space-y-3 pt-2 border-t border-[#222226]">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{isAr ? 'الميزانية والمدة' : 'Budget & Duration'}</span>
-                    <span className="text-xs font-mono font-bold text-emerald-400">${totalBudget} USD</span>
+                    <span className="text-xs font-mono font-bold text-blue-400">${totalBudget} USD</span>
                   </div>
 
                   {/* Daily Budget Chips */}
@@ -947,7 +947,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                     </div>
                     <div>
                       <span className="text-[10px] text-neutral-400 block">{isAr ? 'النقرات المتوقعة' : 'Est. Clicks'}</span>
-                      <span className="font-bold text-emerald-400 font-mono">~{estimatedClicks.toLocaleString()}</span>
+                      <span className="font-bold text-blue-400 font-mono">~{estimatedClicks.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -1061,7 +1061,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
             <div className="w-full max-w-md bg-[#141416] border border-[#26262B] rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
               <div className="flex items-center justify-between border-b border-[#222226] pb-3">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck size={20} className="text-emerald-400" />
+                  <ShieldCheck size={20} className="text-blue-400" />
                   <h3 className="text-sm font-bold text-white">
                     {isAr ? 'فاتورة حجز الإعلان وتفاصيل الدفع' : 'Ad Booking Invoice & Payment'}
                   </h3>
@@ -1078,7 +1078,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
               <div className="rounded-2xl bg-[#0E0E10] border border-[#2A2A30] p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs text-neutral-400">
                   <span>{isAr ? 'رقم مرجع الحجز:' : 'Payment Reference:'}</span>
-                  <span className="text-emerald-400 font-bold">{isAr ? 'قيد التدقيق (Pending)' : 'Pending Verification'}</span>
+                  <span className="text-blue-400 font-bold">{isAr ? 'قيد التدقيق (Pending)' : 'Pending Verification'}</span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-base font-mono font-black text-white tracking-wider">
@@ -1088,7 +1088,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                     onClick={() => handleCopyReference(activeInvoice.paymentReference)}
                     className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white tap-press transition-colors"
                   >
-                    {copiedRef ? <CheckCircle2 size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                    {copiedRef ? <CheckCircle2 size={13} className="text-blue-400" /> : <Copy size={13} />}
                     <span>{copiedRef ? (isAr ? 'تم النسخ' : 'Copied') : (isAr ? 'نسخ المرجع' : 'Copy')}</span>
                   </button>
                 </div>
@@ -1103,7 +1103,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
               {/* Payment Instructions */}
               <div className="rounded-2xl bg-[#0E0E10] border border-[#222226] p-3.5 space-y-2.5 text-xs text-neutral-300">
                 <div className="font-bold text-white flex items-center gap-1.5">
-                  <Clock size={14} className="text-amber-400" />
+                  <Clock size={14} className="text-neutral-300" />
                   <span>{isAr ? 'طرق تحويل المبلغ وتأكيد الحجز:' : 'Payment Transfer Instructions:'}</span>
                 </div>
 

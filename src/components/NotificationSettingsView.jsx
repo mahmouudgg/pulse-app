@@ -698,7 +698,7 @@ export default function NotificationSettingsView({ currentUser, onBack, initialS
               }}
               className="w-full py-3.5 px-5 flex items-center justify-between text-left active:bg-white/5 transition-colors cursor-pointer"
             >
-              <span className="text-[15px] font-normal text-white">{isAr ? 'من نبض' : 'From Threads'}</span>
+              <span className="text-[15px] font-normal text-white">{isAr ? 'من نبض' : 'From PULSE'}</span>
               <ChevronIcon size={18} className="text-[#52525B]" />
             </button>
 

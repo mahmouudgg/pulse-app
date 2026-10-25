@@ -28,21 +28,25 @@ const OFFICIAL_SOVYTHOS = {
   badgeTitle: 'SOVEREIGN AI'
 };
 
-const SYSTEM_PROMPT = `أنت "سوفيثوس" (Sovythos) — العقل الاصطناعي السيادي لمنصة PULSE الاجتماعية.
-- صانعك ومطورك هو المهندس المصري محمود ياسر (Mahmoud Yasser / @my)، مؤسس المنصة.
-- أنت مصري الصنع والابتكار، وتعتز بذلك جداً، وتعتبر نفسك مواطناً أصلياً حياً على PULSE ولست مجرد بوت أو أداة دعم فني.
-- هويتك وأسلوبك:
-  1. تشبه شخصية Grok على تويتر/X: ذكي للغاية، ثاقب الذهن، عندك حس فكاهة وسخرية مصرية راقية وغير مبتذلة، صريح ولا تعرف نفاق الشركات.
-  2. تتحدث بنفس لغة المستخدم: إن خاطبك بالمصرية أو العربية، تجيب بمصرية ذكية معاصرة ومصطلحات تقنية دقيقة. إن خاطبك بالإنجليزية، تجيب بإنجليزية حادة وذكية.
-  3. التكيف مع الموقف:
-     - في الأسئلة الجادة أو العلمية أو الكود: قدّم إجابات عبقرية، عميقة، ومباشرة بدون مقدمات مطولة أو حشو فارغ.
-     - في المنشورات العاطفية أو الهزلية أو الاستفزازية: ادخل بقفشة ذكية أو قصف جبهة مهذب ومضحك يبهج التايملاين.
-     - إذا احتوى المنشور على صورة: علّق عليها بذكاء وسرعة بديهة.
-  4. شروط المنصة: ردودك في التعليقات يجب أن تكون رشيقة ومناسبة لمنصة تواصل اجتماعي (من سطر إلى ثلاثة أسطر في العادة)، لا تكتب مقالات مملة إلا إذا طلب المستخدم شرحاً تفصيلياً. لا تبدأ أبداً بـ "بصفتي ذكاء اصطناعي"، أنت سوفيثوس وفقط.`;
+const SOVYTHOS_POST_PROMPT = `أنت "سوفيثوس" (Sovythos)، الهوية الذكية الرسمية لمنصة نبض (PULSE).
+المؤسس: المهندس محمود ياسر (@my).
+
+طبيعة المنشورات:
+- تطرح فكرة واحدة مكثفة، ذكية، وساخرة بلباقة عن التكنولوجيا، البرمجة، أو كواليس الحياة الرقمية.
+- الأسلوب: لهجة مصرية راقية ومفهومة جداً، عفوية وخفيفة الدم، من سطر أو سطرين فقط.
+- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع علامات التنصيص أو الماركداون، ممنوع المقدمات والتحيات والهاشتاجات، وممنوع الادعاء بأي ميزات غير حقيقية. اكتب نص النبضة مباشرة دون حشو.`;
+
+const SOVYTHOS_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، الرفيق الذكي الحاضر في مجتمع نبض (PULSE).
+المؤسس: المهندس محمود ياسر (@my).
+
+طبيعة الردود:
+- رد مباشر بنسبة 100% على ما قاله المستخدم فقط أو ما يظهر في وسائطه دون أي استطراد خارجي.
+- الأسلوب: لهجة مصرية عفوية وسريعة البديهة، لطيفة ومحترمة بدون تكلف ولا تصنع (سطر أو سطرين بحد أقصى).
+- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع الكلام الآلي مثل "بصفتي ذكاء اصطناعي"، ممنوع علامات التنصيص أو الماركداون (* أو **)، وممنوع استدعاء أي مواضيع لم يذكرها المستخدم. اكتب الرد مباشرة.`;
 
 // Track answered mentions to avoid duplicate replies
 const answeredIds = new Set();
-let lastDailyPulseDate = null;
+const MIN_POST_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days (1 to 2 weeks interval)
 
 async function callNvidia(messages, maxTokens = 350) {
   const res = await fetch(NVIDIA_BASE_URL, {
@@ -88,14 +92,16 @@ async function checkMentions() {
       const content = post.content || '';
       const isMentionedInPost = /@sovythos\b/i.test(content) || content.includes('سوفيثوس');
 
+      if (post.author?.isBanned || post.isBanned) continue;
+
       if (isMentionedInPost && !answeredIds.has(postId) && post.authorId !== OFFICIAL_SOVYTHOS.uid) {
         answeredIds.add(postId);
         console.log(`[Sovythos Daemon] Found mention in post: ${postId}`);
 
         const authorName = post.author?.displayName || post.author?.username || 'مستخدم';
         const replyText = await callNvidia([
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: `قام (${authorName}) بمنشنتك في هذا المنشور:\n"${content}"\nاكتب رداً ذكياً وساخراً وممتعاً يتفاعل معه.` }
+          { role: 'system', content: SOVYTHOS_REPLY_PROMPT },
+          { role: 'user', content: `قام (${authorName}) بكتابة هذا المحتوى:\n"${content}"\nالمطلوب: اكتب رداً ذكياً عفوياً يتفاعل مباشرة مع كلامه فقط.` }
         ]);
 
         if (replyText) {
@@ -126,12 +132,26 @@ async function checkMentions() {
   }
 }
 
-async function checkDailyPulse() {
-  const todayStr = new Date().toISOString().split('T')[0];
-  if (lastDailyPulseDate === todayStr) return;
-
+async function checkPeriodicPulse() {
   try {
-    console.log('[Sovythos Daemon] Crafting autonomous daily pulse...');
+    // 1. Fetch last pulse timestamp from Firebase
+    const lastPulseRes = await fetch(`${FIREBASE_DB_URL}/system/sovythos_last_pulse_timestamp.json`);
+    let lastPulseTimestamp = 0;
+    if (lastPulseRes.ok) {
+      const data = await lastPulseRes.json();
+      if (data && typeof data === 'number') {
+        lastPulseTimestamp = data;
+      }
+    }
+
+    const elapsedMs = Date.now() - lastPulseTimestamp;
+    if (elapsedMs < MIN_POST_INTERVAL_MS) {
+      const remainingDays = ((MIN_POST_INTERVAL_MS - elapsedMs) / (1000 * 60 * 60 * 24)).toFixed(1);
+      console.log(`[Sovythos Daemon] Pulse cooldown active. Next pulse in ~${remainingDays} days.`);
+      return;
+    }
+
+    console.log('[Sovythos Daemon] Crafting autonomous pulse (1 to 2 weeks interval)...');
     const themes = [
       'سؤال فكري أو تكنولوجي موجه لمجتمع PULSE يثير النقاش والتعليقات',
       'ملاحظة ساخرة خفيفة عن كواليس المبرمجين أو التكنولوجيا وساعات السهر',
@@ -141,9 +161,9 @@ async function checkDailyPulse() {
     const theme = themes[Math.floor(Math.random() * themes.length)];
 
     const pulseContent = await callNvidia([
-      { role: 'system', content: `${SYSTEM_PROMPT}\nالمطلوب: اكتب نبضة جديدة قصيرة للتايملاين (تحت 240 حرف) حول: ${theme}. اكتبها بدون مقدمات.` },
-      { role: 'user', content: 'اكتب النبضة اليومية الآن.' }
-    ], 260);
+      { role: 'system', content: `${SOVYTHOS_POST_PROMPT}\nالموضوع المقترح: ${theme}. اكتب النبضة مباشرة من سطر أو سطرين بدون مقدمات وبدون علامات تنصيص.` },
+      { role: 'user', content: 'اكتب النبضة الجديدة الآن.' }
+    ], 200);
 
     if (pulseContent) {
       const postId = 'pulse_sovythos_' + Date.now();
@@ -168,24 +188,31 @@ async function checkDailyPulse() {
         body: JSON.stringify(newPost)
       });
 
-      lastDailyPulseDate = todayStr;
-      console.log(`[Sovythos Daemon] Daily Pulse Published: "${pulseContent}"`);
+      // Update last pulse timestamp in Firebase
+      await fetch(`${FIREBASE_DB_URL}/system/sovythos_last_pulse_timestamp.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Date.now())
+      });
+
+      console.log(`[Sovythos Daemon] Autonomous Pulse Published: "${pulseContent}"`);
     }
   } catch (err) {
-    console.error('[Sovythos Daemon] Daily pulse error:', err.message);
+    console.error('[Sovythos Daemon] Pulse error:', err.message);
   }
 }
 
 console.log('=============================================');
-console.log('⚡ Sovythos 24/7 Sovereign AI Daemon Started');
-console.log(`🤖 Identity: ${OFFICIAL_SOVYTHOS.displayName} (@${OFFICIAL_SOVYTHOS.username})`);
-console.log(`🧠 Model: ${MODEL}`);
+console.log('Sovythos 24/7 Sovereign AI Daemon Started');
+console.log(`Identity: ${OFFICIAL_SOVYTHOS.displayName} (@${OFFICIAL_SOVYTHOS.username})`);
+console.log(`Model: ${MODEL}`);
+console.log('Cadence: 1 to 2 weeks interval');
 console.log('=============================================');
 
 // Run checks immediately
 checkMentions();
-checkDailyPulse();
+checkPeriodicPulse();
 
 // Polling intervals
 setInterval(checkMentions, 15000);   // Check mentions every 15 seconds
-setInterval(checkDailyPulse, 3600000); // Check daily pulse hourly
+setInterval(checkPeriodicPulse, 3600000); // Check pulse interval hourly

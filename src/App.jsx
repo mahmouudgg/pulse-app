@@ -28,8 +28,6 @@ import { watchConnectionStatus } from './services/firebase';
 
 import { DEFAULT_AVATAR, resolveAvatar } from './utils/defaultAvatar';
 
-
-
 import AuthPage from './pages/AuthPage';
 
 import FeedPage from './pages/FeedPage';
@@ -86,8 +84,6 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 
 import MusicPage from './pages/MusicPage';
 
-
-
 import Navbar from './components/Navbar';
 
 import AccountSwitcherBottomSheet from './components/AccountSwitcherBottomSheet';
@@ -108,8 +104,6 @@ import UpdateModal from './components/UpdateModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
-
-
 import { fcmService } from './services/fcmService';
 
 import { notificationService } from './services/notificationService';
@@ -122,8 +116,6 @@ import { offlineCacheService } from './services/offlineCacheService';
 
 import { liveSyncEngine } from './services/liveSyncEngine';
 
-
-
 function MainApp() {
 
   const { currentUser, toggleBookmark, toggleFollow, savedAccounts = [] } = useAuth();
@@ -131,8 +123,6 @@ function MainApp() {
   const { t, lang } = useLanguage();
 
   const { showToast } = useToast();
-
-
 
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -150,8 +140,6 @@ function MainApp() {
 
   });
 
-
-
   const handleToggleFollow = (targetUid) => {
 
     if (!currentUser) {
@@ -167,8 +155,6 @@ function MainApp() {
     toggleFollow(targetUid);
 
   };
-
-
 
   const [posts, setPosts] = useState([]);
 
@@ -203,8 +189,6 @@ function MainApp() {
 
   const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
 
-
-
   // Direct Messages & Activity Unread Notifications State (PULSE Dot Pattern)
 
   const [activeChatRecipient, setActiveChatRecipient] = useState(null);
@@ -216,8 +200,6 @@ function MainApp() {
     return currentUser?.uid ? notificationService.getUnreadCount(currentUser.uid) : 0;
 
   });
-
-
 
   useEffect(() => {
 
@@ -231,29 +213,21 @@ function MainApp() {
 
   }, [currentUser]);
 
-
-
   // Modals for Share & Report
 
   const [sharePost, setSharePost] = useState(null);
 
   const [reportPost, setReportPost] = useState(null);
 
-
-
   // In-App Auto Updater State
 
   const [updateInfo, setUpdateInfo] = useState(null);
-
-
 
   // Feed Pagination & Infinite Scroll State
 
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
   const [isLoadingOlder, setIsLoadingOlder] = useState(false);
-
-
 
   // Live Spaces State (Clubhouse / Twitter Spaces style)
 
@@ -263,35 +237,25 @@ function MainApp() {
 
   const [isCreateSpaceOpen, setIsCreateSpaceOpen] = useState(false);
 
-
-
   // Smart Offline / Reconnect Banner State
 
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const [showReconnected, setShowReconnected] = useState(false);
 
-
-
   // 6-Month Hardware Device Ban State (Strict zero-trust hardware lockout)
 
   const [deviceBanInfo, setDeviceBanInfo] = useState(() => antiAbuseEngine.getFastLocalDeviceBan());
 
-
-
   // Biometric & Passcode App Lock State
 
   const [isAppLocked, setIsAppLocked] = useState(() => biometricLockService.isLockEnabled());
-
-
 
   // App Lock & Screen Capture Protection Lifecycle Watcher
 
   useEffect(() => {
 
     screenSecurity.init();
-
-
 
     const handleVisibility = () => {
 
@@ -311,21 +275,15 @@ function MainApp() {
 
     };
 
-
-
     const handleAppLockToggled = () => {
 
       setIsAppLocked(biometricLockService.isLockEnabled());
 
     };
 
-
-
     document.addEventListener('visibilitychange', handleVisibility);
 
     window.addEventListener('pulse_app_lock_changed', handleAppLockToggled);
-
-
 
     return () => {
 
@@ -336,8 +294,6 @@ function MainApp() {
     };
 
   }, []);
-
-
 
   // Deep cloud check for 6-Month Device Ban
 
@@ -351,8 +307,6 @@ function MainApp() {
 
     });
 
-
-
     const handleDeviceBannedEvent = (e) => {
 
       if (e.detail) {
@@ -365,8 +319,6 @@ function MainApp() {
 
     window.addEventListener('pulse_device_banned', handleDeviceBannedEvent);
 
-
-
     return () => {
 
       isMounted = false;
@@ -376,8 +328,6 @@ function MainApp() {
     };
 
   }, []);
-
-
 
   // Seamless Startup Boot Splash Screen Dissolve (Zero black-screen flash)
 
@@ -407,8 +357,6 @@ function MainApp() {
 
   }, []);
 
-
-
   // In-App Auto Updater startup check
 
   useEffect(() => {
@@ -437,8 +385,6 @@ function MainApp() {
 
   }, []);
 
-
-
   // PULSE Official Grade Debounced Offline & Reconnection Watcher
 
   useEffect(() => {
@@ -446,8 +392,6 @@ function MainApp() {
     let offlineTimer = null;
 
     let wasActuallyOffline = false;
-
-
 
     const handleOnline = () => {
 
@@ -487,8 +431,6 @@ function MainApp() {
 
     };
 
-
-
     const handleOffline = () => {
 
       // Don't trigger if the app is hidden in the background
@@ -515,8 +457,6 @@ function MainApp() {
 
     };
 
-
-
     const handleVisibility = () => {
 
       if (!document.hidden && typeof navigator !== 'undefined' && navigator.onLine) {
@@ -535,15 +475,11 @@ function MainApp() {
 
     };
 
-
-
     window.addEventListener('online', handleOnline);
 
     window.addEventListener('offline', handleOffline);
 
     document.addEventListener('visibilitychange', handleVisibility);
-
-
 
     return () => {
 
@@ -558,8 +494,6 @@ function MainApp() {
     };
 
   }, []);
-
-
 
   // Listen for 'pulse:compose_media' to open compose modal with media attached
 
@@ -583,8 +517,6 @@ function MainApp() {
 
   }, []);
 
-
-
   // Listen for 'pulse_compose_with_sound' to open compose modal with sound attached
 
   useEffect(() => {
@@ -606,8 +538,6 @@ function MainApp() {
     return () => window.removeEventListener('pulse_compose_with_sound', handleComposeWithSound);
 
   }, []);
-
-
 
   // Initialize and load posts with Live Firebase Realtime Sync & Offline Cache
 
@@ -637,8 +567,6 @@ function MainApp() {
 
     }
 
-
-
     const unsubscribePosts = storageService.subscribeToPosts((livePosts) => {
 
       setPosts(livePosts);
@@ -646,8 +574,6 @@ function MainApp() {
       offlineCacheService.cacheFeedPosts(livePosts).catch(() => {});
 
     }, 25);
-
-
 
     // Reconnection synchronization: when coming back online, force fetch live posts from cloud
 
@@ -669,11 +595,7 @@ function MainApp() {
 
     };
 
-
-
     window.addEventListener('online', handleOnline);
-
-
 
     // Check and trigger autonomous daily pulse by Sovythos
 
@@ -691,8 +613,6 @@ function MainApp() {
 
     }, 2500);
 
-
-
     return () => {
 
       clearTimeout(pulseTimer);
@@ -705,8 +625,6 @@ function MainApp() {
 
   }, []);
 
-
-
   // Universal Live Cloud Sync Engine (Continuous Real-Time Reconciliation)
 
   useEffect(() => {
@@ -714,8 +632,6 @@ function MainApp() {
     if (currentUser?.uid) {
 
       liveSyncEngine.start(currentUser.uid);
-
-
 
       const handleNotifsSynced = (e) => {
 
@@ -727,8 +643,6 @@ function MainApp() {
 
       };
 
-
-
       const handleDmsSynced = (e) => {
 
         if (typeof e.detail?.totalUnread === 'number') {
@@ -739,13 +653,9 @@ function MainApp() {
 
       };
 
-
-
       window.addEventListener('pulse_notifications_synced', handleNotifsSynced);
 
       window.addEventListener('pulse_dms_synced', handleDmsSynced);
-
-
 
       return () => {
 
@@ -764,8 +674,6 @@ function MainApp() {
     }
 
   }, [currentUser?.uid]);
-
-
 
   // Unread DMs subscription
 
@@ -788,8 +696,6 @@ function MainApp() {
     }
 
   }, [currentUser?.uid]);
-
-
 
   // Unread Activity Notifications subscription (PULSE Dot Pattern)
 
@@ -837,8 +743,6 @@ function MainApp() {
 
   }, [currentUser?.uid]);
 
-
-
   // Cleanly reset screen states when logging out
 
   useEffect(() => {
@@ -877,8 +781,6 @@ function MainApp() {
 
   }, [currentUser]);
 
-
-
   // Real Native Firebase Cloud Messaging (FCM) & System Notification Channels
 
   useEffect(() => {
@@ -900,8 +802,6 @@ function MainApp() {
     }
 
   }, [currentUser?.uid]);
-
-
 
   // Deep-link navigation when user taps a notification on lock screen or status bar
 
@@ -979,8 +879,6 @@ function MainApp() {
 
   }, [posts]);
 
-
-
   // Deep linking handler (pulse://post/123, pulse://user/john, or https://pulseeg.wuaze.com/?post=123)
 
   useEffect(() => {
@@ -994,8 +892,6 @@ function MainApp() {
         let path = '';
 
         let queryParams = {};
-
-
 
         if (rawUrl.startsWith('pulse://')) {
 
@@ -1023,8 +919,6 @@ function MainApp() {
 
         }
 
-
-
         // 1. Post deep link
 
         const postId = queryParams.post || (path.startsWith('p/') ? path.replace('p/', '') : (path.startsWith('post/') ? path.replace('post/', '') : null));
@@ -1040,8 +934,6 @@ function MainApp() {
           return;
 
         }
-
-
 
         // 2. User profile deep link (support /my, /@my, /user/my, ?user=my)
 
@@ -1065,8 +957,6 @@ function MainApp() {
 
         }
 
-
-
         // 3. Invite deep link
 
         if (queryParams.invite || path.startsWith('invite')) {
@@ -1085,8 +975,6 @@ function MainApp() {
 
     };
 
-
-
     // Check window location on web launch
 
     if (typeof window !== 'undefined') {
@@ -1102,8 +990,6 @@ function MainApp() {
       }
 
     }
-
-
 
     // Listen to native Capacitor App URL open
 
@@ -1127,8 +1013,6 @@ function MainApp() {
 
     }
 
-
-
     return () => {
 
       if (appUrlSub && typeof appUrlSub.remove === 'function') {
@@ -1140,8 +1024,6 @@ function MainApp() {
     };
 
   }, [posts]);
-
-
 
   // Android Native Hardware / Gesture Back Button Handler
 
@@ -1168,8 +1050,6 @@ function MainApp() {
     activeTab
 
   });
-
-
 
   useEffect(() => {
 
@@ -1216,8 +1096,6 @@ function MainApp() {
     activeTab
 
   ]);
-
-
 
   useEffect(() => {
 
@@ -1285,8 +1163,6 @@ function MainApp() {
 
         }
 
-
-
         // 2. Subscreen back navigation
 
         if (s.currentScreen === 'chat') {
@@ -1319,8 +1195,6 @@ function MainApp() {
 
         }
 
-
-
         // 3. Tab back navigation (back to feed)
 
         if (s.activeTab !== 'feed') {
@@ -1330,8 +1204,6 @@ function MainApp() {
           return;
 
         }
-
-
 
         // 4. Double tap back to exit on Feed
 
@@ -1361,8 +1233,6 @@ function MainApp() {
 
     }
 
-
-
     return () => {
 
       if (backSub && typeof backSub.remove === 'function') {
@@ -1374,12 +1244,6 @@ function MainApp() {
     };
 
   }, [showToast]);
-
-
-
-
-
-
 
   // 0ms Optimistic Like handler
 
@@ -1394,8 +1258,6 @@ function MainApp() {
     }
 
     hapticsService.medium();
-
-
 
     // 1. Instant 0ms local mutation
 
@@ -1425,8 +1287,6 @@ function MainApp() {
 
     );
 
-
-
     if (selectedPost && selectedPost.id === postId) {
 
       setSelectedPost((prev) => {
@@ -1451,8 +1311,6 @@ function MainApp() {
 
     }
 
-
-
     // 2. Background sync
 
     try {
@@ -1469,8 +1327,6 @@ function MainApp() {
 
   };
 
-
-
   // 0ms Optimistic Repost handler with real timeline entry
 
   const handleRepost = (postId) => {
@@ -1485,15 +1341,11 @@ function MainApp() {
 
     hapticsService.medium();
 
-
-
     try {
 
       const result = storageService.toggleRepost(postId, currentUser) || {};
 
       const { repostEntry, isRepostedNow } = result;
-
-
 
       setPosts((prev) => {
 
@@ -1519,8 +1371,6 @@ function MainApp() {
 
         });
 
-
-
         if (isRepostedNow && repostEntry) {
 
           next = [repostEntry, ...next];
@@ -1538,8 +1388,6 @@ function MainApp() {
         return next;
 
       });
-
-
 
       if (selectedPost && selectedPost.id === postId) {
 
@@ -1575,8 +1423,6 @@ function MainApp() {
 
   };
 
-
-
   // 0ms Optimistic Publish new post
 
   const handlePublish = (newPost) => {
@@ -1591,8 +1437,6 @@ function MainApp() {
 
     hapticsService.success();
 
-
-
     // 1. Insert immediately in 0ms to local feed head
 
     setPosts((prev) => [newPost, ...prev]);
@@ -1600,8 +1444,6 @@ function MainApp() {
     setActiveTab('feed');
 
     setCurrentScreen(null);
-
-
 
     // 2. Background sync
 
@@ -1614,8 +1456,6 @@ function MainApp() {
       console.warn('Publish error:', err);
 
     }
-
-
 
     // 3. Sovythos AI Mention Trigger
 
@@ -1634,8 +1474,6 @@ function MainApp() {
     }
 
   };
-
-
 
   // Delete post handler
 
@@ -1666,8 +1504,6 @@ function MainApp() {
     }
 
   };
-
-
 
   // Edit post handler
 
@@ -1703,8 +1539,6 @@ function MainApp() {
 
   };
 
-
-
   // 0ms Optimistic Toggle bookmark handler
 
   const handleToggleBookmark = (postId) => {
@@ -1731,8 +1565,6 @@ function MainApp() {
 
   };
 
-
-
   // Block user handler (Instant client-side filter)
 
   const handleBlockUser = (targetUserId) => {
@@ -1757,8 +1589,6 @@ function MainApp() {
 
   };
 
-
-
   // Immediate Client-Side Moderation & Post Hiding upon reporting
 
   const handleReportSubmitted = (reportedPostId) => {
@@ -1776,8 +1606,6 @@ function MainApp() {
     showToast('تم إخفاء النبضة وإرسال البلاغ لفريق المراجعة بنجاح.');
 
   };
-
-
 
   // Load older posts with database protection & pagination
 
@@ -1825,8 +1653,6 @@ function MainApp() {
 
   };
 
-
-
   // Open user profile (Strict guard against ghost/empty profiles)
 
   const handleOpenUserProfile = (user) => {
@@ -1839,23 +1665,17 @@ function MainApp() {
 
     if (!authorUid && !authorUsername) return;
 
-
-
     const fullUser = (authorUid && storageService.getUser(authorUid)) ||
 
       (authorUsername && storageService.getUserByUsername(authorUsername)) ||
 
       user;
 
-
-
     setViewedUserProfile(fullUser);
 
     setCurrentScreen('user-profile');
 
   };
-
-
 
   // Dedicated open post detail handler
 
@@ -1871,8 +1691,6 @@ function MainApp() {
 
   };
 
-
-
   // Open follow/followers dedicated list page
 
   const handleOpenFollowList = ({ user, initialType = 'followers' }) => {
@@ -1882,8 +1700,6 @@ function MainApp() {
     setCurrentScreen('follow-list');
 
   };
-
-
 
   // Open chat with user
 
@@ -1905,8 +1721,6 @@ function MainApp() {
 
   };
 
-
-
   // Open messages inbox
 
   const handleOpenMessages = () => {
@@ -1923,8 +1737,6 @@ function MainApp() {
 
   };
 
-
-
   // Open pioneers standalone page
 
   const handleOpenPioneers = () => {
@@ -1932,8 +1744,6 @@ function MainApp() {
     setCurrentScreen('pioneers');
 
   };
-
-
 
   // Conditional early returns for banned devices, non-logged in, or banned users AFTER all hooks
 
@@ -1943,15 +1753,11 @@ function MainApp() {
 
   }
 
-
-
   if (isAppLocked) {
 
     return <AppLockScreen onUnlock={() => setIsAppLocked(false)} lang={lang} />;
 
   }
-
-
 
   if (!currentUser && !isGuestMode) {
 
@@ -1973,15 +1779,11 @@ function MainApp() {
 
   }
 
-
-
   if (currentUser?.isBanned) {
 
     return <BannedPage user={currentUser} />;
 
   }
-
-
 
   return (
 
@@ -2030,8 +1832,6 @@ function MainApp() {
         </div>
 
       )}
-
-
 
       {/* Main Content Area */}
 
@@ -2439,8 +2239,6 @@ function MainApp() {
 
             )}
 
-
-
             {activeTab === 'explore' && (
 
               <ExplorePage
@@ -2479,8 +2277,6 @@ function MainApp() {
 
             )}
 
-
-
             {activeTab === 'activity' && (
 
               <NotificationsPage
@@ -2500,8 +2296,6 @@ function MainApp() {
               />
 
             )}
-
-
 
             {activeTab === 'profile' && (
 
@@ -2560,8 +2354,6 @@ function MainApp() {
         </div>
 
       </main>
-
-
 
       {/* Bottom Navigation (shown when no deep subscreen is active) */}
 
@@ -2631,8 +2423,6 @@ function MainApp() {
 
       )}
 
-
-
       {/* Global Quick Account Switcher Bottom Sheet (PULSE Native Style) */}
 
       <AccountSwitcherBottomSheet
@@ -2650,8 +2440,6 @@ function MainApp() {
         }}
 
       />
-
-
 
       {/* Floating Mini Space Player when room is minimized */}
 
@@ -2676,8 +2464,6 @@ function MainApp() {
         />
 
       )}
-
-
 
       {/* Live Space Full Screen Interactive Room */}
 
@@ -2709,8 +2495,6 @@ function MainApp() {
 
       )}
 
-
-
       {/* Real Compose Modal */}
 
       <ComposeModal
@@ -2737,8 +2521,6 @@ function MainApp() {
 
       />
 
-
-
       {/* Deep Link Share Preview Modal */}
 
       <SharePreviewModal
@@ -2752,8 +2534,6 @@ function MainApp() {
         currentUser={currentUser}
 
       />
-
-
 
       {/* Content Reporting Modal with instant client-side moderation */}
 
@@ -2771,13 +2551,9 @@ function MainApp() {
 
       />
 
-
-
       {/* Floating Mini Audio Player (Global dock above navbar) */}
 
       <MiniAudioPlayer isSpaceActive={Boolean(activeSpace)} />
-
-
 
       {/* In-App Auto Updater Modal */}
 
@@ -2788,8 +2564,6 @@ function MainApp() {
         onClose={() => setUpdateInfo(null)}
 
       />
-
-
 
       {/* Create Live Space Modal */}
 
@@ -2810,8 +2584,6 @@ function MainApp() {
         }}
 
       />
-
-
 
       {/* Guest Auth Modal */}
 
@@ -2843,8 +2615,6 @@ function MainApp() {
 
 }
 
-
-
 function AppContent() {
 
   const { language } = useLanguage();
@@ -2860,8 +2630,6 @@ function AppContent() {
   );
 
 }
-
-
 
 export default function App() {
 

@@ -565,7 +565,7 @@ export const InsightsPage = ({ onBack, currentUser, userPosts = [] }) => {
                     {isAr ? 'أداء الحملات الإعلانية' : 'Campaign Performance'}
                   </span>
                 </div>
-                <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   {adMetrics?.activeCampaigns || 0} {isAr ? 'حملات نشطة' : 'Active'}
                 </span>
               </div>
@@ -653,9 +653,9 @@ export const InsightsPage = ({ onBack, currentUser, userPosts = [] }) => {
                             <span
                               className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                                 ad.status === 'active' || ad.status === 'approved'
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                                   : ad.status === 'pending'
-                                  ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                                  ? 'bg-neutral-800 text-neutral-300 border border-neutral-700'
                                   : ad.status === 'rejected'
                                   ? 'bg-red-500/10 text-red-400 border border-red-500/20'
                                   : 'bg-neutral-800 text-neutral-400'
@@ -695,7 +695,7 @@ export const InsightsPage = ({ onBack, currentUser, userPosts = [] }) => {
                         </div>
                         <div className="bg-[#18181C] py-2 rounded-xl">
                           <span className="text-[11px] text-neutral-400 block">CTR</span>
-                          <span className="font-bold text-emerald-400">{ctr}%</span>
+                          <span className="font-bold text-blue-400">{ctr}%</span>
                         </div>
                       </div>
 

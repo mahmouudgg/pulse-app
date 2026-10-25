@@ -204,7 +204,7 @@ export default function SupervisionPage({ currentUser, onBack }) {
                     <div className="w-full h-2 rounded-full bg-[#202026] overflow-hidden">
                       <div 
                         className={`h-full transition-all duration-500 ${
-                          usagePercent > 90 ? 'bg-red-500' : usagePercent > 75 ? 'bg-amber-400' : 'bg-white'
+                          usagePercent > 90 ? 'bg-red-500' : 'bg-white'
                         }`}
                         style={{ width: `${usagePercent}%` }}
                       ></div>
@@ -327,7 +327,7 @@ export default function SupervisionPage({ currentUser, onBack }) {
               {/* Guardian Overview Info */}
               <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 space-y-2">
                 <div className="text-sm font-bold text-white flex items-center gap-2">
-                  <Shield size={16} className="text-emerald-400" />
+                  <Shield size={16} className="text-blue-400" />
                   <span>{isAr ? 'إشراف ولي الأمر المعتمد' : 'Supervising as Guardian'}</span>
                 </div>
                 <p className="text-xs text-neutral-400 leading-relaxed">
@@ -369,7 +369,7 @@ export default function SupervisionPage({ currentUser, onBack }) {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          <span className="text-[11px] font-mono bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20">
                             {isAr ? 'محمي ومراقب' : 'Protected'}
                           </span>
                         </div>

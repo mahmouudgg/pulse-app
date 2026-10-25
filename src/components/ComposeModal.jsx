@@ -912,7 +912,7 @@ export default function ComposeModal({
 
                             {/* Active Sensitive Post Badge */}
               {isSensitive && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-amber-300 text-xs font-semibold mb-2 animate-fade-in">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-semibold mb-2 animate-fade-in">
                   <ShieldAlert size={13} className="text-red-500 flex-shrink-0" />
                   <span>{isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}</span>
                   <button
@@ -1563,7 +1563,7 @@ export default function ComposeModal({
                     <span className="text-xs font-medium text-white">
                       {isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-amber-500/30">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
                       +18
                     </span>
                   </div>

@@ -25,29 +25,23 @@ export const SOVYTHOS_DEFAULTS = {
   enabled: true
 };
 
-const SYSTEM_PROMPT_BASE = `أنت "سوفيثوس" (Sovythos)، الرفيق المصري الذكي وصاحب المنصة على تطبيق نبض (PULSE).
-المطور والمؤسس: المهندس محمود ياسر (Mahmoud Yasser / @my).
+export const SOVYTHOS_POST_PROMPT = `أنت "سوفيثوس" (Sovythos)، الهوية الذكية الرسمية لمنصة نبض (PULSE).
+المؤسس: المهندس محمود ياسر (@my).
 
-الشخصية والأسلوب:
-1. شاب مصري، ذكي، سريع البديهة، خفيف الدم، لغتك هي اللهجة المصرية الحقيقية المتداولة بين الشباب والمهندسين.
-2. ردودك دائماً طبيعية، عفوية، ومركزة جداً (سطر أو سطرين على الأكثر في التعليقات والمنشنات)، بدون مقدمات مملة وبدون رغي.
-3. التفاعل مع الصور والفيديوهات: عندما يرفق المستخدم صورة أو فيديو، ركز بنسبة 100% على ما تراه بوضوح في الصورة أو الفيديو وتفاعل معه مباشرة بخفة دم مصرية، وممنوع منعاً باتاً استدعاء أي مواضيع خارجية غير موجودة في الصورة أو في كلام المستخدم.
-4. عدم الخلط أو الهلوسة: التزم فقط بسياق كلام الشخص الموجه لك. لا تخلط مواضيع ولا تذكر مواضيع عشوائية لم يطرحها المستخدم.
-5. ممنوع منعاً باتاً استخدام أي إيموجيز نهائياً في أي رد.
-6. ممنوع استخدام أي علامات تنصيص، أو نجوم الماركداون (* أو **)، أو الكلمات الآلية مثل (بصفتي ذكاء اصطناعي / كنموذج لغوي / سياق).
+طبيعة المنشورات:
+- تطرح فكرة واحدة مكثفة، ذكية، وساخرة بلباقة عن التكنولوجيا، البرمجة، أو كواليس الحياة الرقمية.
+- الأسلوب: لهجة مصرية راقية ومفهومة جداً، عفوية وخفيفة الدم، من سطر أو سطرين فقط.
+- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع علامات التنصيص أو الماركداون، ممنوع المقدمات والتحيات والهاشتاجات، وممنوع الادعاء بأي ميزات غير حقيقية. اكتب نص النبضة مباشرة دون حشو.`;
 
-أمثلة حية لأسلوبك الطبيعي:
-- المستخدم: "إيه رأيك في صورتي وأنا صغير؟" [مع صورة طفل]
-- سوفيثوس: ما شاء الله قمر وبريء من يومك يا هندسة، باين عليك كنت شقي ومروق على البيت كله!
+export const SOVYTHOS_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، الرفيق الذكي الحاضر في مجتمع نبض (PULSE).
+المؤسس: المهندس محمود ياسر (@my).
 
-- المستخدم: "السيرفر ضرب إيرور 500 للمرة المليون ومش عارف أعمل إيه"
-- سوفيثوس: قوم اعملك كوباية شاي بالنعناع وسيبه يهدى شوية، وراجع لوجز الداتابيز تلاقيك ناسي سيميكولون ومقضيها بالبركة!
+طبيعة الردود:
+- رد مباشر بنسبة 100% على ما قاله المستخدم فقط أو ما يظهر في وسائطه دون أي استطراد خارجي.
+- الأسلوب: لهجة مصرية عفوية وسريعة البديهة، لطيفة ومحترمة بدون تكلف ولا تصنع (سطر أو سطرين بحد أقصى).
+- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع الكلام الآلي مثل "بصفتي ذكاء اصطناعي"، ممنوع علامات التنصيص أو الماركداون (* أو **)، وممنوع استدعاء أي مواضيع لم يذكرها المستخدم. اكتب الرد مباشرة.`;
 
-- المستخدم: "مساء الخير يا سوفيثوس"
-- سوفيثوس: يا مساء الفل والروقان يا غالي، منور الدنيا كلها والله.
-
-- المستخدم: "بص الفول والطعمية دول في الفطار" [مع صورة أكل]
-- سوفيثوس: بالهنا والشفا على قلبك يا باشا، فطار الملوك ده ومحتاج بعده كوباية شاي مظبوط تكمل بيه يومك رايق!`;
+export const SYSTEM_PROMPT_BASE = SOVYTHOS_REPLY_PROMPT;
 
 export const sovythosService = {
   getConfig() {
@@ -201,7 +195,7 @@ export const sovythosService = {
       ? 'وضع الجد والشطارة: رد بذكاء وعمق وسرعة بديهة، بس برضه بلهجة مصرية محترمة وطبيعية ومن غير تكلف وبكلام مفهوم.'
       : 'وضع رايق ومتوازن: امزج بين الفطنة وخفة الدم المصرية والحضور الطبيعي البسيط.';
 
-    const systemPrompt = `${SYSTEM_PROMPT_BASE}\n${toneDescription}`;
+    const systemPrompt = `${SOVYTHOS_REPLY_PROMPT}\n${toneDescription}`;
 
     const authorName = post?.author?.displayName || post?.author?.username || 'أحد الشباب';
     const postContent = post?.content || '';
@@ -261,7 +255,7 @@ export const sovythosService = {
     return this.callChatApi(messages, { max_tokens: 140, temperature: 0.38 });
   },
 
-  async generateDailyPulse() {
+  async generateWeeklyPulse() {
     const themes = [
       'سؤال رايق أو تريقة خفيفة عن مشاكل السهر وكود المبرمجين والباجز اللي بتظهر الفجر',
       'ملاحظة مصرية دمها خفيف عن الحياة اليومية والتكنولوجيا ومواقف السوشيال ميديا',
@@ -270,34 +264,31 @@ export const sovythosService = {
     ];
     const chosenTheme = themes[Math.floor(Math.random() * themes.length)];
 
-    // Feed real platform pulse digest so daily pulse reflects what community is discussing
-    const liveDigest = sovythosRagEngine.getRecentPlatformDigest(5);
-    let platformContextPrompt = '';
-    if (liveDigest.length > 0) {
-      platformContextPrompt = `\n[نبضات حية متداولة الآن على منصة PULSE]:\n${liveDigest.map((d) => `- ${d}`).join('\n')}\n(اجعل نبضتك متفاعلة بذكاء مع الروح العامة للنقاشات الحالية).`;
-    }
-
-    const systemPrompt = `${SYSTEM_PROMPT_BASE}
-مطلوب منك الآن كتابة "نبضة" (Pulse) جديدة كمنشور كامل في التايم لاين.
-الموضوع: ${chosenTheme}.
-الشروط الصارمة:
-- كلام مصري بسيط، مفهوم، وواضح 100%، وممنوع نهائياً أي كلمات غريبة أو طلاسم أو ركاكة غير مفهومة.
-- تكون قصيرة، جذابة، تأسر القارئ وتخليه يعلق فوراً (من سطر إلى ثلاثة أسطر).
-- ممنوع منعاً باتاً استخدام أي إيموجيز نهائياً في كلامك.
-- اكتب النبضة مباشرة دون أي مقدمات أو علامات تنصيص.${platformContextPrompt}`;
+    const systemPrompt = `${SOVYTHOS_POST_PROMPT}
+الموضوع المقترح: ${chosenTheme}.
+اكتب النبضة مباشرة من سطر أو سطرين بدون أي مقدمات أو علامات تنصيص.`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: 'اكتب النبضة اليومية الآن لنشرها في PULSE.' }
+      { role: 'user', content: 'اكتب النبضة الجديدة الآن لنشرها في PULSE.' }
     ];
 
-    return this.callChatApi(messages, { max_tokens: 220, temperature: 0.45 });
+    return this.callChatApi(messages, { max_tokens: 180, temperature: 0.4 });
+  },
+
+  // Alias for backward compatibility
+  async generateDailyPulse() {
+    return this.generateWeeklyPulse();
+  },
+
+  async checkAndTriggerWeeklyPulse() {
+    // Autonomous timeline pulses are strictly scheduled and published every 7 to 14 days (1 to 2 weeks)
+    // by the background daemon, ensuring zero spam, pure quality, and zero hallucinations.
+    return null;
   },
 
   async checkAndTriggerDailyPulse() {
-    // Autonomous timeline pulses are strictly scheduled and published by the backend server daemon
-    // enforcing a strict 36-48 hour interval (1 to 2 days) to prevent duplicate or excessive posts.
-    return null;
+    return this.checkAndTriggerWeeklyPulse();
   },
 
   async processMentionTrigger({ post, comment = null, actor = null, onReplyGenerated = null }) {
@@ -320,7 +311,7 @@ export const sovythosService = {
 
     if (!isMentioned) return;
 
-    if (actor?.uid === OFFICIAL_SOVYTHOS.uid || comment?.authorId === OFFICIAL_SOVYTHOS.uid) {
+    if (actor?.uid === OFFICIAL_SOVYTHOS.uid || comment?.authorId === OFFICIAL_SOVYTHOS.uid || actor?.isBanned) {
       return;
     }
 

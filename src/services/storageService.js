@@ -8,8 +8,6 @@
 
  */
 
-
-
 import { notificationService } from './notificationService';
 
 import { database } from './firebase';
@@ -19,8 +17,6 @@ import { ref, set, get, update, remove, onValue, query, orderByKey, limitToLast,
 import { DEFAULT_AVATAR, resolveAvatar } from '../utils/defaultAvatar';
 
 import { SOVYTHOS_AVATAR } from '../assets/sovythosAvatar';
-
-
 
 const STORAGE_KEYS = {
 
@@ -35,8 +31,6 @@ const STORAGE_KEYS = {
   FOLLOW_REQUESTS: 'pulse_follow_requests_v1'
 
 };
-
-
 
 // Official Founder & Lead Developer Account
 
@@ -90,8 +84,6 @@ const OFFICIAL_FOUNDER = {
 
 };
 
-
-
 // Official Account: Sovythos
 
 export const OFFICIAL_SOVYTHOS = {
@@ -144,13 +136,9 @@ export const OFFICIAL_SOVYTHOS = {
 
 };
 
-
-
 // Official Platform Account: PULSE
 
 export const OFFICIAL_PULSE_AVATAR = 'https://res.cloudinary.com/dgskw7nki/image/upload/f_auto,q_auto/v1790976187/pulse_avatars/xkcwnhipezmchkxil20v.png';
-
-
 
 export const OFFICIAL_PULSE = {
 
@@ -198,15 +186,11 @@ export const OFFICIAL_PULSE = {
 
 };
 
-
-
 export const storageService = {
 
   _inMemoryPosts: [],
 
   _inMemoryUsers: [],
-
-
 
   cleanLegacyStorage() {
 
@@ -228,8 +212,6 @@ export const storageService = {
 
   },
 
-
-
   safeSetItem(key, rawData) {
 
     try {
@@ -243,8 +225,6 @@ export const storageService = {
       console.warn('[SafeStorage] Quota notice for key ' + key + ', executing LRU pruning...', err);
 
       this.cleanLegacyStorage();
-
-
 
       if (key === STORAGE_KEYS.POSTS && Array.isArray(rawData)) {
 
@@ -306,8 +286,6 @@ export const storageService = {
 
       }
 
-
-
       if (key === STORAGE_KEYS.USERS && Array.isArray(rawData)) {
 
         try {
@@ -333,8 +311,6 @@ export const storageService = {
     }
 
   },
-
-
 
   init() {
 
@@ -374,15 +350,11 @@ export const storageService = {
 
   },
 
-
-
   async initCloud() {
 
     // Cloud seeding disabled — account is permanently created
 
   },
-
-
 
   // Safely resolve engagement data from any format (Array, Firebase Object, or Map)
 
@@ -412,15 +384,11 @@ export const storageService = {
 
   },
 
-
-
   // POST NORMALIZER (PULSE Official High-Performance Architecture)
 
   _normalizePost(post, users = null, key = null) {
 
     if (!post || typeof post !== 'object') return null;
-
-
 
     // Strict validation: Reject phantom/corrupted/empty post nodes (like { viewsCount: 1 })
 
@@ -448,15 +416,11 @@ export const storageService = {
 
     );
 
-
-
     // If a post has neither content nor author, it's an orphaned/corrupted node
 
     if (!hasContent && !post.isRepost) return null;
 
     if (!hasAuthor) return null;
-
-
 
     const resolvedUsers = users || this.getUsers();
 
@@ -466,15 +430,11 @@ export const storageService = {
 
     const bookmarks = this._resolveEngagementArray(post.bookmarks);
 
-
-
     const id = post.id || key;
 
     const authorUid = post.authorId || post.userId || (typeof post.author === 'object' ? post.author?.uid : null);
 
     const authorUsername = (typeof post.author === 'string' ? post.author : (post.author?.username || post.authorUsername)) || '';
-
-
 
     const isPulseAuthor = authorUid === OFFICIAL_PULSE.uid || authorUsername?.toLowerCase() === 'pulse';
 
@@ -487,8 +447,6 @@ export const storageService = {
       (authorUid === OFFICIAL_SOVYTHOS.uid || authorUsername?.toLowerCase() === OFFICIAL_SOVYTHOS.username.toLowerCase() ? OFFICIAL_SOVYTHOS : null) ||
 
       (isPulseAuthor ? OFFICIAL_PULSE : null);
-
-
 
     const fallbackAuthor = post.author || {};
 
@@ -518,8 +476,6 @@ export const storageService = {
 
     };
 
-
-
     const isOfficialAuthor = finalAuthor.username === 'my' || finalAuthor.username === 'pulse' || finalAuthor.username === 'sovythos' || finalAuthor.uid === 'dev_mahmoud_yasser' || finalAuthor.uid === 'user_1789828179039' || finalAuthor.uid === 'user_1789917894698' || isPulseAuthor;
 
     if (isOfficialAuthor) {
@@ -529,8 +485,6 @@ export const storageService = {
       finalAuthor.pioneerNumber = null;
 
     }
-
-
 
     const rawViews = post.viewsCount !== undefined ? post.viewsCount : post.views;
 
@@ -543,8 +497,6 @@ export const storageService = {
       ? Object.keys(rawViews).length
 
       : (Number(rawViews) || 0);
-
-
 
     const normalizedPost = {
 
@@ -566,6 +518,10 @@ export const storageService = {
 
       viewsCount,
 
+      isSensitive: Boolean(post.isSensitive || post.sensitive || post.sensitiveType === 'adult' || (Array.isArray(post.tags) && (post.tags.includes('18+') || post.tags.includes('nsfw')))),
+
+      sensitiveType: post.sensitiveType || (post.isSensitive ? 'adult' : null),
+
       createdAt: post.createdAt || new Date().toISOString()
 
     };
@@ -574,13 +530,9 @@ export const storageService = {
 
     delete normalizedPost.repostsCount;
 
-
-
     return normalizedPost;
 
   },
-
-
 
   // Tombstone tracking for deleted posts to prevent zombie resurrection from stale cache or network delays
 
@@ -602,8 +554,6 @@ export const storageService = {
 
   },
 
-
-
   _recordDeletedPostId(postId) {
 
     if (!postId) return;
@@ -622,8 +572,6 @@ export const storageService = {
 
   },
 
-
-
   // REALTIME LISTENERS WITH DATABASE PROTECTION & PAGINATION (limitCount: 200)
 
   subscribeToPosts(callback, limitCount = 25) {
@@ -637,8 +585,6 @@ export const storageService = {
         const val = snapshot.val();
 
         const deletedSet = this._getDeletedPostIds();
-
-
 
         if (val) {
 
@@ -656,13 +602,9 @@ export const storageService = {
 
             .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
-
-
           const rawKeysCount = Object.keys(val).length;
 
           let finalPosts = livePosts;
-
-
 
           // If the cloud query returned fewer items than the window limit,
 
@@ -682,8 +624,6 @@ export const storageService = {
 
               : 0;
 
-
-
             const olderPosts = existingPosts.filter((p) => {
 
               const pTime = new Date(p.createdAt || 0).getTime();
@@ -695,8 +635,6 @@ export const storageService = {
             finalPosts = [...livePosts, ...olderPosts].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
           }
-
-
 
           this._inMemoryPosts = finalPosts;
 
@@ -754,8 +692,6 @@ export const storageService = {
 
   },
 
-
-
   // Direct live pull from cloud (e.g. on pull-to-refresh or reconnect)
 
   async fetchLivePosts(limitCount = 200) {
@@ -792,8 +728,6 @@ export const storageService = {
 
         .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
-
-
       this.safeSetItem(STORAGE_KEYS.POSTS, livePosts);
 
       return livePosts;
@@ -807,8 +741,6 @@ export const storageService = {
     }
 
   },
-
-
 
   // Load older posts on demand (Infinite Scroll)
 
@@ -838,8 +770,6 @@ export const storageService = {
 
       if (!val) return [];
 
-
-
       const users = this.getUsers();
 
       const deletedSet = this._getDeletedPostIds();
@@ -855,8 +785,6 @@ export const storageService = {
         .filter((p) => !deletedSet.has(String(p.id)) && (!p.isRepost || !deletedSet.has(String(p.originalPostId))))
 
         .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-
-
 
       return list;
 
@@ -984,8 +912,6 @@ export const storageService = {
     }
   },
 
-
-
   subscribeToUsers(callback) {
 
     try {
@@ -1023,8 +949,6 @@ export const storageService = {
             })
 
             .filter(Boolean);
-
-
 
           this._inMemoryUsers = list;
 
@@ -1069,8 +993,6 @@ export const storageService = {
     }
 
   },
-
-
 
   subscribeToUser(uid, callback) {
 
@@ -1130,8 +1052,6 @@ export const storageService = {
 
   },
 
-
-
   saveFCMToken(uid, token) {
 
     if (!uid || !token || uid === 'undefined' || uid === 'app_release') return;
@@ -1160,8 +1080,6 @@ export const storageService = {
 
   },
 
-
-
   // BASE64 IMAGE STORAGE (100% Free - Zero Cloud Storage Fees)
 
   async uploadImage(base64Data) {
@@ -1169,8 +1087,6 @@ export const storageService = {
     return base64Data;
 
   },
-
-
 
   // USERS (Defensive Filtering: Zero Ghost/Undefined Users)
 
@@ -1198,8 +1114,6 @@ export const storageService = {
 
         if (u.apkUrl || u.versionCode || u.isMandatory) return null;
 
-
-
         const isSovy = u.uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
 
         const isFounder = u.uid === OFFICIAL_FOUNDER.uid || u.username?.toLowerCase() === 'my';
@@ -1207,8 +1121,6 @@ export const storageService = {
         const isPulse = u.uid === OFFICIAL_PULSE.uid || u.username?.toLowerCase() === 'pulse';
 
         const isOfficialAccount = isSovy || isFounder || isPulse;
-
-
 
         return {
 
@@ -1235,8 +1147,6 @@ export const storageService = {
         };
 
       }).filter(Boolean);
-
-
 
       // Always guarantee official accounts are present
 
@@ -1268,8 +1178,6 @@ export const storageService = {
 
   },
 
-
-
   getUser(uid) {
 
     if (!uid || uid === 'undefined' || uid === 'app_release') return null;
@@ -1289,8 +1197,6 @@ export const storageService = {
     return null;
 
   },
-
-
 
   getUserByUsername(username) {
 
@@ -1314,8 +1220,6 @@ export const storageService = {
 
   },
 
-
-
   getUserByEmail(email) {
 
     if (!email) return null;
@@ -1336,8 +1240,6 @@ export const storageService = {
 
   },
 
-
-
   // Asynchronous Cloud & Cache Email Lookup for Google Auth & Conflict Prevention
 
   async findUserByEmailAsync(email) {
@@ -1346,15 +1248,11 @@ export const storageService = {
 
     const clean = email.trim().toLowerCase();
 
-
-
     // 1. Check local cache
 
     const local = this.getUserByEmail(clean);
 
     if (local) return local;
-
-
 
     // 2. Fast O(1) indexed query in Firebase RTDB
 
@@ -1399,8 +1297,6 @@ export const storageService = {
       console.warn('Indexed findUserByEmailAsync error:', e);
 
     }
-
-
 
     // 3. Deep scan fallback across all users
 
@@ -1448,8 +1344,6 @@ export const storageService = {
 
   },
 
-
-
   // Derive unique, clean username from email (e.g. ahmed.yasser@gmail.com -> ahmed_yasser)
 
   async generateUniqueUsernameFromEmail(email) {
@@ -1464,15 +1358,11 @@ export const storageService = {
 
     if (clean.length > 25) clean = clean.substring(0, 25);
 
-
-
     let candidate = clean;
 
     let isAvailable = await this.checkUsernameAvailable(candidate);
 
     if (isAvailable) return candidate;
-
-
 
     for (let i = 1; i <= 99; i++) {
 
@@ -1484,13 +1374,9 @@ export const storageService = {
 
     }
 
-
-
     return `${clean}_${Math.floor(1000 + Math.random() * 9000)}`;
 
   },
-
-
 
   async getUserByPhone(phone) {
 
@@ -1522,8 +1408,6 @@ export const storageService = {
 
   },
 
-
-
   // Live Cloud Users Synchronization
 
   async syncUsersFromCloud() {
@@ -1536,8 +1420,6 @@ export const storageService = {
 
       if (!val || typeof val !== 'object') return this.getUsers();
 
-
-
       const cloudUsers = Object.entries(val).map(([k, u]) => {
 
         if (!u || typeof u !== 'object') return null;
@@ -1548,15 +1430,11 @@ export const storageService = {
 
         if (!u.username || typeof u.username !== 'string') return null;
 
-
-
         const uid = u.uid || k;
 
         const isSovy = uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
 
         const isFounder = uid === OFFICIAL_FOUNDER.uid || u.username?.toLowerCase() === 'my';
-
-
 
         return {
 
@@ -1582,23 +1460,15 @@ export const storageService = {
 
       }).filter(Boolean);
 
-
-
       const localUsers = this.getUsers();
 
       const mergedMap = new Map();
-
-
 
       mergedMap.set(OFFICIAL_FOUNDER.uid, OFFICIAL_FOUNDER);
 
       mergedMap.set(OFFICIAL_SOVYTHOS.uid, OFFICIAL_SOVYTHOS);
 
-
-
       cloudUsers.forEach((u) => mergedMap.set(u.uid, u));
-
-
 
       localUsers.forEach((lu) => {
 
@@ -1624,8 +1494,6 @@ export const storageService = {
 
       });
 
-
-
       const finalList = Array.from(mergedMap.values());
 
       this.safeSetItem(STORAGE_KEYS.USERS, finalList);
@@ -1642,8 +1510,6 @@ export const storageService = {
 
   },
 
-
-
   // Direct Realtime Cloud User Lookup by Username, Email, Phone, or UID
 
   async fetchUserFromCloud(identifier) {
@@ -1655,8 +1521,6 @@ export const storageService = {
     const query = raw.toLowerCase();
 
     const cleanPhone = raw.replace(/[\s\-\(\)]/g, '');
-
-
 
     try {
 
@@ -1704,8 +1568,6 @@ export const storageService = {
 
       }
 
-
-
       // 2. Scan cloud users node
 
       const snap = await get(ref(database, 'users'));
@@ -1714,13 +1576,9 @@ export const storageService = {
 
       if (!val || typeof val !== 'object') return null;
 
-
-
       let matchedUser = null;
 
       const allCloudUsers = [];
-
-
 
       for (const [k, u] of Object.entries(val)) {
 
@@ -1730,15 +1588,11 @@ export const storageService = {
 
         if (!u.username || typeof u.username !== 'string') continue;
 
-
-
         const uid = u.uid || k;
 
         const isSovy = uid === OFFICIAL_SOVYTHOS.uid || u.username?.toLowerCase() === 'sovythos';
 
         const isFounder = uid === OFFICIAL_FOUNDER.uid || u.username?.toLowerCase() === 'my';
-
-
 
         const normalized = {
 
@@ -1764,8 +1618,6 @@ export const storageService = {
 
         allCloudUsers.push(normalized);
 
-
-
         const uUsername = u.username.toLowerCase();
 
         const uEmail = u.email ? u.email.toLowerCase() : '';
@@ -1773,8 +1625,6 @@ export const storageService = {
         const uPhone = u.phone ? u.phone.replace(/[\s\-\(\)]/g, '') : '';
 
         const uFullPhone = u.fullPhone ? u.fullPhone.replace(/[\s\-\(\)]/g, '') : '';
-
-
 
         if (uUsername === query || uEmail === query || uid === raw) {
 
@@ -1796,8 +1646,6 @@ export const storageService = {
 
       }
 
-
-
       // Repopulate local storage cache with cloud snapshot
 
       if (allCloudUsers.length > 0) {
@@ -1809,8 +1657,6 @@ export const storageService = {
         } catch {}
 
       }
-
-
 
       if (matchedUser) {
 
@@ -1826,13 +1672,9 @@ export const storageService = {
 
     }
 
-
-
     return null;
 
   },
-
-
 
   // Carrier-Grade Real-time Cloud Uniqueness Verification (Indexed O(1) + Deep Scan Fallback)
 
@@ -1844,8 +1686,6 @@ export const storageService = {
 
     if (clean.length < 2) return false;
 
-
-
     // 1. Check local cache
 
     const localExisting = this.getUserByUsername(clean);
@@ -1855,8 +1695,6 @@ export const storageService = {
       return false;
 
     }
-
-
 
     // 2. Direct indexed Firebase RTDB query (O(1) indexed lookup)
 
@@ -1885,8 +1723,6 @@ export const storageService = {
       console.warn('Indexed username query error:', err);
 
     }
-
-
 
     // 3. Fallback deep scan across cloud users node (guarantees case-insensitivity)
 
@@ -1918,21 +1754,15 @@ export const storageService = {
 
     }
 
-
-
     return true;
 
   },
-
-
 
   async checkEmailAvailable(email, excludeUid = null) {
 
     if (!email) return false;
 
     const clean = email.trim().toLowerCase();
-
-
 
     // 1. Check local cache
 
@@ -1943,8 +1773,6 @@ export const storageService = {
       return false;
 
     }
-
-
 
     // 2. Direct indexed Firebase RTDB query
 
@@ -1973,8 +1801,6 @@ export const storageService = {
       console.warn('Indexed email query error:', err);
 
     }
-
-
 
     // 3. Fallback deep scan across cloud users node
 
@@ -2006,13 +1832,9 @@ export const storageService = {
 
     }
 
-
-
     return true;
 
   },
-
-
 
   async checkPhoneAvailable(phone, excludeUid = null) {
 
@@ -2021,8 +1843,6 @@ export const storageService = {
     const clean = phone.replace(/[\s\-\(\)\+]/g, '');
 
     if (clean.length < 7) return true;
-
-
 
     // 1. Local cache
 
@@ -2039,8 +1859,6 @@ export const storageService = {
     });
 
     if (localFound) return false;
-
-
 
     // 2. Query indexed Firebase RTDB directly
 
@@ -2067,8 +1885,6 @@ export const storageService = {
       console.warn('Indexed phone query error:', err);
 
     }
-
-
 
     // 3. Fallback deep scan across cloud users node
 
@@ -2106,13 +1922,9 @@ export const storageService = {
 
     }
 
-
-
     return true;
 
   },
-
-
 
   getNextPioneerNumber() {
 
@@ -2141,8 +1953,6 @@ export const storageService = {
     return null;
 
   },
-
-
 
   getUserPioneerNumber(user) {
 
@@ -2192,8 +2002,6 @@ export const storageService = {
 
   },
 
-
-
   getPioneerCount() {
 
     const users = this.getUsers();
@@ -2203,8 +2011,6 @@ export const storageService = {
     return Math.max(users.length, pioneers.length, 1);
 
   },
-
-
 
   async getCloudPioneerCount() {
 
@@ -2234,8 +2040,6 @@ export const storageService = {
 
   },
 
-
-
   saveUser(user) {
 
     const users = this.getUsers();
@@ -2251,8 +2055,6 @@ export const storageService = {
       users.push(user);
 
     }
-
-
 
     try {
 
@@ -2285,8 +2087,6 @@ export const storageService = {
       }
 
     }
-
-
 
     // Propagate updated user profile to all posts authored by this user
 
@@ -2340,8 +2140,6 @@ export const storageService = {
 
       });
 
-
-
       if (changed) {
 
         this.safeSetItem(STORAGE_KEYS.POSTS, updatedPosts);
@@ -2353,8 +2151,6 @@ export const storageService = {
       console.warn('Propagate profile changes error:', err);
 
     }
-
-
 
     // Cloud Realtime sync
 
@@ -2382,8 +2178,6 @@ export const storageService = {
 
   },
 
-
-
   // Sever all follower/following connections between two users upon block
 
   severRelationship(userAId, userBId) {
@@ -2397,8 +2191,6 @@ export const storageService = {
       const userA = users.find((u) => u.uid === userAId);
 
       const userB = users.find((u) => u.uid === userBId);
-
-
 
       if (userA) {
 
@@ -2414,8 +2206,6 @@ export const storageService = {
 
       }
 
-
-
       if (userB) {
 
         userB.following = this._resolveEngagementArray(userB.following).filter((id) => id !== userAId);
@@ -2429,8 +2219,6 @@ export const storageService = {
         this.saveUser(userB);
 
       }
-
-
 
       // Also clean up any pending follow requests
 
@@ -2446,8 +2234,6 @@ export const storageService = {
 
   },
 
-
-
   // Ban / Suspend System (Firebase Realtime True/False)
 
   banUser(targetUserId, reason = 'مخالفة معايير الأمان وإرشادات مجتمع PULSE') {
@@ -2458,19 +2244,13 @@ export const storageService = {
 
     if (!user) return null;
 
-
-
     user.isBanned = true;
 
     user.banReason = reason;
 
     user.bannedAt = new Date().toISOString();
 
-
-
     this.saveUser(user);
-
-
 
     try {
 
@@ -2490,8 +2270,6 @@ export const storageService = {
 
   },
 
-
-
   unbanUser(targetUserId) {
 
     const users = this.getUsers();
@@ -2500,19 +2278,13 @@ export const storageService = {
 
     if (!user) return null;
 
-
-
     user.isBanned = false;
 
     delete user.banReason;
 
     delete user.bannedAt;
 
-
-
     this.saveUser(user);
-
-
 
     try {
 
@@ -2530,8 +2302,6 @@ export const storageService = {
 
   },
 
-
-
   toggleVerification(targetUserId, status = true) {
 
     const users = this.getUsers();
@@ -2540,17 +2310,11 @@ export const storageService = {
 
     if (!user) return null;
 
-
-
     user.isVerified = status;
 
     user.verificationStatus = status ? 'verified' : 'none';
 
-
-
     this.saveUser(user);
-
-
 
     try {
 
@@ -2568,8 +2332,6 @@ export const storageService = {
 
   },
 
-
-
   // Follow Requests System for Private Accounts
 
   getFollowRequestsMap() {
@@ -2586,8 +2348,6 @@ export const storageService = {
 
   },
 
-
-
   saveFollowRequestsMap(map) {
 
     try {
@@ -2602,8 +2362,6 @@ export const storageService = {
 
   },
 
-
-
   hasPendingFollowRequest(targetUserId, requesterUid) {
 
     if (!targetUserId || !requesterUid) return false;
@@ -2616,8 +2374,6 @@ export const storageService = {
 
   },
 
-
-
   getPendingFollowRequests(targetUserId) {
 
     if (!targetUserId) return [];
@@ -2628,8 +2384,6 @@ export const storageService = {
 
   },
 
-
-
   sendFollowRequest(targetUserId, currentUser) {
 
     if (!targetUserId || !currentUser || targetUserId === currentUser.uid) return false;
@@ -2637,8 +2391,6 @@ export const storageService = {
     const map = this.getFollowRequestsMap();
 
     if (!map[targetUserId]) map[targetUserId] = [];
-
-
 
     const existingIndex = map[targetUserId].findIndex((r) => r.requesterUid === currentUser.uid);
 
@@ -2653,8 +2405,6 @@ export const storageService = {
       map[targetUserId].splice(existingIndex, 1);
 
     }
-
-
 
     const requestItem = {
 
@@ -2686,13 +2436,9 @@ export const storageService = {
 
     };
 
-
-
     map[targetUserId].unshift(requestItem);
 
     this.saveFollowRequestsMap(map);
-
-
 
     try {
 
@@ -2703,8 +2449,6 @@ export const storageService = {
       console.warn(e);
 
     }
-
-
 
     notificationService.addNotification({
 
@@ -2727,8 +2471,6 @@ export const storageService = {
     return true;
 
   },
-
-
 
   cancelFollowRequest(targetUserId, requesterUid) {
 
@@ -2754,8 +2496,6 @@ export const storageService = {
 
   },
 
-
-
   acceptFollowRequest(requesterUid, currentUser) {
 
     if (!requesterUid || !currentUser) return false;
@@ -2766,21 +2506,13 @@ export const storageService = {
 
     const curr = users.find((u) => u.uid === currentUser.uid);
 
-
-
     if (!requester || !curr) return false;
 
-
-
     this.cancelFollowRequest(curr.uid, requester.uid);
-
-
 
     curr.followers = this._resolveEngagementArray(curr.followers);
 
     requester.following = this._resolveEngagementArray(requester.following);
-
-
 
     if (!curr.followers.includes(requester.uid)) {
 
@@ -2794,23 +2526,15 @@ export const storageService = {
 
     }
 
-
-
     curr.followersCount = curr.followers.length;
 
     requester.followingCount = requester.following.length;
-
-
 
     this.saveUser(curr);
 
     this.saveUser(requester);
 
-
-
     notificationService.updateNotificationStatus(curr.uid, requester.uid, 'follow_request', 'accepted');
-
-
 
     notificationService.addNotification({
 
@@ -2830,8 +2554,6 @@ export const storageService = {
 
   },
 
-
-
   rejectFollowRequest(requesterUid, currentUser) {
 
     if (!requesterUid || !currentUser) return false;
@@ -2844,8 +2566,6 @@ export const storageService = {
 
   },
 
-
-
   // Follow / Unfollow System
 
   toggleFollow(targetUserId, currentUser) {
@@ -2856,21 +2576,13 @@ export const storageService = {
 
     const curr = users.find((u) => u.uid === currentUser.uid);
 
-
-
     if (!target || !curr || target.uid === curr.uid) return false;
-
-
 
     curr.following = this._resolveEngagementArray(curr.following);
 
     target.followers = this._resolveEngagementArray(target.followers);
 
-
-
     const isFollowing = curr.following.includes(target.uid);
-
-
 
     // Private account check: if target is private and caller is not already following
 
@@ -2891,8 +2603,6 @@ export const storageService = {
       }
 
     }
-
-
 
     if (isFollowing) {
 
@@ -2918,15 +2628,11 @@ export const storageService = {
 
       target.followersCount = target.followers.length;
 
-
-
       // Check if this follow turns the relationship into a MUTUAL follow!
 
       const targetFollowing = this._resolveEngagementArray(target.following);
 
       const isMutualNow = targetFollowing.includes(curr.uid);
-
-
 
       if (isMutualNow) {
 
@@ -2966,13 +2672,9 @@ export const storageService = {
 
     }
 
-
-
     this.saveUser(curr);
 
     this.saveUser(target);
-
-
 
     // Sync follower/following arrays directly to Firebase RTDB for immediate indexing
 
@@ -2984,13 +2686,9 @@ export const storageService = {
 
     } catch (e) {}
 
-
-
     return !isFollowing;
 
   },
-
-
 
   getUserFollowers(userId) {
 
@@ -3008,8 +2706,6 @@ export const storageService = {
 
   },
 
-
-
   getUserFollowing(userId) {
 
     if (!userId) return [];
@@ -3026,8 +2722,6 @@ export const storageService = {
 
   },
 
-
-
   // Bookmarks System
 
   toggleBookmark(postId, currentUser) {
@@ -3038,15 +2732,11 @@ export const storageService = {
 
     if (!curr) return false;
 
-
-
     curr.bookmarks = this._resolveEngagementArray(curr.bookmarks);
 
     const index = curr.bookmarks.indexOf(postId);
 
     let isBookmarked = false;
-
-
 
     if (index >= 0) {
 
@@ -3060,13 +2750,9 @@ export const storageService = {
 
     }
 
-
-
     // Save locally
 
     this.safeSetItem(STORAGE_KEYS.USERS, users);
-
-
 
     // Sync ONLY bookmarks to Firebase (not entire user document)
 
@@ -3080,13 +2766,9 @@ export const storageService = {
 
     }
 
-
-
     return isBookmarked;
 
   },
-
-
 
   isBookmarked(postId, currentUser) {
 
@@ -3097,8 +2779,6 @@ export const storageService = {
     return bookmarks.includes(postId);
 
   },
-
-
 
   getBookmarkedPosts(currentUser) {
 
@@ -3118,8 +2798,6 @@ export const storageService = {
 
   },
 
-
-
   getLikedPosts(currentUser) {
 
     if (!currentUser) return [];
@@ -3135,8 +2813,6 @@ export const storageService = {
     });
 
   },
-
-
 
   getArchivedPosts(currentUser) {
 
@@ -3155,8 +2831,6 @@ export const storageService = {
     }
 
   },
-
-
 
   archivePost(post, currentUser) {
 
@@ -3186,8 +2860,6 @@ export const storageService = {
 
   },
 
-
-
   unarchivePost(postId, currentUser) {
 
     if (!currentUser || !postId) return false;
@@ -3210,8 +2882,6 @@ export const storageService = {
 
   },
 
-
-
   // Interactive Poll Voting
 
   votePoll(postId, optionIndex, userId) {
@@ -3224,8 +2894,6 @@ export const storageService = {
 
     if (!post || !post.poll || !Array.isArray(post.poll.options)) return null;
 
-
-
     // Remove user's previous vote from any option in this poll
 
     post.poll.options.forEach((opt) => {
@@ -3233,8 +2901,6 @@ export const storageService = {
       opt.votes = this._resolveEngagementArray(opt.votes).filter((id) => id !== userId);
 
     });
-
-
 
     // Add user vote to target option
 
@@ -3250,8 +2916,6 @@ export const storageService = {
 
     }
 
-
-
     // Recalculate total votes
 
     post.poll.totalVotes = post.poll.options.reduce(
@@ -3262,13 +2926,9 @@ export const storageService = {
 
     );
 
-
-
     // Save locally
 
     this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
     // Sync poll to Firebase RTDB
 
@@ -3282,13 +2942,9 @@ export const storageService = {
 
     }
 
-
-
     return post.poll;
 
   },
-
-
 
   getContentFilters(currentUser) {
 
@@ -3308,8 +2964,6 @@ export const storageService = {
 
   },
 
-
-
   saveContentFilters(filters, currentUser) {
 
     try {
@@ -3327,8 +2981,6 @@ export const storageService = {
     }
 
   },
-
-
 
   // POSTS
 
@@ -3366,8 +3018,6 @@ export const storageService = {
 
   },
 
-
-
   async getPostById(postId) {
 
     if (!postId) return null;
@@ -3400,8 +3050,6 @@ export const storageService = {
 
   },
 
-
-
   savePost(post) {
 
     const posts = this.getPosts();
@@ -3409,8 +3057,6 @@ export const storageService = {
     posts.unshift(post);
 
     this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
     // Cloud Realtime sync
 
@@ -3427,8 +3073,6 @@ export const storageService = {
       console.warn(e);
 
     }
-
-
 
     // Mention notification dispatch
 
@@ -3484,27 +3128,19 @@ export const storageService = {
 
   },
 
-
-
   deletePost(postId, userOrUid) {
 
     if (!postId) return false;
 
     const sPostId = String(postId);
 
-
-
     // 1. Tombstone ID immediately to avoid resurrection
 
     this._recordDeletedPostId(sPostId);
 
-
-
     const posts = this.getPosts();
 
     const post = posts.find((p) => String(p.id) === sPostId);
-
-
 
     const uid = typeof userOrUid === 'object' && userOrUid ? userOrUid.uid : userOrUid;
 
@@ -3514,21 +3150,15 @@ export const storageService = {
 
       uid === 'dev_mahmoud_yasser';
 
-
-
     if (post) {
 
       const postAuthorUid = post.authorId || post.userId || post.author?.uid;
 
       const postAuthorUsername = post.author?.username?.toLowerCase();
 
-
-
       const isAuthor = (uid && (postAuthorUid === uid || post.authorId === uid)) ||
 
         (username && postAuthorUsername === username);
-
-
 
       if (!isAuthor && !isFounder) {
 
@@ -3537,8 +3167,6 @@ export const storageService = {
       }
 
     }
-
-
 
     // Filter out post and any reposts referencing it
 
@@ -3553,8 +3181,6 @@ export const storageService = {
     });
 
     this.safeSetItem(STORAGE_KEYS.POSTS, filtered);
-
-
 
     // Also remove comments under this post from local cache
 
@@ -3571,8 +3197,6 @@ export const storageService = {
       }
 
     } catch {}
-
-
 
     // Cloud Realtime delete (post, comments)
 
@@ -3592,13 +3216,9 @@ export const storageService = {
 
     }
 
-
-
     return true;
 
   },
-
-
 
   updatePost(postId, newContent, userOrUid) {
 
@@ -3610,8 +3230,6 @@ export const storageService = {
 
     if (postIndex === -1) return null;
 
-
-
     const post = posts[postIndex];
 
     const uid = typeof userOrUid === 'object' && userOrUid ? userOrUid.uid : userOrUid;
@@ -3622,27 +3240,19 @@ export const storageService = {
 
       uid === 'dev_mahmoud_yasser';
 
-
-
     const postAuthorUid = post.authorId || post.userId || post.author?.uid;
 
     const postAuthorUsername = post.author?.username?.toLowerCase();
 
-
-
     const isAuthor = (uid && (postAuthorUid === uid || post.authorId === uid)) ||
 
       (username && postAuthorUsername === username);
-
-
 
     if (!isAuthor && !isFounder) {
 
       throw new Error('لا تملك صلاحية تعديل هذه النبضة.');
 
     }
-
-
 
     const editedAt = new Date().toISOString();
 
@@ -3660,13 +3270,9 @@ export const storageService = {
 
     };
 
-
-
     posts[postIndex] = updatedPost;
 
     this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
     // Cloud Realtime sync
 
@@ -3690,13 +3296,9 @@ export const storageService = {
 
     }
 
-
-
     return updatedPost;
 
   },
-
-
 
   incrementVoiceListens(postId, listenerUser) {
 
@@ -3706,13 +3308,9 @@ export const storageService = {
 
     if (!post) return;
 
-
-
     post.voiceListens = (post.voiceListens || 0) + 1;
 
     this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
     // Cloud Realtime sync
 
@@ -3725,8 +3323,6 @@ export const storageService = {
       console.warn(e);
 
     }
-
-
 
     if (listenerUser && post.authorId !== listenerUser.uid) {
 
@@ -3754,13 +3350,9 @@ export const storageService = {
 
     }
 
-
-
     return post;
 
   },
-
-
 
   toggleLikePost(postId, user) {
 
@@ -3769,8 +3361,6 @@ export const storageService = {
     const post = posts.find((p) => p.id === postId);
 
     let isLikedNow = false;
-
-
 
     if (post) {
 
@@ -3804,8 +3394,6 @@ export const storageService = {
 
     }
 
-
-
     // Per-user atomic Firebase write (no race condition)
 
     try {
@@ -3827,8 +3415,6 @@ export const storageService = {
       console.warn('Firebase like sync error:', e);
 
     }
-
-
 
     // Notification for post author
 
@@ -3858,15 +3444,9 @@ export const storageService = {
 
     }
 
-
-
     return post;
 
   },
-
-
-
-
 
   toggleRepost(postId, user) {
 
@@ -3876,8 +3456,6 @@ export const storageService = {
 
     if (!post) return { post: null, repostEntry: null };
 
-
-
     const reposts = this._resolveEngagementArray(post.reposts);
 
     const index = reposts.indexOf(user.uid);
@@ -3885,8 +3463,6 @@ export const storageService = {
     let isRepostedNow = false;
 
     let repostEntry = null;
-
-
 
     if (index >= 0) {
 
@@ -4036,15 +3612,11 @@ export const storageService = {
 
     }
 
-
-
     post.reposts = reposts;
 
     delete post.repostsCount;
 
     this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
     // Per-user atomic Firebase write for repost flag
 
@@ -4067,8 +3639,6 @@ export const storageService = {
       console.warn('Firebase repost sync error:', e);
 
     }
-
-
 
     // Notification
 
@@ -4098,15 +3668,9 @@ export const storageService = {
 
     }
 
-
-
     return { post, repostEntry, isRepostedNow };
 
   },
-
-
-
-
 
   // COMMENTS
 
@@ -4217,8 +3781,6 @@ export const storageService = {
     }
   },
 
-
-
   getUserReplies(userId, username) {
 
     this.init();
@@ -4237,8 +3799,6 @@ export const storageService = {
 
       const results = [];
 
-
-
       Object.entries(all).forEach(([postId, commentsList]) => {
 
         let actualList = commentsList;
@@ -4250,8 +3810,6 @@ export const storageService = {
 
         const parentPost = posts.find((p) => p.id === postId) || null;
 
-
-
         commentsList.forEach((comm) => {
 
           if (!comm) return;
@@ -4259,8 +3817,6 @@ export const storageService = {
           const commAuthorUid = comm.authorId || comm.userId || comm.author?.uid;
 
           const commAuthorUname = (comm.author?.username || comm.authorUsername || '').toLowerCase();
-
-
 
           const isMatch = Boolean(
 
@@ -4271,8 +3827,6 @@ export const storageService = {
             ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (commAuthorUname === 'my' || commAuthorUid === 'dev_mahmoud_yasser' || commAuthorUid === 'my'))
 
           );
-
-
 
           if (isMatch) {
 
@@ -4316,8 +3870,6 @@ export const storageService = {
 
       });
 
-
-
       return results.sort((a, b) => new Date(b.comment.createdAt || 0) - new Date(a.comment.createdAt || 0));
 
     } catch (err) {
@@ -4330,15 +3882,11 @@ export const storageService = {
 
   },
 
-
-
   subscribeToUserReplies(userId, username, callback) {
 
     if (!userId && !username) return () => {};
 
     if (callback) callback(this.getUserReplies(userId, username));
-
-
 
     try {
 
@@ -4384,8 +3932,6 @@ export const storageService = {
 
   },
 
-
-
   addComment(postId, comment, currentUser) {
 
     this.init();
@@ -4424,8 +3970,6 @@ export const storageService = {
 
       }
 
-
-
       const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS)) || {};
       let list = all[postId] || [];
       if (!Array.isArray(list)) {
@@ -4455,8 +3999,6 @@ export const storageService = {
           console.warn('[StorageService] Realtime comment sync exception:', e);
         }
 
-
-
         if (currentUser && post.authorId !== currentUser.uid) {
 
           notificationService.addNotification({
@@ -4482,8 +4024,6 @@ export const storageService = {
           notificationService.playNotificationSound();
 
         }
-
-
 
         // Mention notifications in comment
 
@@ -4545,8 +4085,6 @@ export const storageService = {
 
   },
 
-
-
   toggleLikeComment(postId, commentId, user) {
     if (!postId || !commentId || !user) return null;
     try {
@@ -4558,15 +4096,11 @@ export const storageService = {
       const comment = list.find((c) => c && c.id === commentId);
       if (!comment) return null;
 
-
-
       comment.likes = this._resolveEngagementArray(comment.likes);
 
       const idx = comment.likes.indexOf(user.uid);
 
       let isLikedNow = false;
-
-
 
       if (idx >= 0) {
 
@@ -4580,11 +4114,7 @@ export const storageService = {
 
       }
 
-
-
       this.safeSetItem(STORAGE_KEYS.COMMENTS, all);
-
-
 
       // Cloud Realtime sync — atomic per-user write
 
@@ -4608,8 +4138,6 @@ export const storageService = {
 
       }
 
-
-
       if (isLikedNow && comment.authorId !== user.uid) {
 
         notificationService.addNotification({
@@ -4628,8 +4156,6 @@ export const storageService = {
 
       }
 
-
-
       return comment;
 
     } catch (e) {
@@ -4642,8 +4168,6 @@ export const storageService = {
 
   },
 
-
-
   deleteComment(postId, commentId, userId) {
     try {
       const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS)) || {};
@@ -4653,8 +4177,6 @@ export const storageService = {
       }
       all[postId] = list.filter((c) => c && c.id !== commentId && (c.authorId === userId || userId === 'dev_mahmoud_yasser' || userId === OFFICIAL_FOUNDER.uid));
       this.safeSetItem(STORAGE_KEYS.COMMENTS, all);
-
-
 
       // Cloud Realtime sync
 
@@ -4668,8 +4190,6 @@ export const storageService = {
 
       }
 
-
-
       const posts = this.getPosts();
 
       const post = posts.find((p) => p.id === postId);
@@ -4679,8 +4199,6 @@ export const storageService = {
         post.repliesCount -= 1;
 
         this.safeSetItem(STORAGE_KEYS.POSTS, posts);
-
-
 
         try {
 
@@ -4702,8 +4220,6 @@ export const storageService = {
 
   },
 
-
-
   // VERIFICATIONS
 
   requestVerification(userId, notes = '') {
@@ -4715,8 +4231,6 @@ export const storageService = {
       user.verificationStatus = 'pending';
 
       this.saveUser(user);
-
-
 
       // Cloud Realtime request
 
@@ -4746,8 +4260,6 @@ export const storageService = {
 
   },
 
-
-
   approveVerification(userId) {
 
     const user = this.getUsers().find((u) => u.uid === userId);
@@ -4759,8 +4271,6 @@ export const storageService = {
       user.verificationStatus = 'verified';
 
       this.saveUser(user);
-
-
 
       try {
 

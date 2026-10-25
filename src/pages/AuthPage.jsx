@@ -686,7 +686,7 @@ export default function AuthPage({ isModal = false, onClose = null, onContinueAs
             </div>
 
             {resetSuccessMessage && (
-              <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-800 text-white text-xs flex items-center gap-2">
                 <Check size={15} className="flex-shrink-0" />
                 <span>{resetSuccessMessage}</span>
               </div>
@@ -862,7 +862,7 @@ export default function AuthPage({ isModal = false, onClose = null, onContinueAs
                       className="w-full bg-[#141416] border border-[#222226] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white transition-colors"
                     />
                     {emailAvailability.message && (
-                      <p className={`text-[11px] mt-1 ${emailAvailability.available ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <p className={`text-[11px] mt-1 ${emailAvailability.available ? 'text-blue-400' : 'text-red-400'}`}>
                         {emailAvailability.message}
                       </p>
                     )}
@@ -895,7 +895,7 @@ export default function AuthPage({ isModal = false, onClose = null, onContinueAs
                       />
                     </div>
                     {phoneAvailability.message && (
-                      <p className={`text-[11px] mt-1 ${phoneAvailability.available ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <p className={`text-[11px] mt-1 ${phoneAvailability.available ? 'text-blue-400' : 'text-red-400'}`}>
                         {phoneAvailability.message}
                       </p>
                     )}
@@ -1062,7 +1062,7 @@ export default function AuthPage({ isModal = false, onClose = null, onContinueAs
                     ) : generatedUsername ? (
                       <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-1.5 text-white font-mono font-semibold text-sm">
-                          <Check size={14} className="text-emerald-400" />
+                          <Check size={14} className="text-blue-400" />
                           <span>@{generatedUsername}</span>
                         </div>
                         <span className="text-[10px] text-[#71717a]">

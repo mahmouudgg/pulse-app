@@ -226,7 +226,7 @@ export default function FollowInvitePage({ currentUser, onBack, onOpenUserProfil
                 className="w-full p-4 flex items-center justify-between text-start hover:bg-white/[0.02] tap-press transition-colors"
               >
                 <div className="flex items-center gap-3.5 text-neutral-200">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
                     <MessageCircle size={18} />
                   </div>
                   <div>

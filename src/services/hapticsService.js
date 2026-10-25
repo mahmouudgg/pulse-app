@@ -1,6 +1,5 @@
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
-import { soundEffectsService } from './soundEffectsService';
 
 /**
  * PULSE Official Tactile Precision Haptics & Sensory Engine for PULSE
@@ -64,31 +63,26 @@ export const hapticsService = {
   // AAA Micro-Delight: Double-Tap & Like Pop
   like() {
     this.medium();
-    soundEffectsService.likePop();
   },
 
   // AAA Micro-Delight: Pull to Refresh Trigger Snap
   refresh() {
     this.heavy();
-    soundEffectsService.refreshSnap();
   },
 
   // AAA Micro-Delight: Odometer Counter Roll Tick
   counter() {
     this.selection();
-    soundEffectsService.counterTick();
   },
 
   // AAA Micro-Delight: Bottom Tab Tap
   tab() {
     this.light();
-    soundEffectsService.tabTap();
   },
 
   // AAA Micro-Delight: Swipe-to-dismiss Whoosh
   dismiss() {
     this.selection();
-    soundEffectsService.dismissWhoosh();
   },
 
   // Double pulse for successful actions (reply sent, verified, post created)

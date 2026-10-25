@@ -324,8 +324,6 @@ export async function renderStoryCanvas(post, options = {}) {
     currentY += voiceBoxHeight;
   }
 
-
-
   // 9. Bottom Story Footer / Call To Action
   const footerY = 1680;
 

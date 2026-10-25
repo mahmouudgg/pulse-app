@@ -1065,8 +1065,6 @@ export default function PostCard({
             </div>
           )}
 
-
-
           {/* Sponsored Call to Action Button */}
           {post.isSponsored && (
             <div className="mt-3">
