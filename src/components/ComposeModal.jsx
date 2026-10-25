@@ -912,8 +912,8 @@ export default function ComposeModal({
 
                             {/* Active Sensitive Post Badge */}
               {isSensitive && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2 animate-fade-in">
-                  <ShieldAlert size={13} className="text-amber-400 flex-shrink-0" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-amber-300 text-xs font-semibold mb-2 animate-fade-in">
+                  <ShieldAlert size={13} className="text-red-500 flex-shrink-0" />
                   <span>{isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}</span>
                   <button
                     type="button"
@@ -1400,12 +1400,12 @@ export default function ComposeModal({
                         <div className="flex items-center gap-2">
                           <span>{isAr ? 'محتوى حساس (+18)' : 'Sensitive (+18)'}</span>
                           {isSensitive && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400">
                               {isAr ? 'مفعّل' : 'Active'}
                             </span>
                           )}
                         </div>
-                        <ShieldAlert size={18} className={isSensitive ? 'text-amber-400' : 'text-neutral-300'} />
+                        <ShieldAlert size={18} className={isSensitive ? 'text-red-500' : 'text-neutral-300'} />
                       </div>
 
                     </div>
@@ -1563,7 +1563,7 @@ export default function ComposeModal({
                     <span className="text-xs font-medium text-white">
                       {isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-amber-500/30">
                       +18
                     </span>
                   </div>
@@ -1578,7 +1578,7 @@ export default function ComposeModal({
                     setIsSensitive(!isSensitive);
                   }}
                   className={`w-11 h-6 rounded-full transition-colors relative flex items-center flex-shrink-0 ${
-                    isSensitive ? 'bg-amber-500' : 'bg-neutral-700'
+                    isSensitive ? 'bg-red-500' : 'bg-neutral-700'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-full transition-transform ${

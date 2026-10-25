@@ -651,7 +651,7 @@ export default function PostDetailPage({
                     {formatPostHeaderTime(post.createdAt)}
                   </span>
                   {isPostSensitive(post) && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30">
                       +18
                     </span>
                   )}

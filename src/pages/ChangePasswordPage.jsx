@@ -68,11 +68,11 @@ export default function ChangePasswordPage({ onBack }) {
       case 1:
         return 'bg-red-500';
       case 2:
-        return 'bg-amber-500';
+        return 'bg-neutral-500';
       case 3:
-        return 'bg-yellow-400';
+        return 'bg-neutral-400';
       case 4:
-        return 'bg-emerald-500';
+        return 'bg-white';
       default:
         return 'bg-neutral-800';
     }
@@ -148,7 +148,7 @@ export default function ChangePasswordPage({ onBack }) {
           <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 space-y-2.5">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white flex-shrink-0">
-                <ShieldCheck size={19} className="text-emerald-400" />
+                <ShieldCheck size={19} className="text-white" />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-white">
@@ -266,12 +266,12 @@ export default function ChangePasswordPage({ onBack }) {
                 {confirmPassword && (
                   <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
                     {passwordsMatch ? (
-                      <span className="text-emerald-400 flex items-center gap-1 font-medium">
+                      <span className="text-white flex items-center gap-1 font-medium">
                         <Check size={12} />
                         {isAr ? 'كلمتا المرور متطابقتان' : 'Passwords match'}
                       </span>
                     ) : (
-                      <span className="text-rose-400 flex items-center gap-1 font-medium">
+                      <span className="text-red-400 flex items-center gap-1 font-medium">
                         <AlertCircle size={12} />
                         {isAr ? 'كلمتا المرور غير متطابقتين' : 'Passwords do not match'}
                       </span>
@@ -290,7 +290,7 @@ export default function ChangePasswordPage({ onBack }) {
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    strength.rules.minLength ? 'bg-emerald-500 text-black' : 'border border-neutral-600'
+                    strength.rules.minLength ? 'bg-white text-black font-bold' : 'border border-neutral-600'
                   }`}>
                     {strength.rules.minLength && <Check size={10} strokeWidth={3} />}
                   </div>
@@ -301,7 +301,7 @@ export default function ChangePasswordPage({ onBack }) {
 
                 <div className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    strength.rules.hasUpperLower ? 'bg-emerald-500 text-black' : 'border border-neutral-600'
+                    strength.rules.hasUpperLower ? 'bg-white text-black font-bold' : 'border border-neutral-600'
                   }`}>
                     {strength.rules.hasUpperLower && <Check size={10} strokeWidth={3} />}
                   </div>
@@ -312,7 +312,7 @@ export default function ChangePasswordPage({ onBack }) {
 
                 <div className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    strength.rules.hasNumber ? 'bg-emerald-500 text-black' : 'border border-neutral-600'
+                    strength.rules.hasNumber ? 'bg-white text-black font-bold' : 'border border-neutral-600'
                   }`}>
                     {strength.rules.hasNumber && <Check size={10} strokeWidth={3} />}
                   </div>
@@ -323,7 +323,7 @@ export default function ChangePasswordPage({ onBack }) {
 
                 <div className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    strength.rules.hasSymbol ? 'bg-emerald-500 text-black' : 'border border-neutral-600'
+                    strength.rules.hasSymbol ? 'bg-white text-black font-bold' : 'border border-neutral-600'
                   }`}>
                     {strength.rules.hasSymbol && <Check size={10} strokeWidth={3} />}
                   </div>
@@ -334,7 +334,7 @@ export default function ChangePasswordPage({ onBack }) {
 
                 <div className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    strength.rules.notCommon ? 'bg-emerald-500 text-black' : 'border border-neutral-600'
+                    strength.rules.notCommon ? 'bg-white text-black font-bold' : 'border border-neutral-600'
                   }`}>
                     {strength.rules.notCommon && <Check size={10} strokeWidth={3} />}
                   </div>

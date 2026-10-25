@@ -85,9 +85,9 @@ export default function SafeLinkModal({
           <div className="flex items-center gap-3.5">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
               isDangerous 
-                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' 
+                ? 'bg-red-500/10 border-red-500/20 text-red-400' 
                 : isWarning 
-                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                  ? 'bg-red-500/10 border-red-500/20 text-red-400' 
                   : 'bg-white/[0.05] border-white/10 text-white'
             }`}>
               {isDangerous ? (
@@ -126,12 +126,12 @@ export default function SafeLinkModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 min-w-0 flex-1 me-2">
               {audit.isHttps ? (
-                <div className="flex items-center gap-1 text-emerald-400 text-xs font-medium" title="HTTPS Secure">
+                <div className="flex items-center gap-1 text-[#0095F6] text-xs font-medium" title="HTTPS Secure">
                   <Lock size={12} className="flex-shrink-0" />
                   <span className="font-mono text-[11px]">HTTPS</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1 text-rose-400 text-xs font-medium" title="HTTP Unencrypted">
+                <div className="flex items-center gap-1 text-red-400 text-xs font-medium" title="HTTP Unencrypted">
                   <Unlock size={12} className="flex-shrink-0" />
                   <span className="font-mono text-[11px]">{isAr ? 'غير مشفر' : 'HTTP'}</span>
                 </div>
@@ -147,7 +147,7 @@ export default function SafeLinkModal({
               type="button"
               className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium tap-press transition-colors"
             >
-              {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+              {copied ? <Check size={12} className="text-[#0095F6]" /> : <Copy size={12} />}
               <span>{copied ? (isAr ? 'تم النسخ' : 'Copied') : (isAr ? 'نسخ' : 'Copy')}</span>
             </button>
           </div>
@@ -163,8 +163,8 @@ export default function SafeLinkModal({
         {hasRisk && (
           <div className={`p-3 rounded-xl border text-xs leading-relaxed flex items-start gap-2.5 ${
             isDangerous 
-              ? 'bg-rose-950/30 border-rose-800/40 text-rose-300'
-              : 'bg-amber-950/30 border-amber-800/40 text-amber-300'
+              ? 'bg-red-950/30 border-red-800/40 text-red-300'
+              : 'bg-red-950/30 border-red-800/40 text-red-400'
           }`}>
             <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-current" />
             <span className="font-medium">
@@ -180,7 +180,7 @@ export default function SafeLinkModal({
             disabled={isOpening}
             className={`w-full h-12 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 tap-press transition-all ${
               isDangerous
-                ? 'bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white shadow-lg shadow-rose-900/30'
+                ? 'bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white shadow-lg shadow-red-900/30'
                 : 'bg-white hover:bg-neutral-200 active:scale-[0.99] text-black shadow-lg shadow-white/5'
             }`}
           >

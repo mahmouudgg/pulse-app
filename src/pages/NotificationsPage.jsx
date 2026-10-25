@@ -222,13 +222,13 @@ export default function NotificationsPage({ onOpenDetail, onOpenUserProfile, onO
     switch (type) {
       case 'security_login_alert':
         return (
-          <div className="w-4 h-4 rounded-full bg-amber-400 flex items-center justify-center border-2 border-black">
+          <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center border-2 border-black">
             <ShieldAlert size={9} className="text-black stroke-[3]" />
           </div>
         );
       case 'weak_password_alert':
         return (
-          <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center border-2 border-black">
+          <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center border-2 border-black">
             <Lock size={9} className="text-black stroke-[3]" />
           </div>
         );
@@ -779,19 +779,19 @@ function SwipeableNotificationRow({
           {item.type === 'security_login_alert' && (
             <div className="mt-3 p-3.5 rounded-2xl bg-[#141418] border border-[#26262E] space-y-2.5">
               <div className="flex items-center gap-2 text-xs text-neutral-300">
-                <ShieldAlert size={16} className="text-amber-400 flex-shrink-0" />
+                <ShieldAlert size={16} className="text-red-500 flex-shrink-0" />
                 <span className="leading-relaxed font-medium">
                   {item.text || (lang === 'ar' ? 'تسجيل دخول جديد لحسابك' : 'New login detected on your account')}
                 </span>
               </div>
               
               {item.status === 'approved' ? (
-                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold py-1">
+                <div className="flex items-center gap-1.5 text-xs text-white font-semibold py-1">
                   <CheckCircle2 size={15} />
                   <span>{lang === 'ar' ? 'تم تأكيد الجلسة كنشاط موثوق بواسطتك' : 'Verified as recognized activity by you'}</span>
                 </div>
               ) : item.status === 'rejected' ? (
-                <div className="flex items-center gap-1.5 text-xs text-rose-400 font-semibold py-1">
+                <div className="flex items-center gap-1.5 text-xs text-red-400 font-semibold py-1">
                   <AlertTriangle size={15} />
                   <span>{lang === 'ar' ? 'تم رفض الجلسة وإنهاء اتصال الجهاز فورياً' : 'Session denied and device terminated'}</span>
                 </div>
@@ -818,9 +818,9 @@ function SwipeableNotificationRow({
 
           {/* Weak Password Periodic Security Alert Card */}
           {item.type === 'weak_password_alert' && (
-            <div className="mt-3 p-3.5 rounded-2xl bg-[#141418] border border-amber-500/20 space-y-3">
+            <div className="mt-3 p-3.5 rounded-2xl bg-[#141418] border border-red-500/25 space-y-3">
               <div className="flex items-start gap-2.5 text-xs text-neutral-300">
-                <ShieldAlert size={18} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <ShieldAlert size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="font-bold text-white text-xs">
                     {lang === 'ar' ? 'تنبيه أمان: كلمة المرور بحاجة للتحديث' : 'Security Alert: Password Update Recommended'}
@@ -834,7 +834,7 @@ function SwipeableNotificationRow({
               </div>
 
               {item.status === 'resolved' ? (
-                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold py-1">
+                <div className="flex items-center gap-1.5 text-xs text-white font-semibold py-1">
                   <CheckCircle2 size={15} />
                   <span>{lang === 'ar' ? 'تم تحديث كلمة المرور وتأمين حسابك بنجاح' : 'Password updated & account secured'}</span>
                 </div>

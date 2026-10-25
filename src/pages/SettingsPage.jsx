@@ -6351,7 +6351,7 @@ export default function SettingsPage({
             {/* Age Verification Gate Status Card */}
             <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 flex items-start gap-3.5">
               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                isAdult ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                isAdult ? 'bg-white/10 text-white border border-white/20' : 'bg-red-500/10 text-red-400 border border-red-500/25'
               }`}>
                 {isAdult ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
               </div>
@@ -6363,7 +6363,7 @@ export default function SettingsPage({
                       : (isAr ? 'حساب قاصر (دون سن 18 عاماً)' : 'Minor Account (Under 18)')}
                   </span>
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    isAdult ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                    isAdult ? 'bg-white/20 text-white' : 'bg-red-500/20 text-red-400'
                   }`}>
                     {userAge !== null ? `${userAge} ${isAr ? 'سنة' : 'yrs'}` : (isAr ? 'غير محدد' : 'Unknown')}
                   </span>

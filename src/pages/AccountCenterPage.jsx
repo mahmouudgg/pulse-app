@@ -694,11 +694,11 @@ export default function AccountCenterPage({ onBack }) {
                   {isAr ? 'اسم المستخدم (@)' : 'Username (@)'}
                 </div>
                 {daysRemaining > 0 ? (
-                  <span className="text-[11px] text-amber-400 font-mono">
+                  <span className="text-[11px] text-neutral-400 font-mono">
                     {isAr ? `متبقي ${daysRemaining} يوم` : `${daysRemaining}d cooldown`}
                   </span>
                 ) : (
-                  <span className="text-[11px] text-emerald-400 font-mono">
+                  <span className="text-[11px] text-white font-mono">
                     {isAr ? 'متاح للتعديل' : 'Available'}
                   </span>
                 )}
@@ -712,7 +712,7 @@ export default function AccountCenterPage({ onBack }) {
                 dir="ltr"
               />
               {usernameMsg.error && <p className="text-xs text-red-400">{usernameMsg.error}</p>}
-              {usernameMsg.success && <p className="text-xs text-emerald-400">{usernameMsg.success}</p>}
+              {usernameMsg.success && <p className="text-xs text-[#0095F6]">{usernameMsg.success}</p>}
               <button
                 onClick={handleUpdateUsername}
                 disabled={daysRemaining > 0 || !newUsername.trim()}
@@ -740,7 +740,7 @@ export default function AccountCenterPage({ onBack }) {
                     className="w-full bg-black border border-[#2A2A2E] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
                     dir="ltr"
                   />
-                  <Check size={14} className="absolute end-3 top-3 text-emerald-400 stroke-[3]" />
+                  <Check size={14} className="absolute end-3 top-3 text-[#0095F6] stroke-[3]" />
                 </div>
               </div>
 
@@ -881,7 +881,7 @@ export default function AccountCenterPage({ onBack }) {
               </div>
 
               {passwordMsg.error && <p className="text-xs text-red-400">{passwordMsg.error}</p>}
-              {passwordMsg.success && <p className="text-xs text-emerald-400">{passwordMsg.success}</p>}
+              {passwordMsg.success && <p className="text-xs text-[#0095F6]">{passwordMsg.success}</p>}
 
               <button
                 type="submit"
@@ -896,7 +896,7 @@ export default function AccountCenterPage({ onBack }) {
             <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck size={18} className={twoFactorEnabled ? 'text-emerald-400' : 'text-neutral-400'} />
+                  <ShieldCheck size={18} className={twoFactorEnabled ? 'text-[#0095F6]' : 'text-neutral-400'} />
                   <div>
                     <div className="text-sm font-semibold text-white">
                       {isAr ? 'المصادقة الثنائية (2FA)' : 'Two-Factor Authentication'}
@@ -914,7 +914,7 @@ export default function AccountCenterPage({ onBack }) {
                   onClick={twoFactorEnabled ? handleDisable2FA : handleOpen2FA}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold tap-press transition-colors ${
                     twoFactorEnabled 
-                      ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20'
+                      ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-rose-500/20'
                       : 'bg-white text-black hover:bg-neutral-200'
                   }`}
                 >
@@ -963,7 +963,7 @@ export default function AccountCenterPage({ onBack }) {
                     <button
                       type="submit"
                       disabled={isVerifyingTotp || totpInputCode.length !== 6}
-                      className="w-full py-2.5 bg-emerald-500 text-black text-xs font-bold rounded-xl disabled:opacity-40 tap-press"
+                      className="w-full py-2.5 bg-[#0095F6] text-white text-xs font-bold rounded-xl disabled:opacity-40 tap-press"
                     >
                       {isVerifyingTotp ? (isAr ? 'جاري التحقق...' : 'Verifying...') : (isAr ? 'تأكيد وتفعيل' : 'Confirm & Enable')}
                     </button>
@@ -1069,7 +1069,7 @@ export default function AccountCenterPage({ onBack }) {
                   <button
                     type="button"
                     onClick={handleRevokeAllOtherSessions}
-                    className="text-xs text-rose-400 hover:underline font-medium tap-press"
+                    className="text-xs text-red-500 hover:underline font-medium tap-press"
                   >
                     {isAr ? 'إنهاء باقي الجلسات' : 'Log out all others'}
                   </button>
@@ -1091,7 +1091,7 @@ export default function AccountCenterPage({ onBack }) {
                           <div className="text-xs font-semibold text-white flex items-center gap-1.5 truncate">
                             <span>{session.deviceName || session.browser || 'PULSE Client'}</span>
                             {isCurrent && (
-                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-mono">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-white font-mono border border-white/20">
                                 {isAr ? 'هذا الجهاز' : 'This device'}
                               </span>
                             )}
@@ -1108,7 +1108,7 @@ export default function AccountCenterPage({ onBack }) {
                         className={`text-xs px-2.5 py-1 rounded tap-press font-semibold transition-colors ${
                           isCurrent
                             ? 'text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10'
-                            : 'text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20'
+                            : 'text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20'
                         }`}
                       >
                         {isCurrent ? (isAr ? 'تسجيل الخروج' : 'Log out') : (isAr ? 'خروج' : 'Revoke')}

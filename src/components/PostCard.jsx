@@ -737,7 +737,7 @@ export default function PostCard({
           {(post.topic || post.location) && (
             <div className="mt-1 flex items-center flex-wrap gap-1.5">
               {isPostSensitive(post) && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-[10px] font-bold text-amber-300">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-[10px] font-bold text-red-400">
                   <ShieldAlert size={10} />
                   <span>+18</span>
                 </span>

@@ -92,15 +92,15 @@ export default function SensitiveMediaGate({
 
         {/* Solid Content Warning (+18) Overlay Card */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center bg-black/60 backdrop-blur-md">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center mb-3 shadow-lg">
-            <ShieldAlert size={22} className="text-amber-400" />
+          <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-center justify-center mb-3 shadow-lg">
+            <ShieldAlert size={22} className="text-red-500" />
           </div>
 
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-sm font-bold text-white">
               {isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult Content (+18)'}
             </span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
               +18
             </span>
           </div>
@@ -132,7 +132,7 @@ export default function SensitiveMediaGate({
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <div className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 border border-rose-500/25 text-rose-300 text-xs font-semibold flex items-center gap-1.5">
+              <div className="px-3.5 py-1.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-1.5">
                 <Lock size={12} />
                 <span>{isAr ? 'غير متاح للحسابات دون سن 18 عاماً' : 'Restricted for accounts under 18'}</span>
               </div>
@@ -164,7 +164,7 @@ export default function SensitiveMediaGate({
           <EyeOff size={12} />
           <span>{isAr ? 'تعتيم' : 'Blur'}</span>
         </button>
-        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/80 text-white border border-white/20 backdrop-blur-md">
           +18
         </span>
       </div>
