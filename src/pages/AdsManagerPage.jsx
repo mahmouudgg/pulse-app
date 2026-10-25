@@ -656,6 +656,34 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                 />
               </div>
 
+              {/* AdMob App ID */}
+              <div>
+                <label className="text-xs font-semibold text-neutral-300 block mb-1">
+                  Google AdMob App ID
+                </label>
+                <input
+                  type="text"
+                  value={googleConfig.appId || ''}
+                  onChange={(e) => setGoogleConfig({ ...googleConfig, appId: e.target.value })}
+                  placeholder="ca-app-pub-3044896651670937~6674193241"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E0E10] border border-[#26262B] text-xs text-white placeholder-neutral-500 outline-none focus:border-white transition-colors font-mono"
+                />
+              </div>
+
+              {/* AdMob Unit ID / Native */}
+              <div>
+                <label className="text-xs font-semibold text-neutral-300 block mb-1">
+                  {isAr ? 'معرف وحدة إعلان AdMob (Native Ad Unit ID)' : 'AdMob Native Unit ID'}
+                </label>
+                <input
+                  type="text"
+                  value={googleConfig.adUnitId || ''}
+                  onChange={(e) => setGoogleConfig({ ...googleConfig, adUnitId: e.target.value })}
+                  placeholder="ca-app-pub-3044896651670937/5677995718"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E0E10] border border-[#26262B] text-xs text-white placeholder-neutral-500 outline-none focus:border-white transition-colors font-mono"
+                />
+              </div>
+
               {/* Publisher ID */}
               <div>
                 <label className="text-xs font-semibold text-neutral-300 block mb-1">
@@ -665,7 +693,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                   type="text"
                   value={googleConfig.publisherId || ''}
                   onChange={(e) => setGoogleConfig({ ...googleConfig, publisherId: e.target.value })}
-                  placeholder="ca-pub-XXXXXXXXXXXXXXXX"
+                  placeholder="ca-app-pub-3044896651670937"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E0E10] border border-[#26262B] text-xs text-white placeholder-neutral-500 outline-none focus:border-white transition-colors font-mono"
                 />
               </div>
@@ -679,7 +707,7 @@ export default function AdsManagerPage({ onBack, onOpenInsights }) {
                   type="text"
                   value={googleConfig.adSlotId || ''}
                   onChange={(e) => setGoogleConfig({ ...googleConfig, adSlotId: e.target.value })}
-                  placeholder="1234567890"
+                  placeholder="5677995718"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#0E0E10] border border-[#26262B] text-xs text-white placeholder-neutral-500 outline-none focus:border-white transition-colors font-mono"
                 />
               </div>

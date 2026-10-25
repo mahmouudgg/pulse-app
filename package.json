@@ -11,6 +11,7 @@
     "sync:ios": "vite build && cap sync ios"
   },
   "dependencies": {
+    "@capacitor-community/admob": "^6.2.0",
     "@capacitor-community/contacts": "^6.1.1",
     "@capacitor/android": "^6.2.0",
     "@capacitor/app": "^6.0.3",

@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { adService } from '../services/adService';
 import { hapticsService } from '../services/hapticsService';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
+import VerifiedBadge from './VerifiedBadge';
 
 export default function AdCard({
   ad,
@@ -96,13 +97,13 @@ export default function AdCard({
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-sm font-bold text-white hover:underline cursor-pointer">
               {ad.brandName}
             </span>
-            {/* Subtle Ad / إعلان Tag */}
-            <span className="text-[12px] font-medium text-[#777777] select-none">
-              {isAr ? 'إعلان' : 'Ad'}
+            <VerifiedBadge size={14} />
+            <span className="text-[11px] font-medium text-neutral-400 select-none px-2 py-0.5 rounded-full bg-[#18181B] border border-[#27272A]">
+              {isAr ? 'مُموّل' : 'Sponsored'}
             </span>
           </div>
         </div>
@@ -219,6 +220,28 @@ export default function AdCard({
               <span>{ctaLabel}</span>
               <ExternalLink size={12} className="stroke-[2.5]" />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3.1 Fallback CTA Card for text-only ads */}
+      {!ad.mediaUrl && (
+        <div 
+          onClick={handleCtaClick}
+          className="mb-3 p-3 rounded-2xl bg-[#141416]/95 border border-[#262628] flex items-center justify-between cursor-pointer group/cta hover:border-[#38383c] transition-colors"
+        >
+          <div className="flex flex-col">
+            <span className="text-[11px] text-neutral-400 font-mono truncate max-w-[200px]" dir="ltr">
+              {displayUrl}
+            </span>
+            <span className="text-xs font-bold text-white group-hover/cta:underline mt-0.5">
+              {ctaLabel}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-black text-xs font-bold shadow-sm tap-press">
+            <span>{ctaLabel}</span>
+            <ExternalLink size={12} className="stroke-[2.5]" />
           </div>
         </div>
       )}
