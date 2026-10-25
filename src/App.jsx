@@ -2151,7 +2151,11 @@ function MainApp() {
 
           <SettingsPage
 
-            onBack={() => setCurrentScreen(null)}
+            onBack={() => {
+              setCurrentScreen(null);
+              setSettingsInitialSubView(null);
+            }}
+            initialSubView={settingsInitialSubView}
 
             onOpenVerification={() => setCurrentScreen('verification')}
 

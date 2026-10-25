@@ -199,6 +199,8 @@ export default function SettingsPage({
 
 
 
+,
+  initialSubView = null
 }) {
 
 
@@ -279,7 +281,7 @@ export default function SettingsPage({
 
 
 
-  const [activeSubView, setActiveSubView] = useState(null);
+  const [activeSubView, setActiveSubView] = useState(() => initialSubView || null);
 
 
 
