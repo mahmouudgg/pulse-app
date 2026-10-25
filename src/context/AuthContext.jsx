@@ -884,10 +884,10 @@ export function AuthProvider({ children }) {
   };
 
   // Request Official Verification
-  const requestVerification = (notes = '') => {
+  const requestVerification = (notes = '', plan = 'monthly') => {
     if (!currentUser) return;
-    storageService.requestVerification(currentUser.uid, notes);
-    const updated = { ...currentUser, verificationStatus: 'pending' };
+    storageService.requestVerification(currentUser.uid, notes, plan);
+    const updated = { ...currentUser, verificationStatus: 'pending', proPlan: plan };
     setCurrentUser(updated);
   };
 

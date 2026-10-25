@@ -4222,7 +4222,7 @@ export const storageService = {
 
   // VERIFICATIONS
 
-  requestVerification(userId, notes = '') {
+  requestVerification(userId, notes = '', plan = 'monthly') {
 
     const user = this.getUsers().find((u) => u.uid === userId);
 
@@ -4245,6 +4245,8 @@ export const storageService = {
           displayName: user.displayName,
 
           notes,
+
+          plan,
 
           requestedAt: new Date().toISOString()
 

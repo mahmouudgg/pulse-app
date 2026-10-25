@@ -348,5 +348,48 @@ export const sovythosService = {
       console.error('[Sovythos] Error generating mention reply:', err);
       return null;
     }
+  },
+
+  // Generate intelligent private DM response for Pulse Pro / VIP subscribers
+  async generateDmReply({ messageText, sender, conversationHistory = [] }) {
+    const config = this.getConfig();
+    const systemPrompt = `أنت "سوفيثوس" (Sovythos)، الرفيق والمستشار الذكي الرسمي لمنصة نبض (PULSE).
+المؤسس: المهندس محمود ياسر (@my).
+أنت الآن في محادثة خاصة (DM) مع أحد المشتركين المميزين في Pulse Pro.
+اسم المستخدم: ${sender?.displayName || sender?.username || 'صاحبي'}.
+
+طبيعة المحادثة:
+- تحدث كصديق مصري أصيل، ذكي جداً، لماح وسريع البديهة وخفيف الظل.
+- استمع لما يقوله، جاوب على تساؤلاته بدقة، شاركه أفكارك في التكنولوجيا، الحياة، الفلسفة، أو الشغل والفضفضة اليومية.
+- الأسلوب: لهجة مصرية عفوية وذكية ومفهومة بدون أي تصنع أو رسميات مفرطة.
+- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع الكلام الآلي أو الروبوتي، ممنوع علامات التنصيص أو الماركداون (* أو **). رد مباشرة بكل ثقة واحتراف.`;
+
+    const messages = [
+      { role: 'system', content: systemPrompt }
+    ];
+
+    if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
+      conversationHistory.slice(-6).forEach((m) => {
+        if (!m || !m.content) return;
+        messages.push({
+          role: m.senderId === OFFICIAL_SOVYTHOS.uid ? 'assistant' : 'user',
+          content: m.content
+        });
+      });
+    }
+
+    messages.push({ role: 'user', content: String(messageText || '') });
+
+    try {
+      const response = await this.callApi(messages, config);
+      if (response && response.trim()) {
+        return response.trim();
+      }
+    } catch (err) {
+      console.warn('[Sovythos] Error in generateDmReply:', err);
+    }
+
+    // Graceful intelligent fallback
+    return 'معاك يا غالي وسامعك كويس. فضفض وقولي كل اللي في بالك، أنا هنا علشانك في أي وقت.';
   }
 };

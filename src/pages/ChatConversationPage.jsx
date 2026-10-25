@@ -25,7 +25,8 @@ export default function ChatConversationPage({
   onBack,
   onOpenUserProfile,
   onOpenDetail,
-  onBlockUser
+  onBlockUser,
+  onOpenVerification
 }) {
   const { lang } = useLanguage();
   const isAr = lang === 'ar';
@@ -46,6 +47,15 @@ export default function ChatConversationPage({
     recipient?.isPro || 
     recipient?.isFounder || 
     recipient?.verificationStatus === 'verified'
+  );
+
+  const isRecipientSovythos = recipient?.uid === 'user_1789917894698' || recipient?.username?.toLowerCase() === 'sovythos';
+  const isCurrentUserPro = Boolean(
+    currentUser?.isPro || 
+    currentUser?.vipTier === 'pro' || 
+    currentUser?.isFounder || 
+    currentUser?.isVerified ||
+    currentUser?.verificationStatus === 'verified'
   );
 
   const BackIcon = isAr ? ArrowRight : ArrowLeft;
@@ -312,6 +322,29 @@ export default function ChatConversationPage({
             <MoreHorizontal size={16} />
           </button>
         </div>
+
+        {/* Sovythos Dedicated AI Membership Status Bar */}
+        {isRecipientSovythos && (
+          <div className="bg-[#101012] border-b border-[#1C1C22] px-4 py-2 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isCurrentUserPro ? 'bg-blue-400' : 'bg-zinc-600'}`} />
+              <span className="text-zinc-300 text-[11px] truncate">
+                {isCurrentUserPro 
+                  ? (isAr ? 'عضوية Pulse Pro: محادثة خاصة غير محدودة مع سوفيثوس' : 'Pulse Pro: Unlimited Sovythos AI Chat')
+                  : (isAr ? 'وضع سوفيثوس المجاني (50 رداً مصرياً منوعاً). اشترك في Pro لفتح المحادثة الحرة الكاملة' : 'Free Sovythos mode. Upgrade to Pro for full AI chat.')}
+              </span>
+            </div>
+            {!isCurrentUserPro && onOpenVerification && (
+              <button
+                type="button"
+                onClick={onOpenVerification}
+                className="ms-2 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold tap-press flex-shrink-0 transition-colors"
+              >
+                {isAr ? 'ترقية' : 'Upgrade'}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* ======================================================== */}
         {/* Messages Scroll Area                                     */}

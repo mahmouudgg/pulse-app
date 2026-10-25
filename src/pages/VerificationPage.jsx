@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   ArrowRight, ArrowLeft, Check, Clock, FileText, Copy, 
-  CheckCheck, ShieldCheck, Mic, Zap, Smartphone, ChevronRight, ChevronLeft
+  CheckCheck, ShieldCheck, Mic, Zap, Smartphone, ChevronRight, ChevronLeft,
+  Bot, EyeOff, Pin, Sparkles, CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -17,6 +18,7 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
   const isAr = lang === 'ar';
   const { showToast } = useToast();
 
+  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'annual'
   const [docNotes, setDocNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [copiedNumber, setCopiedNumber] = useState(false);
@@ -33,6 +35,8 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
   const isPending = (currentUser?.verificationStatus === 'pending' || submitted) && !isPro;
   const isDeveloper = currentUser?.username === 'my' || currentUser?.isFounder;
 
+  const currentPrice = billingCycle === 'annual' ? 400 : 50;
+
   const handleApply = (e) => {
     e.preventDefault();
     if (!docNotes.trim()) {
@@ -43,7 +47,7 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
       return;
     }
     try { hapticsService.medium?.(); } catch {}
-    requestVerification(docNotes.trim());
+    requestVerification(docNotes.trim(), billingCycle);
     setSubmitted(true);
     showToast(
       isAr ? 'تم استلام بيانات التحويل ورقم المعاملة بنجاح' : 'Payment reference submitted successfully',
@@ -68,7 +72,8 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
       updateProfile({
         isVerified: !isPro,
         isPro: !isPro,
-        verificationStatus: nextStatus
+        verificationStatus: nextStatus,
+        proPlan: billingCycle
       });
     }
     showToast(
@@ -81,24 +86,34 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
 
   const PRO_PERKS = [
     {
-      icon: ShieldCheck,
-      title: isAr ? 'شارة التوثيق الرسمية' : 'Official Verified Badge',
-      desc: isAr ? 'علامة التوثيق الزرقاء المعتمدة تظهر بجوار اسمك في المنشورات والردود والبحث.' : 'Blue verification badge displayed across your pulses and replies.'
+      icon: Bot,
+      title: isAr ? 'محادثة خاصة بلا حدود مع سوفيثوس' : 'Sovythos AI Personal DM',
+      desc: isAr ? 'دردشة خاصة مفتوحة 24/7 مع سوفيثوس بذكاء اصطناعي كامل، يسمعك ويحلل معك أفكارك.' : '24/7 unrestricted private DM chats with Sovythos AI.'
     },
     {
-      icon: FileText,
-      title: isAr ? 'مساحة نشر حتى 4,000 حرف' : '4,000 Character Pulses',
-      desc: isAr ? 'نشر مقالات وتحليلات مطولة بدون قيود حد الـ 500 حرف الافتراضي.' : 'Publish long-form posts beyond the default 500-character limit.'
+      icon: EyeOff,
+      title: isAr ? 'تصفح نقي 100% بدون إعلانات' : '100% Ad-Free Experience',
+      desc: isAr ? 'خلاصة التايم لاين نقية تماماً وخالية من أي نبضات ممولة أو إعلانات.' : 'Browse the entire feed completely ad-free.'
+    },
+    {
+      icon: ShieldCheck,
+      title: isAr ? 'شارة التوثيق الزرقاء الملكية' : 'Official Verified Badge',
+      desc: isAr ? 'علامة التوثيق الزرقاء المعتمدة تظهر بجوار اسمك في كافة النبضات والردود والبحث.' : 'Blue verification badge displayed across your pulses and replies.'
     },
     {
       icon: Zap,
       title: isAr ? 'أولوية الظهور في الخوارزمية' : 'Algorithmic Priority',
-      desc: isAr ? 'ظهور منشوراتك وردودك في صدارة الصفحة الرئيسية وشجرة النقاشات.' : 'Top placement across feeds and discussion threads.'
+      desc: isAr ? 'ظهور منشوراتك وردودك في صدارة التايم لاين والأكسبلور والمقترحات.' : 'Top placement across feeds and discussion threads.'
     },
     {
-      icon: Mic,
-      title: isAr ? 'تسجيلات صوتية بنقاء استوديو' : 'Studio Voice Notes',
-      desc: isAr ? 'تسجيلات صوتية بدقة فائقة ومدة تصل إلى دقيقتين كاملتين.' : 'Studio-grade voice pulses up to 2 full minutes.'
+      icon: FileText,
+      title: isAr ? 'مساحة نشر حتى 4,000 حرف' : '4,000 Character Pulses',
+      desc: isAr ? 'نشر مقالات وتحليلات مطولة بدون التقيد بحد الـ 500 حرف الافتراضي.' : 'Publish long-form posts beyond default limits.'
+    },
+    {
+      icon: Pin,
+      title: isAr ? 'تثبيت حتى 3 نبضات في البروفايل' : '3 Pinned Pulses',
+      desc: isAr ? 'إبراز أهم 3 منشورات وإنجازات في صدارة صفحتك الشخصية.' : 'Pin up to 3 pulses at the top of your profile.'
     }
   ];
 
@@ -123,7 +138,7 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
               <BackIcon size={24} strokeWidth={2} />
             </button>
             <h1 className="text-xl font-bold text-white tracking-tight">
-              {isAr ? 'إدارة الاشتراك' : 'Subscription'}
+              {isAr ? 'عضوية Pulse Pro' : 'Pulse Pro Subscription'}
             </h1>
           </div>
 
@@ -158,130 +173,125 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <h2 className="text-base font-bold text-white truncate">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base font-bold text-white truncate">
                     {currentUser?.displayName || currentUser?.username}
-                  </h2>
+                  </span>
+                  {isPro && <VerifiedBadge size={16} />}
                 </div>
-                <div className="text-xs text-zinc-400 font-mono" dir="ltr">
+                <div className="text-xs text-zinc-400 font-mono truncate">
                   @{currentUser?.username}
                 </div>
                 <div className="mt-2 flex items-center gap-2">
-                  {isPro ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-black text-xs font-bold font-mono">
-                      <Check size={12} className="stroke-[3]" />
-                      <span>PULSE PRO</span>
-                    </span>
-                  ) : isPending ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-xs font-medium font-mono">
-                      <Clock size={12} />
-                      <span>{isAr ? 'قيد المراجعة' : 'PENDING'}</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-400 text-xs font-medium">
-                      {isAr ? 'عضوية أساسية' : 'Basic Member'}
-                    </span>
-                  )}
+                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                    isPro 
+                      ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' 
+                      : isPending 
+                      ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' 
+                      : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                  }`}>
+                    {isPro 
+                      ? (isAr ? 'عضوية موثقة Pulse Pro' : 'Pulse Pro Member')
+                      : isPending 
+                      ? (isAr ? 'الطلب قيد المراجعة' : 'Pending Review')
+                      : (isAr ? 'حساب مجاني' : 'Free Account')}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ACTIVE PRO VIEW */}
           {isPro ? (
-            <div className="space-y-4">
-              <div className="p-4 rounded-3xl bg-[#0D0D10] border border-zinc-800 text-center">
-                <p className="text-sm font-semibold text-white mb-1">
-                  {isAr ? 'عضويتك معتمدة ونشطة مدى الحياة' : 'Your membership is active for life'}
-                </p>
-                <p className="text-xs text-zinc-400">
-                  {isAr 
-                    ? 'جميع المميزات الحصرية مفعلة لحسابك دون أي مدفوعات متكررة.' 
-                    : 'All privileges are unlocked without recurring charges.'}
-                </p>
+            /* ACTIVE PRO SUBSCRIBER VIEW */
+            <div className="p-6 rounded-3xl bg-[#101012] border border-blue-500/20 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center mx-auto">
+                <ShieldCheck size={26} />
               </div>
-
-              {/* Active Perks List */}
-              <div className="space-y-2">
-                <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider px-1">
-                  {isAr ? 'المميزات المفعلة' : 'Active Privileges'}
-                </div>
-                {PRO_PERKS.map((perk, idx) => (
-                  <div 
-                    key={idx}
-                    className="p-3.5 rounded-2xl bg-[#101012] border border-[#222226] flex items-start gap-3"
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <perk.icon size={16} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-white flex items-center gap-1.5">
-                        <span>{perk.title}</span>
-                        <Check size={14} className="text-white stroke-[2.5]" />
-                      </div>
-                      <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
-                        {perk.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <h2 className="text-base font-bold text-white">
+                {isAr ? 'أنت مشترك في Pulse Pro' : 'You are subscribed to Pulse Pro'}
+              </h2>
+              <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                {isAr 
+                  ? 'حسابك يتمتع بكافة الميزات الحصرية: محادثة سوفيثوس الخاصة المفتوحة، التصفح الخالي من الإعلانات، وشارة التوثيق.'
+                  : 'You have full access to Sovythos AI private chat, ad-free feed, and the verified blue badge.'}
+              </p>
+            </div>
+          ) : isPending ? (
+            /* PENDING APPLICATION VIEW */
+            <div className="p-6 rounded-3xl bg-[#101012] border border-amber-500/20 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
+                <Clock size={24} />
               </div>
-
-              {onOpenCompose && (
+              <h2 className="text-base font-bold text-white">
+                {isAr ? 'طلب الاشتراك قيد المراجعة' : 'Subscription Request Pending'}
+              </h2>
+              <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                {isAr 
+                  ? 'تم استلام بيانات المعاملة، ويجري مراجعة التحويل وتفعيل العضوية لحسابك خلال وقت قصير.'
+                  : 'Your payment reference is being verified. Membership will be activated shortly.'}
+              </p>
+            </div>
+          ) : (
+            /* NOT SUBSCRIBED: SELECT PLAN & APPLY */
+            <div className="space-y-5">
+              {/* Billing Cycle Selector */}
+              <div className="p-1 rounded-2xl bg-[#141416] border border-zinc-800 flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => {
                     try { hapticsService.light?.(); } catch {}
-                    onBack();
-                    onOpenCompose();
+                    setBillingCycle('monthly');
                   }}
-                  className="w-full py-3.5 rounded-full bg-white text-black font-bold text-xs hover:bg-neutral-200 tap-press transition-colors shadow-lg flex items-center justify-center gap-2 mt-4"
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all tap-press ${
+                    billingCycle === 'monthly'
+                      ? 'bg-white text-black shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
                 >
-                  <FileText size={16} />
-                  <span>{isAr ? 'نشر نبضة مطولة جديدة' : 'Write a Long-form Pulse'}</span>
+                  {isAr ? 'اشتراك شهري (50 ج.م)' : 'Monthly (50 EGP)'}
                 </button>
-              )}
-            </div>
-          ) : isPending ? (
-            /* PENDING REVIEW VIEW */
-            <div className="space-y-4">
-              <div className="p-6 rounded-3xl bg-[#101012] border border-[#222226] text-center">
-                <div className="w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center mx-auto mb-3">
-                  <Clock size={24} />
-                </div>
-                <h3 className="text-base font-bold text-white mb-1">
-                  {isAr ? 'طلب التوثيق قيد المراجعة' : 'Verification Under Review'}
-                </h3>
-                <p className="text-xs text-zinc-400 leading-relaxed max-w-sm mx-auto mb-4">
-                  {isAr
-                    ? 'تم استلام بيانات التحويل ورقم المعاملة بنجاح، وسيتم اعتماد الشارة وتفعيل حسابك في أقرب وقت.'
-                    : 'Payment details received. Your badge and features will be unlocked shortly.'}
-                </p>
-                <div className="inline-block px-3 py-1 rounded-full bg-black border border-zinc-800 text-xs text-zinc-400 font-mono">
-                  REF-{Date.now().toString().slice(-6)}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { hapticsService.light?.(); } catch {}
+                    setBillingCycle('annual');
+                  }}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all tap-press relative ${
+                    billingCycle === 'annual'
+                      ? 'bg-white text-black shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    {isAr ? 'اشتراك سنوي (400 ج.م)' : 'Annual (400 EGP)'}
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                      billingCycle === 'annual' ? 'bg-blue-600 text-white' : 'bg-blue-500/20 text-blue-400'
+                    }`}>
+                      {isAr ? 'وفر 33%' : 'Save 33%'}
+                    </span>
+                  </span>
+                </button>
               </div>
-            </div>
-          ) : (
-            /* NOT SUBSCRIBED VIEW: MINIMAL & ELEGANT */
-            <div className="space-y-5">
-              {/* Value Proposition */}
+
+              {/* Selected Plan Details Banner */}
               <div className="p-5 rounded-3xl bg-gradient-to-b from-[#141418] to-[#0A0A0C] border border-white/10 text-center">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-black text-xs font-bold mb-3">
-                  <ShieldCheck size={13} />
-                  <span>{isAr ? 'عضوية معتمدة مدى الحياة: 50 ج.م' : 'Lifetime Access: 50 EGP'}</span>
+                <div className="text-2xl font-black text-white font-mono tracking-tight">
+                  {currentPrice} {isAr ? 'ج.م' : 'EGP'}
+                  <span className="text-xs font-normal text-zinc-400 font-sans ms-1.5">
+                    / {billingCycle === 'annual' ? (isAr ? 'سنوياً (شهرين مجاناً)' : 'year') : (isAr ? 'شهرياً' : 'month')}
+                  </span>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed max-w-sm mx-auto">
-                  {isAr
-                    ? 'احصل على شارة التوثيق الزرقاء، مساحة نشر 4000 حرف، وأولوية الخوارزمية لمرة واحدة فقط بدون أي اشتراك شهري.'
-                    : 'Get the blue badge, 4,000 char capacity, and priority feed placement for a single one-time payment.'}
+                <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto leading-relaxed">
+                  {billingCycle === 'annual'
+                    ? (isAr ? 'بمعدل 33 ج.م فقط شهرياً مع كافة ميزات Pro المتقدمة والدعم ذو الأولوية.' : 'Equivalent to 33 EGP/month with all Pro perks.')
+                    : (isAr ? 'تجديد شهري مرن، يمكنك الإلغاء أو الترقية للسنوي في أي وقت.' : 'Flexible monthly renewal. Cancel or upgrade anytime.')}
                 </p>
               </div>
 
               {/* Perks List */}
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider px-1">
-                  {isAr ? 'مميزات العضوية' : 'Membership Features'}
+                  {isAr ? 'مميزات عضوية Pulse Pro' : 'Pulse Pro Features'}
                 </div>
                 {PRO_PERKS.map((perk, idx) => (
                   <div 
@@ -306,14 +316,19 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
               {/* Payment Box */}
               <form onSubmit={handleApply} className="space-y-3 pt-2">
                 <div className="p-4 rounded-3xl bg-[#101012] border border-[#222226] space-y-3">
-                  <div className="text-xs font-semibold text-white">
-                    {isAr ? 'طرق التحويل (Vodafone Cash / InstaPay):' : 'Payment methods (Vodafone Cash / InstaPay):'}
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-semibold text-white">
+                      {isAr ? 'طرق الدفع (Vodafone Cash / InstaPay):' : 'Payment methods (Vodafone Cash / InstaPay):'}
+                    </div>
+                    <div className="text-xs font-mono font-bold text-blue-400">
+                      {currentPrice} {isAr ? 'ج.م' : 'EGP'}
+                    </div>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-black border border-zinc-800 flex items-center justify-between">
                     <div>
                       <div className="text-[11px] text-zinc-400">
-                        {isAr ? 'رقم التحويل (فودافون كاش أو إنستاباي)' : 'Payment Number'}
+                        {isAr ? 'رقم التحويل الرسمي (فودافون كاش أو إنستاباي)' : 'Official Payment Number'}
                       </div>
                       <div className="text-base font-mono font-bold text-white tracking-wider mt-0.5" dir="ltr">
                         {VERIFICATION_PHONE}
@@ -337,7 +352,7 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
                       type="text"
                       value={docNotes}
                       onChange={(e) => setDocNotes(e.target.value)}
-                      placeholder={isAr ? 'مثال: تم التحويل من رقم 010xxxxxxx' : 'e.g. Sent from 010xxxxxxx'}
+                      placeholder={isAr ? 'مثال: تم التحويل من محفظة 010xxxxxxx' : 'e.g. Sent from 010xxxxxxx'}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-black border border-zinc-800 text-white text-xs placeholder:text-zinc-600 focus:outline-none focus:border-white transition-colors"
                     />
                   </div>
@@ -347,7 +362,9 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
                   type="submit"
                   className="w-full py-3.5 rounded-full bg-white text-black font-bold text-xs hover:bg-neutral-200 tap-press transition-colors shadow-lg"
                 >
-                  {isAr ? 'تأكيد الاشتراك وإرسال البيانات' : 'Confirm Subscription'}
+                  {isAr 
+                    ? `تأكيد الاشتراك ${billingCycle === 'annual' ? 'السنوي' : 'الشهري'} (${currentPrice} ج.م)`
+                    : `Confirm ${billingCycle === 'annual' ? 'Annual' : 'Monthly'} Subscription (${currentPrice} EGP)`}
                 </button>
               </form>
             </div>

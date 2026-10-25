@@ -364,6 +364,18 @@ class AdService {
   injectAdsIntoFeed(posts, currentUser = null, userLocation = null) {
     if (!Array.isArray(posts) || posts.length === 0) return [];
 
+    // Pulse Pro / VIP / Verified users enjoy a 100% clean ad-free experience
+    const isProUser = Boolean(
+      currentUser?.isPro ||
+      currentUser?.vipTier === 'pro' ||
+      currentUser?.isFounder ||
+      currentUser?.isVerified ||
+      currentUser?.verificationStatus === 'verified'
+    );
+    if (isProUser) {
+      return posts.filter((p) => !p.isAd);
+    }
+
     // Filter only REAL approved or active ads
     const all = this.getAds();
     const approvedUserAds = all.filter((a) => a.status === 'approved' || a.status === 'active');

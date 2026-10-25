@@ -2082,6 +2082,8 @@ function MainApp() {
 
             onBlockUser={handleBlockUser}
 
+            onOpenVerification={() => setCurrentScreen('verification')}
+
           />
 
         ) : currentScreen === 'pioneers' ? (
