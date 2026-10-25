@@ -9,6 +9,7 @@ import { ref, set, get, update, onValue, onChildAdded, query, limitToLast, order
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { App } from '@capacitor/app';
+import { notificationPreferencesService } from './notificationPreferencesService';
 
 const STORAGE_KEY = 'pulse_notifications_v3';
 
@@ -101,6 +102,21 @@ export const notificationService = {
     if (!targetUserId || !actor) return null;
     // Strict PULSE Official rule: Never notify oneself!
     if (targetUserId === actor.uid) return null;
+
+    // Granular Notification Preferences check
+    try {
+      let isActorFollowed = false;
+      const allUsers = JSON.parse(localStorage.getItem('pulse_users_v2') || '[]');
+      const targetUser = allUsers.find((u) => u.uid === targetUserId);
+      if (targetUser && Array.isArray(targetUser.following)) {
+        isActorFollowed = targetUser.following.includes(actor.uid);
+      }
+      if (!notificationPreferencesService.shouldDeliverNotification(targetUserId, type, isActorFollowed)) {
+        return null;
+      }
+    } catch (prefErr) {
+      console.warn('Preference check error:', prefErr);
+    }
 
     try {
       const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -215,6 +231,22 @@ export const notificationService = {
     // Dispatch helper
     const processNotification = (notif) => {
       if (!notif || !notif.id) return;
+
+      // Granular Notification Preferences check
+      try {
+        let isActorFollowed = false;
+        const allUsers = JSON.parse(localStorage.getItem('pulse_users_v2') || '[]');
+        const targetUser = allUsers.find((u) => u.uid === userId);
+        if (targetUser && Array.isArray(targetUser.following)) {
+          isActorFollowed = targetUser.following.includes(notif.actor?.uid);
+        }
+        if (!notificationPreferencesService.shouldDeliverNotification(userId, notif.type, isActorFollowed)) {
+          return;
+        }
+      } catch (prefErr) {
+        console.warn('Cloud preference check error:', prefErr);
+      }
+
       this.saveToLocalCache(userId, notif);
 
       const dispatched = getDispatchedSet();

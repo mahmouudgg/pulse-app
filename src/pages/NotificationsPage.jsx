@@ -15,7 +15,8 @@ import {
   ShieldAlert,
   AlertTriangle,
   CheckCircle2,
-  Lock
+  Lock,
+  SlidersHorizontal
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -426,9 +427,23 @@ export default function NotificationsPage({ onOpenDetail, onOpenUserProfile, onO
     <div className="pb-[calc(6.5rem+env(safe-area-inset-bottom))] max-w-xl mx-auto pt-[max(0.75rem,env(safe-area-inset-top))]">
       {/* Threads Activity Header (Screenshot 1:1) */}
       <div className="px-4 pb-3">
-        <h1 className="font-extrabold text-3xl text-white tracking-tight py-2">
-          {lang === 'ar' ? 'النشاط' : 'Activity'}
-        </h1>
+        <div className="flex items-center justify-between py-2">
+          <h1 className="font-extrabold text-3xl text-white tracking-tight">
+            {lang === 'ar' ? 'النشاط' : 'Activity'}
+          </h1>
+          <button
+            type="button"
+            onClick={() => {
+              hapticsService.light?.();
+              window.dispatchEvent(new CustomEvent('pulse:open-settings', { detail: { subview: 'notifications' } }));
+            }}
+            className="w-9 h-9 rounded-full bg-[#18181A] border border-[#27272A] flex items-center justify-center text-neutral-300 hover:text-white active:scale-95 transition-all cursor-pointer"
+            aria-label={lang === 'ar' ? 'إعدادات الإشعارات' : 'Notification Settings'}
+            title={lang === 'ar' ? 'إعدادات الإشعارات' : 'Notification Settings'}
+          >
+            <SlidersHorizontal size={17} className="stroke-[2.2]" />
+          </button>
+        </div>
 
         {/* Filter Chips Carousel (Screenshot 4 exact) */}
         <div className="flex items-center gap-2 pt-2 pb-1 overflow-x-auto no-scrollbar">
