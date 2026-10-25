@@ -44,7 +44,9 @@
         "trustScore",
         "trustTier",
         "birthDate",
+        "birthdate",
         "birthDatePrivacy",
+        "sensitiveContentPref",
         "twoFactorEnabled",
         "fcmToken",
         "usernameLastChangedAt",
@@ -67,6 +69,22 @@
         ".read": true,
         ".write": true,
         ".validate": "!newData.exists() || !newData.hasChild('username') || (newData.child('username').isString() && newData.child('username').val().length >= 1 && newData.child('username').val().length <= 35)",
+        "birthDate": {
+          ".read": true,
+          ".write": true
+        },
+        "birthdate": {
+          ".read": true,
+          ".write": true
+        },
+        "sensitiveContentPref": {
+          ".read": true,
+          ".write": true
+        },
+        "contentPreferences": {
+          ".read": true,
+          ".write": true
+        },
         "passwordResetOtp": {
           ".read": true,
           ".write": true,
@@ -274,6 +292,7 @@
         "createdAt",
         "timestamp",
         "authorId",
+        "authorUsername",
         "author/uid",
         "author/username",
         "author/displayName",
@@ -295,6 +314,9 @@
         "repostedBy/uid",
         "isAIReply",
         "isAutonomousAI",
+        "isSensitive",
+        "sensitiveType",
+        "contentWarning",
         "topic",
         "category",
         "status",
@@ -316,7 +338,15 @@
       "$postId": {
         ".read": true,
         ".write": true,
-        ".validate": "!newData.exists() || newData.hasChild('createdAt') || newData.hasChild('timestamp') || newData.hasChild('content') || newData.hasChild('authorId') || newData.hasChild('viewsCount') || newData.hasChild('voiceListens') || newData.hasChild('repliesCount') || newData.hasChild('likesCount') || newData.hasChild('repostsCount') || newData.hasChild('isEdited') || newData.hasChild('topic') || newData.hasChild('views') || newData.hasChild('likes') || newData.hasChild('reposts')",
+        ".validate": "!newData.exists() || newData.hasChild('createdAt') || newData.hasChild('timestamp') || newData.hasChild('content') || newData.hasChild('authorId') || newData.hasChild('viewsCount') || newData.hasChild('voiceListens') || newData.hasChild('repliesCount') || newData.hasChild('likesCount') || newData.hasChild('repostsCount') || newData.hasChild('isEdited') || newData.hasChild('topic') || newData.hasChild('views') || newData.hasChild('likes') || newData.hasChild('reposts') || newData.hasChild('isSensitive')",
+        "isSensitive": {
+          ".read": true,
+          ".write": true
+        },
+        "sensitiveType": {
+          ".read": true,
+          ".write": true
+        },
         "likes": {
           ".read": true,
           ".write": true
@@ -791,6 +821,38 @@
         ".validate": "!newData.exists() || newData.hasChildren(['userId', 'category']) || newData.hasChild('status')"
       }
     },
+    "account_appeals": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "status",
+          "category",
+          "id"
+        ],
+        "$appealId": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "device_appeals": {
+      ".read": true,
+      ".write": true,
+      "$deviceFingerprint": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "status",
+          "reason",
+          "id"
+        ]
+      }
+    },
     "ads": {
       ".read": true,
       ".write": true,
@@ -865,7 +927,8 @@
         "maintenance",
         "minAppVersion",
         "updatedAt",
-        "google_ads_config"
+        "google_ads_config",
+        "sovythos_last_pulse_timestamp"
       ]
     },
     "banned_devices": {
