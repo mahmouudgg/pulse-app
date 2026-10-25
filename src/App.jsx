@@ -257,6 +257,13 @@ function MainApp() {
 
     screenSecurity.init();
 
+    // Initialize Google Mobile Ads SDK on native mobile platforms
+    if (Capacitor.isNativePlatform()) {
+      import('@capacitor-community/admob').then(({ AdMob }) => {
+        AdMob.initialize().catch((err) => console.warn('AdMob init notice:', err));
+      }).catch(() => {});
+    }
+
     const handleVisibility = () => {
 
       if (document.visibilityState === 'hidden') {

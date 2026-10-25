@@ -31,7 +31,6 @@ class AdService {
     this.initSession();
     this.purgeLegacyPlaceholders();
     this.syncFromCloud();
-    this.initAdMobNative();
   }
 
   initSession() {
@@ -103,6 +102,16 @@ class AdService {
         const cloudList = Object.values(val).filter((a) => a && !LEGACY_PLACEHOLDER_IDS.has(a.id));
         if (cloudList.length > 0) {
           this.saveAds(cloudList);
+        }
+      }
+
+      // Sync Google Ads / Native Network Config from RTDB
+      const googleAdsRef = ref(database, 'system/google_ads_config');
+      const googleSnap = await get(googleAdsRef);
+      if (googleSnap.exists()) {
+        const gVal = googleSnap.val();
+        if (gVal) {
+          localStorage.setItem(STORAGE_KEYS.GOOGLE_CONFIG, JSON.stringify(gVal));
         }
       }
     } catch (e) {
@@ -300,9 +309,9 @@ class AdService {
     } catch {}
     return {
       enabled: true,
+      publisherId: 'ca-app-pub-3044896651670937',
       appId: 'ca-app-pub-3044896651670937~6674193241',
       adUnitId: 'ca-app-pub-3044896651670937/5677995718',
-      publisherId: 'ca-app-pub-3044896651670937',
       adSlotId: '5677995718',
       sponsorName: 'PULSE Official Partner',
       sponsorNameAr: 'شريك PULSE المعتمد',
@@ -324,112 +333,27 @@ class AdService {
     } catch {}
   }
 
-  // Initialize native AdMob SDK when running on Android/iOS Capacitor
-  async initAdMobNative() {
-    try {
-      const { AdMob } = await import('@capacitor-community/admob');
-      await AdMob.initialize({
-        requestTrackingAuthorization: true,
-        initializeForTesting: false
-      });
-      console.log('AdMob native engine initialized successfully');
-    } catch (e) {
-      // Graceful fallback for web/unsupported environments
-    }
-  }
-
-  // Generate a Google Ads / Partner native card node matching Pulse post template
+  // Generate a Google Ads native card node matching Threads template
+  // Appears to users as a normal sponsored card just like any other ad
   getGoogleAdsUnit(index = 0) {
     const config = this.getGoogleAdsConfig();
-
-    // Curated rotation pool for diverse, non-repetitive in-feed native experience
-    const nativePool = [
-      {
-        brandName: config.sponsorNameAr || 'شريك PULSE المعتمد',
-        brandUsername: 'pulse_partner',
-        brandAvatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
-        content: config.sponsorText || 'إعلان ترويجي رسمي معتمد داخل شبكة PULSE. استكشف أحدث المنتجات والتقنيات الحصرية.',
-        destinationUrl: config.destinationUrl || 'https://pulseeg.wuaze.com',
-        displayUrl: config.displayUrl || 'pulseeg.wuaze.com',
-        mediaUrl: config.mediaUrl || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1000&auto=format&fit=crop&q=80',
-        mediaType: 'image',
-        ctaText: config.ctaText || 'Learn more',
-        ctaTextAr: config.ctaTextAr || 'معرفة المزيد',
-        likesCount: 142,
-        repliesCount: 18,
-        repostsCount: 29
-      },
-      {
-        brandName: 'PULSE Pro Services',
-        brandUsername: 'pulse_pro',
-        brandAvatar: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=150&auto=format&fit=crop&q=80',
-        content: 'ارتق بحسابك واحصل على توثيق فوري، وأولوية ظهور في التايم لاين، وإمكانية تعديل النبضات بعد النشر.',
-        destinationUrl: 'https://pulseeg.wuaze.com',
-        displayUrl: 'pulseeg.wuaze.com/pro',
-        mediaUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1000&auto=format&fit=crop&q=80',
-        mediaType: 'image',
-        ctaText: 'Upgrade Now',
-        ctaTextAr: 'ترقية الحساب',
-        likesCount: 310,
-        repliesCount: 45,
-        repostsCount: 88
-      },
-      {
-        brandName: 'عروض الأجهزة الذكية',
-        brandUsername: 'smart_tech',
-        brandAvatar: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&auto=format&fit=crop&q=80',
-        content: 'تخفيضات استثنائية على ملحقات الصوت وسماعات الرأس والأجهزة الذكية مع توصيل سريع.',
-        destinationUrl: 'https://pulseeg.wuaze.com',
-        displayUrl: 'tech.pulse.app',
-        mediaUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&auto=format&fit=crop&q=80',
-        mediaType: 'image',
-        ctaText: 'Shop Now',
-        ctaTextAr: 'تسوق الآن',
-        likesCount: 95,
-        repliesCount: 12,
-        repostsCount: 16
-      },
-      {
-        brandName: 'أستوديو صناعة المحتوى',
-        brandUsername: 'creative_hub',
-        brandAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        content: 'أحدث أدوات التصميم والمونتاج وإدارة المجتمعات الرقمية للمؤثرين وأصحاب المشاريع الناشئة.',
-        destinationUrl: 'https://pulseeg.wuaze.com',
-        displayUrl: 'studio.pulse.app',
-        mediaUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1000&auto=format&fit=crop&q=80',
-        mediaType: 'image',
-        ctaText: 'Explore',
-        ctaTextAr: 'استكشف المتاح',
-        likesCount: 220,
-        repliesCount: 31,
-        repostsCount: 52
-      }
-    ];
-
-    const selected = nativePool[index % nativePool.length];
-
     return {
       id: `network_ad_${index}_${Date.now()}`,
       isAd: true,
       isGoogleAd: true,
-      brandName: selected.brandName,
-      brandUsername: selected.brandUsername,
-      brandAvatar: selected.brandAvatar,
-      content: selected.content,
-      destinationUrl: selected.destinationUrl,
-      displayUrl: selected.displayUrl,
-      ctaText: selected.ctaText,
-      ctaTextAr: selected.ctaTextAr,
+      brandName: config.sponsorNameAr || config.sponsorName || 'شريك ممول',
+      brandUsername: 'partner',
+      brandAvatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+      content: config.sponsorText || config.sponsorTextAr || 'محتوى وإعلان ترويجي رسمي. استكشف أحدث العروض والخدمات الحصرية.',
+      destinationUrl: config.destinationUrl || 'https://pulseeg.wuaze.com',
+      displayUrl: config.displayUrl || 'sponsor.pulse.app',
+      ctaText: config.ctaText || 'Learn more',
+      ctaTextAr: config.ctaTextAr || 'معرفة المزيد',
       ctaType: 'learn_more',
-      mediaUrl: selected.mediaUrl,
-      mediaType: selected.mediaType,
-      appId: config.appId || 'ca-app-pub-3044896651670937~6674193241',
-      adUnitId: config.adUnitId || 'ca-app-pub-3044896651670937/5677995718',
-      publisherId: config.publisherId || 'ca-app-pub-3044896651670937',
-      adSlotId: config.adSlotId || '5677995718',
-      likesCount: selected.likesCount || 0,
-      repliesCount: selected.repliesCount || 0,
-      repostsCount: selected.repostsCount || 0,
+      mediaUrl: config.mediaUrl || null,
+      mediaType: config.mediaType || 'image',
+      publisherId: config.publisherId || '',
+      adSlotId: config.adSlotId || '',
       status: 'active'
     };
   }
