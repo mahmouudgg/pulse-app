@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import PulseMediaViewer from '../components/PulseMediaViewer';
 import PulseVideoPlayer from '../components/PulseVideoPlayer';
+import SensitiveMediaGate from '../components/SensitiveMediaGate';
+import { isPostSensitive } from '../utils/ageVerification';
 import MentionAutocomplete from '../components/MentionAutocomplete';
 import GifPickerModal from '../components/GifPickerModal';
 import ConfirmModal from '../components/ConfirmModal';
@@ -648,6 +650,11 @@ export default function PostDetailPage({
                   <span className="text-neutral-400 font-mono">
                     {formatPostHeaderTime(post.createdAt)}
                   </span>
+                  {isPostSensitive(post) && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                      +18
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -765,29 +772,30 @@ export default function PostDetailPage({
             </div>
           )}
 
-          {/* Attached Image / Media (Clickable to open full screen MediaViewer) */}
+          {/* Attached Image with Carrier-Grade Sensitive Media Gate */}
           {post.imageUrl && (
-            <div 
-              onClick={() => setViewerImage({ url: post.imageUrl, title: post.content, mediaType: 'image' })}
-              className="my-3 rounded-2xl overflow-hidden border border-[#222226] bg-[#0A0A0C] max-h-[520px] w-full flex items-center justify-center cursor-pointer group relative shadow-lg"
-            >
-              <img
-                src={post.imageUrl}
-                alt="Post attachment"
-                className="w-full h-auto max-h-[520px] object-cover transition-transform duration-200 group-hover:scale-[1.01]"
-              />
-            </div>
+            <SensitiveMediaGate
+              post={post}
+              currentUser={currentUser}
+              mediaType="image"
+              src={post.imageUrl}
+              isGif={Boolean(post.isGif)}
+              onOpenViewer={() => setViewerImage({ url: post.imageUrl, title: post.content, mediaType: 'image' })}
+              className="my-3"
+            />
           )}
 
-          {/* Attached Video with Seamless In-Feed Player & Cloudinary Poster */}
+          {/* Attached Video with Carrier-Grade Sensitive Media Gate */}
           {post.videoUrl && (
-            <div className="my-3 w-full max-w-full overflow-hidden rounded-2xl">
-              <PulseVideoPlayer
-                src={post.videoUrl}
-                poster={post.videoPoster}
-                onOpenViewer={() => setViewerImage({ url: post.videoUrl, title: post.content, mediaType: 'video' })}
-              />
-            </div>
+            <SensitiveMediaGate
+              post={post}
+              currentUser={currentUser}
+              mediaType="video"
+              src={post.videoUrl}
+              poster={post.videoPoster}
+              onOpenViewer={() => setViewerImage({ url: post.videoUrl, title: post.content, mediaType: 'video' })}
+              className="my-3"
+            />
           )}
 
           {/* Quoted Post Embed Preview */}

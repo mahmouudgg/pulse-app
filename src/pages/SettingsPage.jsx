@@ -127,6 +127,7 @@ import AccountAppealPage from './AccountAppealPage';
 
 
 import { storageService, OFFICIAL_SOVYTHOS } from '../services/storageService';
+import { calculateAge, isUserAdult, getSensitiveContentPref, setSensitiveContentPref } from '../utils/ageVerification';
 
 
 
@@ -491,6 +492,23 @@ export default function SettingsPage({
 
 
   const [sensitiveLevel, setSensitiveLevel] = useState(() => moderationService.getSensitiveLevel());
+  const [sensitiveMediaPref, setSensitiveMediaPref] = useState(() => getSensitiveContentPref(currentUser));
+
+  useEffect(() => {
+    if (initialSubView) {
+      setActiveSubView(initialSubView);
+    }
+  }, [initialSubView]);
+
+  useEffect(() => {
+    const handleOpenSettingsEvent = (e) => {
+      if (e.detail?.subview) {
+        setActiveSubView(e.detail.subview);
+      }
+    };
+    window.addEventListener('pulse:open-settings', handleOpenSettingsEvent);
+    return () => window.removeEventListener('pulse:open-settings', handleOpenSettingsEvent);
+  }, []);
 
 
 
@@ -527,6 +545,7 @@ export default function SettingsPage({
 
 
       setSensitiveLevel(moderationService.getSensitiveLevel());
+      setSensitiveMediaPref(getSensitiveContentPref(currentUser));
 
 
 
@@ -6811,1396 +6830,202 @@ export default function SettingsPage({
 
 
   if (activeSubView === 'content_sensitive') {
-
-
+    const userAge = calculateAge(currentUser?.birthDate || currentUser?.birthdate);
+    const isAdult = userAge !== null && userAge >= 18;
 
     return (
-
-
-
       <SwipeBackWrapper onBack={() => setActiveSubView('content')}>
-
-
-
         <div className="min-h-screen bg-black text-white pb-[calc(6.5rem+env(safe-area-inset-bottom))] max-w-xl mx-auto">
-
-
-
-          {renderSubHeader(isAr ? 'المحتوى الحساس' : 'Sensitive content', () => setActiveSubView('content'))}
-
-
+          {renderSubHeader(isAr ? 'المحتوى الحساس (+18)' : 'Sensitive content (+18)', () => setActiveSubView('content'))}
 
           <div className="p-4 space-y-6">
-
-
-
-            {/* Top Notice */}
-
-
-
-            <p className="text-xs text-neutral-400 leading-relaxed px-1">
-
-
-
-              {isAr 
-
-
-
-                ? 'سيتم عرض المحتوى الحساس من الملفات الشخصية التي تتابعها في خلاصتك مثل أي محتوى آخر يشاركونه.' 
-
-
-
-                : 'Sensitive content from profiles you follow will be shown in your feed like any other content they share.'}
-
-
-
-            </p>
-
-
-
-
-
-
-
-            {/* Section Header & Subtitle */}
-
-
-
-            <div className="space-y-1.5 px-1">
-
-
-
-              <h3 className="text-sm font-bold text-white">
-
-
-
-                {isAr ? 'ما تراه من الملفات الشخصية التي لا تتابعها' : "What you see from profiles you don't follow"}
-
-
-
-              </h3>
-
-
-
-              <p className="text-xs text-neutral-400 leading-relaxed">
-
-
-
-                {isAr 
-
-
-
-                  ? 'المحتوى الحساس لا يخالف إرشادات مجتمعنا، ولكنه يشير إلى موضوعات قد لا يرغب بعض الأشخاص في رؤيتها.' 
-
-
-
-                  : "Sensitive content doesn't go against our Community Standards, but refers to topics some people may not want to see."}
-
-
-
-              </p>
-
-
-
+            {/* Age Verification Gate Status Card */}
+            <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 flex items-start gap-3.5">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                isAdult ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+              }`}>
+                {isAdult ? <ShieldCheck size={20} /> : <ShieldAlert size={20} />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-white">
+                    {isAdult 
+                      ? (isAr ? 'حساب مؤكد للبالغين (+18)' : 'Verified Adult Account (18+)')
+                      : (isAr ? 'حساب قاصر (دون سن 18 عاماً)' : 'Minor Account (Under 18)')}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    isAdult ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                  }`}>
+                    {userAge !== null ? `${userAge} ${isAr ? 'سنة' : 'yrs'}` : (isAr ? 'غير محدد' : 'Unknown')}
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                  {isAdult
+                    ? (isAr 
+                        ? 'تاريخ ميلادك المسجل يؤكد بلوغك السن القانوني، ويمكنك اختيار إظهار أو تعتيم أو حجب الوسائط الحساسة بحرية.' 
+                        : 'Your birthdate confirms legal adult age. You can freely choose whether to blur, auto-show, or block sensitive media.')
+                    : (isAr 
+                        ? 'لحماية أمان حسابك وفق معايير الأمان ومتاجر التطبيقات، يتم تطبيق التعتيم الإجباري للوسائط الحساسة ولا يمكن تفعيل الإظهار التلقائي.' 
+                        : 'Under store safety standards, sensitive content is strictly blurred with warning overlays and auto-show cannot be enabled.')}
+                </p>
+              </div>
             </div>
 
-
-
-
-
-
-
-            {/* 3 Radio Options */}
-
-
-
-            <div className="rounded-2xl bg-[#121214] border border-[#222226] divide-y divide-[#1C1C20] overflow-hidden">
-
-
-
-              {[
-
-
-
-                {
-
-
-
-                  id: 'less',
-
-
-
-                  title: isAr ? 'أقل' : 'Less',
-
-
-
-                  desc: isAr ? 'قد ترى محتوى حساساً أقل.' : 'You might see less sensitive content.'
-
-
-
-                },
-
-
-
-                {
-
-
-
-                  id: 'standard',
-
-
-
-                  title: isAr ? 'قياسي' : 'Standard',
-
-
-
-                  desc: isAr ? 'قد ترى بعض المحتوى الحساس.' : 'You might see some sensitive content.'
-
-
-
-                },
-
-
-
-                {
-
-
-
-                  id: 'more',
-
-
-
-                  title: isAr ? 'المزيد' : 'More',
-
-
-
-                  desc: isAr ? 'قد ترى المزيد من المحتوى الحساس.' : 'You might see more sensitive content.'
-
-
-
-                }
-
-
-
-              ].map((option) => {
-
-
-
-                const isSelected = sensitiveLevel === option.id;
-
-
-
-                return (
-
-
-
-                  <div
-
-
-
-                    key={option.id}
-
-
-
-                    onClick={() => {
-
-
-
-                      try { hapticsService.selection?.(); } catch {}
-
-
-
-                      setSensitiveLevel(option.id);
-
-
-
-                      moderationService.setSensitiveLevel(option.id);
-
-
-
-                      showToast(isAr ? `تم ضبط المحتوى الحساس: ${option.title}` : `Sensitive content: ${option.title}`);
-
-
-
-                    }}
-
-
-
-                    className="p-4 flex items-center justify-between cursor-pointer hover:bg-white/[0.02] tap-press transition-colors"
-
-
-
-                  >
-
-
-
-                    <div className="pr-3">
-
-
-
-                      <div className="text-sm font-semibold text-white">{option.title}</div>
-
-
-
-                      <div className="text-xs text-neutral-400 mt-0.5">{option.desc}</div>
-
-
-
-                    </div>
-
-
-
-                    {/* Threads Custom Radio Circle */}
-
-
-
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${
-
-
-
-                      isSelected ? 'border-white bg-transparent' : 'border-neutral-600 bg-transparent'
-
-
-
-                    }`}>
-
-
-
-                      {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
-
-
-
-                    </div>
-
-
-
-                  </div>
-
-
-
-                );
-
-
-
-              })}
-
-
-
-            </div>
-
-
-
-          </div>
-
-
-
-        </div>
-
-
-
-      </SwipeBackWrapper>
-
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-  // 6.2 Hidden Words Sub-Screen (Active filtering of custom keywords + Offensive Shield)
-
-
-
-  if (activeSubView === 'content_hidden_words') {
-
-
-
-    const SUGGESTED_HIDDEN = isAr 
-
-
-
-      ? ['إعلان', 'سبام', 'متابعة', 'تداول', 'عملات', 'فوركس']
-
-
-
-      : ['crypto', 'forex', 'spam', 'follow me', 'giveaway', 'ad'];
-
-
-
-
-
-
-
-    return (
-
-
-
-      <SwipeBackWrapper onBack={() => setActiveSubView('content')}>
-
-
-
-        <div className="min-h-screen bg-black text-white pb-[calc(6.5rem+env(safe-area-inset-bottom))] max-w-xl mx-auto">
-
-
-
-          {renderSubHeader(isAr ? 'الكلمات المخفية' : 'Hidden Words', () => setActiveSubView('content'))}
-
-
-
-          <div className="p-4 space-y-6">
-
-
-
-            <p className="text-xs text-neutral-400 leading-relaxed px-1">
-
-
-
-              {isAr 
-
-
-
-                ? 'سيتم حجب أي نبضات أو ردود أو تعليقات تحتوي على هذه الكلمات أو العبارات تلقائياً من خلاصتك وإشعاراتك.' 
-
-
-
-                : 'Pulses, replies, and comments containing these words or phrases will be hidden automatically from your feed.'}
-
-
-
-            </p>
-
-
-
-
-
-
-
-            {/* Custom Words Card */}
-
-
-
-            <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 space-y-4">
-
-
-
-              <div className="text-sm font-semibold text-white">
-
-
-
-                {isAr ? 'إضافة كلمات وعبارات مخصصة' : 'Add custom words and phrases'}
-
-
-
+            {/* Core Sensitive Media Display Preferences (The 3 Modes) */}
+            <div className="space-y-2">
+              <div className="px-1">
+                <h3 className="text-sm font-bold text-white">
+                  {isAr ? 'طريقة عرض الوسائط الحساسة (+18)' : 'Sensitive Media Display Mode'}
+                </h3>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {isAr ? 'حدد كيفية تعامل التطبيق مع الصور والفيديوهات المعلمة كمحتوى حساس' : 'Choose how PULSE handles photos and videos marked as sensitive'}
+                </p>
               </div>
-
-
-
-
-
-
-
-              {/* Form Input */}
-
-
-
-              <form 
-
-
-
-                onSubmit={(e) => {
-
-
-
-                  e.preventDefault();
-
-
-
-                  if (!newKeyword.trim()) return;
-
-
-
-                  const word = newKeyword.trim().toLowerCase();
-
-
-
-                  moderationService.addHiddenWord(word);
-
-
-
-                  setHiddenWordsList(moderationService.getHiddenWords());
-
-
-
-                  setNewKeyword('');
-
-
-
-                  showToast(isAr ? `تمت إضافة "${word}" إلى الكلمات المخفية` : `Added "${word}" to hidden words`);
-
-
-
-                }} 
-
-
-
-                className="flex items-center gap-2"
-
-
-
-              >
-
-
-
-                <input
-
-
-
-                  type="text"
-
-
-
-                  value={newKeyword}
-
-
-
-                  onChange={(e) => setNewKeyword(e.target.value)}
-
-
-
-                  placeholder={isAr ? 'أدخل كلمة أو عبارة لحجبها...' : 'Add word or phrase to hide...'}
-
-
-
-                  className="flex-1 bg-black border border-[#2A2A2E] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors"
-
-
-
-                />
-
-
-
-                <button
-
-
-
-                  type="submit"
-
-
-
-                  disabled={!newKeyword.trim()}
-
-
-
-                  className="px-4 py-2.5 bg-white text-black text-xs font-bold rounded-xl hover:bg-neutral-200 disabled:opacity-30 tap-press transition-all flex items-center gap-1"
-
-
-
-                >
-
-
-
-                  <Plus size={14} />
-
-
-
-                  <span>{isAr ? 'إضافة' : 'Add'}</span>
-
-
-
-                </button>
-
-
-
-              </form>
-
-
-
-
-
-
-
-              {/* Active Words Tags Cloud */}
-
-
-
-              <div className="space-y-2 pt-1">
-
-
-
-                <div className="text-xs font-medium text-neutral-400">
-
-
-
-                  {isAr ? `الكلمات المحجوبة حالياً (${hiddenWordsList.length}):` : `Active hidden words (${hiddenWordsList.length}):`}
-
-
-
-                </div>
-
-
-
-                <div className="flex flex-wrap gap-2">
-
-
-
-                  {hiddenWordsList.length > 0 ? (
-
-
-
-                    hiddenWordsList.map((word) => (
-
-
-
-                      <span 
-
-
-
-                        key={word} 
-
-
-
-                        className="px-3 py-1.5 rounded-full bg-[#1C1C20] border border-[#2C2C32] text-xs text-white flex items-center gap-2"
-
-
-
-                      >
-
-
-
-                        <span>{word}</span>
-
-
-
-                        <button 
-
-
-
-                          type="button"
-
-
-
-                          onClick={() => {
-
-
-
-                            moderationService.removeHiddenWord(word);
-
-
-
-                            setHiddenWordsList(moderationService.getHiddenWords());
-
-
-
-                            showToast(isAr ? `تمت إزالة "${word}"` : `Removed "${word}"`);
-
-
-
-                          }}
-
-
-
-                          className="hover:text-red-400 tap-press text-neutral-400 transition-colors"
-
-
-
-                        >
-
-
-
-                          <X size={13} />
-
-
-
-                        </button>
-
-
-
-                      </span>
-
-
-
-                    ))
-
-
-
-                  ) : (
-
-
-
-                    <span className="text-xs text-neutral-500 py-1">
-
-
-
-                      {isAr ? 'لم تقم بإضافة أي كلمات مخصصة بعد.' : 'No custom hidden words added yet.'}
-
-
-
-                    </span>
-
-
-
-                  )}
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-
-
-
-
-              {/* Quick suggestions chips */}
-
-
-
-              <div className="border-t border-[#1C1C20] pt-3 space-y-2">
-
-
-
-                <span className="text-[11px] text-neutral-500 font-medium">
-
-
-
-                  {isAr ? 'اقتراحات سريعة للحجب الشائع:' : 'Quick hide suggestions:'}
-
-
-
-                </span>
-
-
-
-                <div className="flex flex-wrap gap-1.5">
-
-
-
-                  {SUGGESTED_HIDDEN.map((sug) => {
-
-
-
-                    const isAdded = hiddenWordsList.includes(sug.toLowerCase());
-
-
-
-                    return (
-
-
-
-                      <button
-
-
-
-                        key={sug}
-
-
-
-                        type="button"
-
-
-
-                        onClick={() => {
-
-
-
-                          if (isAdded) {
-
-
-
-                            moderationService.removeHiddenWord(sug.toLowerCase());
-
-
-
-                            setHiddenWordsList(moderationService.getHiddenWords());
-
-
-
-                          } else {
-
-
-
-                            moderationService.addHiddenWord(sug.toLowerCase());
-
-
-
-                            setHiddenWordsList(moderationService.getHiddenWords());
-
-
-
-                            showToast(isAr ? `تمت إضافة "${sug}" للحجب` : `Added "${sug}" to blacklist`);
-
-
-
-                          }
-
-
-
-                        }}
-
-
-
-                        className={`px-2.5 py-1 rounded-lg text-[11px] transition-colors tap-press ${
-
-
-
-                          isAdded 
-
-
-
-                            ? 'bg-white/15 text-white border border-white/30' 
-
-
-
-                            : 'bg-white/5 hover:bg-white/10 text-neutral-300 border border-[#26262A]'
-
-
-
-                        }`}
-
-
-
-                      >
-
-
-
-                        {isAdded ? `- ${sug}` : `+ ${sug}`}
-
-
-
-                      </button>
-
-
-
-                    );
-
-
-
-                  })}
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-            </div>
-
-
-
-
-
-
-
-            {/* Offensive Language & Slurs Shield Card */}
-
-
-
-            <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 flex items-center justify-between">
-
-
-
-              <div className="pr-3">
-
-
-
-                <div className="text-sm font-semibold text-white">
-
-
-
-                  {isAr ? 'الحجب التلقائي للألفاظ النابية والشتائم' : 'Offensive words & slurs shield'}
-
-
-
-                </div>
-
-
-
-                <div className="text-xs text-neutral-400 mt-0.5 leading-relaxed">
-
-
-
-                  {isAr 
-
-
-
-                    ? 'فلترة تلقائية للألفاظ المسيئة والشتائم باستخدام قاموس الحماية المدمج في منصة PULSE.' 
-
-
-
-                    : 'Automatically filter abusive remarks and vulgarities using PULSE built-in safety dictionary.'}
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-              <input
-
-
-
-                type="checkbox"
-
-
-
-                checked={autoFilterOffensive}
-
-
-
-                onChange={(e) => {
-
-
-
-                  const val = e.target.checked;
-
-
-
-                  setAutoFilterOffensive(val);
-
-
-
-                  localStorage.setItem('pulse_autofilter_offensive', val ? 'true' : 'false');
-
-
-
-                  window.dispatchEvent(new CustomEvent('pulse_preference_changed', { detail: { type: 'offensive', val } }));
-
-
-
-                  showToast(val ? (isAr ? 'تم تفعيل حماية الألفاظ' : 'Offensive shield active') : (isAr ? 'تم إيقاف حماية الألفاظ' : 'Offensive shield off'));
-
-
-
-                }}
-
-
-
-                className="w-5 h-5 accent-white cursor-pointer flex-shrink-0 ml-3"
-
-
-
-              />
-
-
-
-            </div>
-
-
-
-          </div>
-
-
-
-        </div>
-
-
-
-      </SwipeBackWrapper>
-
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-  // 6.3 Hide Like and Share Counts Sub-Screen (Active Suppression on Posts)
-
-
-
-  if (activeSubView === 'content_hide_likes') {
-
-
-
-    return (
-
-
-
-      <SwipeBackWrapper onBack={() => setActiveSubView('content')}>
-
-
-
-        <div className="min-h-screen bg-black text-white pb-[calc(6.5rem+env(safe-area-inset-bottom))] max-w-xl mx-auto">
-
-
-
-          {renderSubHeader(isAr ? 'إخفاء أعداد تسجيلات الإعجاب' : 'Hide like and share counts', () => setActiveSubView('content'))}
-
-
-
-          <div className="p-4 space-y-6">
-
-
-
-            <div className="rounded-2xl bg-[#121214] border border-[#222226] p-4 flex items-center justify-between">
-
-
-
-              <div className="pr-3">
-
-
-
-                <div className="text-sm font-semibold text-white">
-
-
-
-                  {isAr ? 'إخفاء أعداد تسجيلات الإعجاب والمشاركات' : 'Hide like and share counts'}
-
-
-
-                </div>
-
-
-
-                <div className="text-xs text-neutral-400 mt-1 leading-relaxed">
-
-
-
-                  {isAr 
-
-
-
-                    ? 'في PULSE، لن ترى العدد الإجمالي لتسجيلات الإعجاب والمشاركات على المنشورات من الحسابات الأخرى. سيساعد هذا في التركيز على جودة المحتوى بدلاً من الأرقام ومقارنة التفاعل.' 
-
-
-
-                    : 'On PULSE, you will not see the total number of likes and shares on posts from other accounts. You can also hide like counts on your own posts.'}
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-              <input
-
-
-
-                type="checkbox"
-
-
-
-                checked={hideLikesCounts}
-
-
-
-                onChange={(e) => {
-
-
-
-                  const val = e.target.checked;
-
-
-
-                  setHideLikesCounts(val);
-
-
-
-                  moderationService.setHideLikeCounts(val);
-
-
-
-                  showToast(val 
-
-
-
-                    ? (isAr ? 'تم إخفاء أعداد الإعجابات والمشاركات' : 'Likes and shares counts hidden') 
-
-
-
-                    : (isAr ? 'تم إظهار أعداد الإعجابات والمشاركات' : 'Likes and shares counts visible')
-
-
-
-                  );
-
-
-
-                }}
-
-
-
-                className="w-5 h-5 accent-white cursor-pointer flex-shrink-0 ml-3"
-
-
-
-              />
-
-
-
-            </div>
-
-
-
-
-
-
-
-            <div className="px-1 text-xs text-neutral-500 leading-relaxed">
-
-
-
-              {isAr 
-
-
-
-                ? 'ستظل قادراً على رؤية إحصاءات منشوراتك الخاصة في تفاصيل المنشور ولوحة التحليلات الخاصة بحسابك.' 
-
-
-
-                : 'You can still see engagement numbers and insights on your own posts in your profile analytics.'}
-
-
-
-            </div>
-
-
-
-          </div>
-
-
-
-        </div>
-
-
-
-      </SwipeBackWrapper>
-
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-  // 6.4 Muted Accounts Sub-Screen (Active Feed Suppression + Unmute Action)
-
-
-
-  if (activeSubView === 'content_muted') {
-
-
-
-    return (
-
-
-
-      <SwipeBackWrapper onBack={() => setActiveSubView('content')}>
-
-
-
-        <div className="min-h-screen bg-black text-white pb-[calc(6.5rem+env(safe-area-inset-bottom))] max-w-xl mx-auto">
-
-
-
-          {renderSubHeader(isAr ? 'الحسابات المكتومة' : 'Muted accounts', () => setActiveSubView('content'))}
-
-
-
-          <div className="p-4 space-y-4">
-
-
-
-            <p className="text-xs text-neutral-400 leading-relaxed px-1">
-
-
-
-              {isAr 
-
-
-
-                ? 'لن تظهر نبضات أو ردود الحسابات المكتومة في خلاصتك. لن يتم إشعار هذه الحسابات بأنك قمت بكتمها.' 
-
-
-
-                : "You won't see pulses or replies from people you've muted in your feed. They won't know they've been muted."}
-
-
-
-            </p>
-
-
-
-
-
-
-
-            {mutedUsersList.length === 0 ? (
-
-
-
-              <div className="rounded-2xl bg-[#121214] border border-[#222226] p-8 text-center space-y-3">
-
-
-
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 mx-auto">
-
-
-
-                  <VolumeX size={22} />
-
-
-
-                </div>
-
-
-
-                <div className="space-y-1">
-
-
-
-                  <div className="text-sm font-semibold text-white">
-
-
-
-                    {isAr ? 'لا توجد حسابات مكتومة' : 'No muted accounts'}
-
-
-
-                  </div>
-
-
-
-                  <div className="text-xs text-neutral-500 max-w-xs mx-auto">
-
-
-
-                    {isAr 
-
-
-
-                      ? 'عندما تقوم بكتم شخص ما من قائمة خيارات نبضاته أو ملفه، سيظهر هنا.' 
-
-
-
-                      : 'When you mute someone from their post options or profile, they will appear here.'}
-
-
-
-                  </div>
-
-
-
-                </div>
-
-
-
-              </div>
-
-
-
-            ) : (
-
-
 
               <div className="rounded-2xl bg-[#121214] border border-[#222226] divide-y divide-[#1C1C20] overflow-hidden">
-
-
-
-                {mutedUsersList.map((item) => {
-
-
-
-                  const uid = typeof item === 'string' ? item : item.uid;
-
-
-
-                  const username = typeof item === 'object' ? item.username : uid;
-
-
-
-                  const displayName = typeof item === 'object' ? item.displayName : username;
-
-
-
-                  const avatar = typeof item === 'object' ? item.avatar : null;
-
-
+                {[
+                  {
+                    id: 'warn',
+                    title: isAr ? 'تحذير وتعتيم قبل العرض (الوضع الآمن - الافتراضي)' : 'Warn & blur before showing (Safe - Default)',
+                    desc: isAr ? 'يتم تعتيم الصور والفيديوهات الحساسة وعرض بطاقة تحذير (+18) تتطلب الضغط لرؤيتها.' : 'Blurs sensitive media with an adult warning overlay requiring a tap to reveal.',
+                    icon: Shield,
+                    disabled: false
+                  },
+                  {
+                    id: 'show',
+                    title: isAr ? 'إظهار تلقائي بدون تعتيم (+18)' : 'Always show without blur (+18)',
+                    desc: isAdult 
+                      ? (isAr ? 'عرض الوسائط الحساسة مباشرة دون تعتيم لمن هم في سن 18 عاماً أو أكثر.' : 'Directly displays sensitive media without warning for verified 18+ users.')
+                      : (isAr ? 'غير متاح: يتطلب أن يكون صاحب الحساب في سن 18 عاماً أو أكثر.' : 'Restricted: Requires registered account age of 18 or older.'),
+                    icon: Eye,
+                    disabled: !isAdult
+                  },
+                  {
+                    id: 'hide',
+                    title: isAr ? 'حجب وإخفاء تام من الخلاصة' : 'Block & hide completely from feed',
+                    desc: isAr ? 'إخفاء وحجب جميع المنشورات والوسائط المعلمة كمحتوى حساس تماماً من خلاصتك.' : 'Prevents any sensitive posts or media from appearing in your feed.',
+                    icon: EyeOff,
+                    disabled: false
+                  }
+                ].map((opt) => {
+                  const isSelected = sensitiveMediaPref === opt.id;
+                  const IconComponent = opt.icon;
 
                   return (
-
-
-
-                    <div key={uid} className="p-4 flex items-center justify-between">
-
-
-
-                      <div className="flex items-center gap-3 min-w-0 pr-2">
-
-
-
-                        <img
-
-
-
-                          src={resolveAvatar(avatar)}
-
-
-
-                          alt=""
-
-
-
-                          className="w-10 h-10 rounded-full object-cover border border-white/10 flex-shrink-0"
-
-
-
-                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = DEFAULT_AVATAR; }}
-
-
-
-                        />
-
-
-
-                        <div className="min-w-0">
-
-
-
-                          <div className="text-sm font-semibold text-white truncate">{displayName}</div>
-
-
-
-                          <div className="text-xs text-neutral-400 truncate" dir="ltr">@{username}</div>
-
-
-
+                    <div
+                      key={opt.id}
+                      onClick={() => {
+                        if (opt.disabled) {
+                          try { hapticsService.warning?.(); } catch {}
+                          showToast(isAr ? 'هذا الخيار يتطلب أن يكون عمرك 18 عاماً أو أكثر.' : 'This option requires age 18 or older.', 'error');
+                          return;
+                        }
+                        try { hapticsService.selection?.(); } catch {}
+                        setSensitiveMediaPref(opt.id);
+                        try {
+                          setSensitiveContentPref(opt.id, currentUser);
+                        } catch (err) {
+                          showToast(err.message, 'error');
+                          return;
+                        }
+                        showToast(isAr ? `تم تحديث التفضيل: ${opt.title}` : `Preference updated: ${opt.title}`, 'success');
+                      }}
+                      className={`p-4 flex items-center justify-between transition-colors ${
+                        opt.disabled 
+                          ? 'opacity-40 cursor-not-allowed bg-black/40' 
+                          : 'cursor-pointer hover:bg-white/[0.02] tap-press'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3.5 pr-3">
+                        <div className="mt-0.5 text-neutral-400">
+                          {opt.disabled ? <Lock size={18} className="text-neutral-500" /> : <IconComponent size={18} className="text-white" />}
                         </div>
-
-
-
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-white">{opt.title}</span>
+                            {opt.disabled && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-neutral-800 text-neutral-400 border border-neutral-700">
+                                {isAr ? 'مقيد' : 'Locked'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-neutral-400 mt-1 leading-relaxed">{opt.desc}</div>
+                        </div>
                       </div>
 
-
-
-                      <button
-
-
-
-                        type="button"
-
-
-
-                        onClick={() => {
-
-
-
-                          moderationService.unmuteUser(uid, currentUser);
-
-
-
-                          setMutedUsersList(moderationService.getMutedUsers(currentUser?.uid));
-
-
-
-                          showToast(isAr ? `تم إلغاء كتم @${username}` : `Unmuted @${username}`);
-
-
-
-                        }}
-
-
-
-                        className="px-3.5 py-1.5 rounded-xl border border-white/20 hover:border-white text-xs font-semibold text-white tap-press transition-colors flex-shrink-0"
-
-
-
-                      >
-
-
-
-                        {isAr ? 'إلغاء الكتم' : 'Unmute'}
-
-
-
-                      </button>
-
-
-
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${
+                        isSelected ? 'border-white bg-transparent' : 'border-neutral-600 bg-transparent'
+                      }`}>
+                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                      </div>
                     </div>
-
-
-
                   );
-
-
-
                 })}
+              </div>
+            </div>
 
-
-
+            {/* Keyword-based Sensitivity Filter (Threads Granular Slider) */}
+            <div className="space-y-2 pt-2 border-t border-[#1C1C20]">
+              <div className="px-1">
+                <h3 className="text-sm font-bold text-white">
+                  {isAr ? 'فلترة الكلمات والموضوعات الحساسة' : 'Keyword & Topic Sensitivity Level'}
+                </h3>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {isAr 
+                    ? 'التحكم في كثافة ظهور الموضوعات الحساسة العامة من الحسابات التي لا تتابعها' 
+                    : 'Manage exposure to sensitive keywords and topics from accounts you do not follow'}
+                </p>
               </div>
 
-
-
-            )}
-
-
-
+              <div className="rounded-2xl bg-[#121214] border border-[#222226] divide-y divide-[#1C1C20] overflow-hidden">
+                {[
+                  {
+                    id: 'less',
+                    title: isAr ? 'أقل' : 'Less',
+                    desc: isAr ? 'حجب أوسع للمحتوى والكلمات الحساسة غير المعلمة.' : 'Strictest keyword filter for sensitive topics.'
+                  },
+                  {
+                    id: 'standard',
+                    title: isAr ? 'قياسي (الموصى به)' : 'Standard (Recommended)',
+                    desc: isAr ? 'توازن طبيعي مع تطبيق معايير السلامة العامة.' : 'Balanced community standards filter.'
+                  },
+                  {
+                    id: 'more',
+                    title: isAr ? 'المزيد' : 'More',
+                    desc: isAr ? 'عرض نطاق أوسع من الموضوعات الحساسة في الخلاصة.' : 'Allows broader topic exposure in discover feed.'
+                  }
+                ].map((option) => {
+                  const isSelected = sensitiveLevel === option.id;
+                  return (
+                    <div
+                      key={option.id}
+                      onClick={() => {
+                        try { hapticsService.selection?.(); } catch {}
+                        setSensitiveLevel(option.id);
+                        moderationService.setSensitiveLevel(option.id);
+                        showToast(isAr ? `تم ضبط مستوى الفلترة: ${option.title}` : `Filter level: ${option.title}`);
+                      }}
+                      className="p-4 flex items-center justify-between cursor-pointer hover:bg-white/[0.02] tap-press transition-colors"
+                    >
+                      <div className="pr-3">
+                        <div className="text-sm font-semibold text-white">{option.title}</div>
+                        <div className="text-xs text-neutral-400 mt-0.5">{option.desc}</div>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all flex-shrink-0 ${
+                        isSelected ? 'border-white bg-transparent' : 'border-neutral-600 bg-transparent'
+                      }`}>
+                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-
-
-
         </div>
-
-
-
       </SwipeBackWrapper>
-
-
-
     );
-
-
-
   }
-
-
-
-
-
-
-
-  // 6.5 Political Content Sub-Screen (Active Limiting of Political Topics)
-
-
 
   if (activeSubView === 'content_political') {
 

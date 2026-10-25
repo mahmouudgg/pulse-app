@@ -544,6 +544,13 @@ export const moderationService = {
         }
       }
 
+      // Sensitive adult content strict hide preference check
+      const sensitivePref = localStorage.getItem(STORAGE_KEYS.SENSITIVE_LEVEL === 'pulse_sensitive_content_pref' ? 'pulse_sensitive_content_pref' : 'pulse_sensitive_content_pref') || 'warn';
+      const isSensitivePost = Boolean(p.isSensitive || p.sensitive || p.sensitiveType === 'adult' || p.contentWarning);
+      if (sensitivePref === 'hide' && isSensitivePost) {
+        return false;
+      }
+
       // Followed accounts bypass sensitive & political filters (Threads spec)
       const isAuthorFollowed = authorId ? (authorId === currentUserId || followingSet.has(authorId)) : false;
 

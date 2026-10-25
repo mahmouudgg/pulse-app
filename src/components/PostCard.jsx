@@ -6,6 +6,8 @@ import ConfirmModal from './ConfirmModal';
 import PulseMediaViewer from './PulseMediaViewer';
 import PulseVideoPlayer from './PulseVideoPlayer';
 import PulseMediaImage from './PulseMediaImage';
+import SensitiveMediaGate from './SensitiveMediaGate';
+import { isPostSensitive } from '../utils/ageVerification';
 import RichTextRenderer from './RichTextRenderer';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
@@ -734,6 +736,12 @@ export default function PostCard({
           {/* Topic & Location Badges */}
           {(post.topic || post.location) && (
             <div className="mt-1 flex items-center flex-wrap gap-1.5">
+              {isPostSensitive(post) && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-[10px] font-bold text-amber-300">
+                  <ShieldAlert size={10} />
+                  <span>+18</span>
+                </span>
+              )}
               {post.topic && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold text-white">
                   <span className="text-neutral-400 font-mono">#</span>
@@ -954,25 +962,28 @@ export default function PostCard({
             </div>
           )}
 
-          {/* Attached Image or Animated GIF (PULSE Official Shimmer Skeleton & Clean Offline Fallback) */}
+          {/* Attached Image or Animated GIF with Carrier-Grade Sensitive Media Gate */}
           {post.imageUrl && (
-            <div className="mt-2.5 w-full max-w-full overflow-hidden rounded-2xl">
-              <PulseMediaImage
-                src={post.imageUrl}
-                isGif={Boolean(post.isGif)}
-                onOpenViewer={() => setViewerMedia({ type: 'image', url: post.imageUrl, post })}
-              />
-            </div>
+            <SensitiveMediaGate
+              post={post}
+              currentUser={currentUser}
+              mediaType="image"
+              src={post.imageUrl}
+              isGif={Boolean(post.isGif)}
+              onOpenViewer={() => setViewerMedia({ type: 'image', url: post.imageUrl, post })}
+            />
           )}
 
-          {/* Attached Video */}
+          {/* Attached Video with Carrier-Grade Sensitive Media Gate */}
           {post.videoUrl && (
-            <div className="mt-2.5 w-full max-w-full overflow-hidden rounded-2xl">
-              <PulseVideoPlayer
-                src={post.videoUrl}
-                onOpenViewer={() => setViewerMedia({ type: 'video', url: post.videoUrl, post })}
-              />
-            </div>
+            <SensitiveMediaGate
+              post={post}
+              currentUser={currentUser}
+              mediaType="video"
+              src={post.videoUrl}
+              poster={post.videoPoster}
+              onOpenViewer={() => setViewerMedia({ type: 'video', url: post.videoUrl, post })}
+            />
           )}
 
           {/* Real Audio Player with Listen Count Hook */}

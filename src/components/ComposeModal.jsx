@@ -4,7 +4,7 @@ import {
   X, Mic, Square, Trash2, AlertCircle, Image as ImageIcon, Video, 
   MapPin, Navigation, Search, Loader2, BarChart2, Plus, 
   FileText, MoreHorizontal, SlidersHorizontal, Check, Music2,
-  Quote, AlignLeft, Crop, Play, Pause
+  Quote, AlignLeft, Crop, Play, Pause, ShieldAlert
 } from 'lucide-react';
 import { startRecording, stopRecording } from '../utils/audioRecorder';
 import { compressImageToBase64 } from '../utils/imageCompressor';
@@ -106,6 +106,7 @@ export default function ComposeModal({
   const [showPostOptionsSheet, setShowPostOptionsSheet] = useState(false);
   const [replyPermission, setReplyPermission] = useState('anyone');
   const [reviewReplies, setReviewReplies] = useState(false);
+  const [isSensitive, setIsSensitive] = useState(false);
 
   const [mentionQuery, setMentionQuery] = useState(null);
   const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
@@ -303,6 +304,7 @@ export default function ComposeModal({
     setPollOptions(['', '']);
     setReplyPermission('anyone');
     setReviewReplies(false);
+    setIsSensitive(false);
     setMentionQuery(null);
     setMicError('');
     setValidationError('');
@@ -334,6 +336,7 @@ export default function ComposeModal({
     setSelectedLocation(draft.location || null);
     setReplyPermission(draft.replyPermission || 'anyone');
     setReviewReplies(Boolean(draft.reviewReplies));
+    setIsSensitive(Boolean(draft.isSensitive));
     setMentionQuery(null);
     setValidationError('');
     setMicError('');
@@ -410,7 +413,7 @@ export default function ComposeModal({
     return () => clearTimeout(autosaveTimerRef.current);
   }, [
     isOpen, uid, content, attachedImage, attachedVideo, attachedGif, attachedMusic, activeQuotePost, recordedAudio,
-    chainedThreads, showPollCreator, pollOptions, selectedLocation, replyPermission, reviewReplies
+    chainedThreads, showPollCreator, pollOptions, selectedLocation, replyPermission, reviewReplies, isSensitive
   ]);
 
   // Android hardware back
@@ -718,6 +721,8 @@ export default function ComposeModal({
         videoUrl: finalVideoUrl,
         videoPoster: finalVideoPoster,
         videoDuration: videoDuration,
+        isSensitive: Boolean(isSensitive),
+        sensitiveType: isSensitive ? 'adult' : null,
         isGif: !!attachedGif,
         isCrossPost: Boolean(isCrossPost),
         location: selectedLocation ? selectedLocation.name : null,
@@ -904,6 +909,25 @@ export default function ComposeModal({
                   )}
                 </button>
               </div>
+
+                            {/* Active Sensitive Post Badge */}
+              {isSensitive && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2 animate-fade-in">
+                  <ShieldAlert size={13} className="text-amber-400 flex-shrink-0" />
+                  <span>{isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { hapticsService.light?.(); } catch {}
+                      setIsSensitive(false);
+                    }}
+                    className="ms-1.5 hover:text-white p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                    title={isAr ? 'إلغاء' : 'Remove'}
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
 
               {/* Auto-growing Textarea */}
               <textarea
@@ -1364,6 +1388,26 @@ export default function ComposeModal({
                         <span>{isAr ? 'الموقع' : 'Location'}</span>
                         <MapPin size={18} className="text-neutral-300" />
                       </div>
+                      {/* Row 5: Sensitive Content (+18) Toggle */}
+                      <div
+                        onClick={() => {
+                          setShowMoreMenu(false);
+                          try { hapticsService.light?.(); } catch {}
+                          setIsSensitive(!isSensitive);
+                        }}
+                        className="px-4 py-3 flex items-center justify-between text-[14px] font-medium text-white hover:bg-white/5 active:bg-white/10 cursor-pointer tap-press transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{isAr ? 'محتوى حساس (+18)' : 'Sensitive (+18)'}</span>
+                          {isSensitive && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300">
+                              {isAr ? 'مفعّل' : 'Active'}
+                            </span>
+                          )}
+                        </div>
+                        <ShieldAlert size={18} className={isSensitive ? 'text-amber-400' : 'text-neutral-300'} />
+                      </div>
+
                     </div>
                   )}
                 </div>
@@ -1508,6 +1552,37 @@ export default function ComposeModal({
                 >
                   <div className={`w-5 h-5 rounded-full transition-transform ${
                     reviewReplies ? 'translate-x-5 bg-black' : 'translate-x-0.5 bg-white'
+                  }`} />
+                </button>
+              </div>
+
+                            {/* Sensitive Adult Content Toggle (+18) */}
+              <div className="rounded-2xl bg-[#2C2C2E]/60 border border-white/5 p-3.5 flex items-center justify-between mb-4">
+                <div className="pr-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white">
+                      {isAr ? 'محتوى مخصص للبالغين (+18)' : 'Adult content (+18)'}
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      +18
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-neutral-400 mt-0.5">
+                    {isAr ? 'تطبيق غطاء ضبابي وتحذير سن المشاهد' : 'Apply warning overlay and blur'}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { hapticsService.light?.(); } catch {}
+                    setIsSensitive(!isSensitive);
+                  }}
+                  className={`w-11 h-6 rounded-full transition-colors relative flex items-center flex-shrink-0 ${
+                    isSensitive ? 'bg-amber-500' : 'bg-neutral-700'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full transition-transform ${
+                    isSensitive ? (isAr ? '-translate-x-5 bg-black' : 'translate-x-5 bg-black') : (isAr ? '-translate-x-0.5 bg-white' : 'translate-x-0.5 bg-white')
                   }`} />
                 </button>
               </div>
