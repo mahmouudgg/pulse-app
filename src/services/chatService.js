@@ -296,6 +296,7 @@ export const chatService = {
             username: sender.username,
             avatar: sender.avatar || null,
             isFounder: senderFounder,
+            isVerified: Boolean(sender.isVerified || sender.isPro || sender.verificationStatus === 'verified' || senderFounder || sender.uid === 'user_1789917894698' || sender.username?.toLowerCase() === 'sovythos'),
             pioneerNumber: sender.pioneerNumber || (senderFounder ? 1 : null)
           },
           [recipient.uid]: {
@@ -304,6 +305,7 @@ export const chatService = {
             username: recipient.username,
             avatar: recipient.avatar || null,
             isFounder: recipientFounder,
+            isVerified: Boolean(recipient.isVerified || recipient.isPro || recipient.verificationStatus === 'verified' || recipientFounder || recipient.uid === 'user_1789917894698' || recipient.username?.toLowerCase() === 'sovythos'),
             pioneerNumber: recipient.pioneerNumber || (recipientFounder ? 1 : null)
           }
         },

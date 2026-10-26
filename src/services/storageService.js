@@ -998,6 +998,12 @@ export const storageService = {
 
     if (!uid || uid === 'app_release' || uid === 'undefined') return () => {};
 
+    // 1. Immediate sync from local cache
+    const cached = this.getUser(uid);
+    if (cached && typeof callback === 'function') {
+      try { callback(cached); } catch {}
+    }
+
     try {
 
       const userRef = ref(database, `users/${uid}`);
@@ -1006,7 +1012,38 @@ export const storageService = {
 
         const val = snapshot.val();
 
-        if (val && typeof val === 'object' && val.username) {
+        if (val && typeof val === 'object' && (val.username || val.displayName)) {
+
+          const isSovy = uid === OFFICIAL_SOVYTHOS.uid || val.username?.toLowerCase() === 'sovythos';
+          const isFounder = uid === OFFICIAL_FOUNDER.uid || val.username?.toLowerCase() === 'my' || uid === 'dev_mahmoud_yasser';
+          const isPulse = uid === OFFICIAL_PULSE.uid || val.username?.toLowerCase() === 'pulse';
+
+          const followersList = this._resolveEngagementArray(val.followers);
+          const followingList = this._resolveEngagementArray(val.following);
+
+          const followersCount = typeof val.followersCount === 'number'
+            ? val.followersCount
+            : followersList.length;
+
+          const followingCount = typeof val.followingCount === 'number'
+            ? val.followingCount
+            : followingList.length;
+
+          const normalized = {
+            ...val,
+            uid: val.uid || uid,
+            displayName: val.displayName || val.name || val.username,
+            avatar: isSovy ? SOVYTHOS_AVATAR : isPulse ? OFFICIAL_PULSE_AVATAR : resolveAvatar(val.avatar),
+            bio: val.bio ?? (isSovy ? OFFICIAL_SOVYTHOS.bio : isFounder ? OFFICIAL_FOUNDER.bio : ''),
+            isFounder: isFounder ? true : Boolean(val.isFounder),
+            isVerified: (isFounder || isSovy || isPulse) ? true : Boolean(val.isVerified || val.isPro || val.verificationStatus === 'verified'),
+            verificationStatus: (isFounder || isSovy || isPulse) ? 'verified' : (val.verificationStatus || (val.isVerified ? 'verified' : 'none')),
+            followers: followersList,
+            following: followingList,
+            followersCount: isSovy && followersCount === 0 ? 10 : followersCount,
+            followingCount: followingCount,
+            bookmarks: this._resolveEngagementArray(val.bookmarks)
+          };
 
           const users = this.getUsers();
 
@@ -1014,11 +1051,11 @@ export const storageService = {
 
           if (existingIndex >= 0) {
 
-            users[existingIndex] = { ...users[existingIndex], ...val };
+            users[existingIndex] = { ...users[existingIndex], ...normalized };
 
           } else {
 
-            users.push({ ...val, uid });
+            users.push(normalized);
 
           }
 
@@ -1032,7 +1069,7 @@ export const storageService = {
 
           }
 
-          if (callback) callback(val);
+          if (typeof callback === 'function') callback(normalized);
 
         }
 
@@ -3797,8 +3834,12 @@ export const storageService = {
 
       const targetUname = (username || '').toLowerCase();
 
-      const results = [];
+      const isSovyTarget = targetUid === OFFICIAL_SOVYTHOS.uid || targetUname === 'sovythos';
 
+      const results = [];
+      const seenCommentIds = new Set();
+
+      // Scan all stored comments by postId
       Object.entries(all).forEach(([postId, commentsList]) => {
 
         let actualList = commentsList;
@@ -3806,13 +3847,15 @@ export const storageService = {
           actualList = (actualList && typeof actualList === 'object') ? Object.values(actualList) : [];
         }
         if (actualList.length === 0) return;
-        commentsList = actualList;
 
-        const parentPost = posts.find((p) => p.id === postId) || null;
+        let parentPost = posts.find((p) => String(p.id) === String(postId)) || null;
 
-        commentsList.forEach((comm) => {
+        actualList.forEach((comm) => {
 
-          if (!comm) return;
+          if (!comm || typeof comm !== 'object') return;
+
+          const commId = comm.id || `comm_${postId}_${comm.createdAt || Math.random()}`;
+          if (seenCommentIds.has(commId)) return;
 
           const commAuthorUid = comm.authorId || comm.userId || comm.author?.uid;
 
@@ -3820,23 +3863,53 @@ export const storageService = {
 
           const isMatch = Boolean(
 
-            (targetUid && commAuthorUid === targetUid) ||
+            (targetUid && (commAuthorUid === targetUid || comm.userId === targetUid)) ||
 
-            (targetUname && commAuthorUname === targetUname) ||
+            (targetUname && (commAuthorUname === targetUname || comm.authorUsername?.toLowerCase() === targetUname)) ||
 
-            ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (commAuthorUname === 'my' || commAuthorUid === 'dev_mahmoud_yasser' || commAuthorUid === 'my'))
+            ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (commAuthorUname === 'my' || commAuthorUid === 'dev_mahmoud_yasser' || commAuthorUid === 'my')) ||
+
+            (isSovyTarget && (commAuthorUname === 'sovythos' || commAuthorUid === OFFICIAL_SOVYTHOS.uid))
 
           );
 
           if (isMatch) {
 
+            seenCommentIds.add(commId);
+
             const normalizedLikes = this._resolveEngagementArray(comm.likes);
 
-            const liveAuthor = users.find((u) => u.uid === commAuthorUid || u.username?.toLowerCase() === commAuthorUname);
+            const liveAuthor = users.find((u) => u.uid === commAuthorUid || u.username?.toLowerCase() === commAuthorUname) || (isSovyTarget ? OFFICIAL_SOVYTHOS : null);
+
+            // Determine parent post with full author profile
+            const resolvedParent = parentPost || comm.parentPost || {
+              id: postId,
+              content: comm.parentPostContent || '',
+              author: comm.parentPostAuthor || null,
+              createdAt: comm.parentPostCreatedAt || comm.createdAt
+            };
+
+            // Enhance parent author if missing avatar or verification
+            let enhancedParentAuthor = resolvedParent.author;
+            if (enhancedParentAuthor) {
+              const pAuthorUid = resolvedParent.authorId || resolvedParent.userId || (typeof enhancedParentAuthor === 'object' ? enhancedParentAuthor.uid : null);
+              const pAuthorUname = typeof enhancedParentAuthor === 'string' ? enhancedParentAuthor : (enhancedParentAuthor.username || resolvedParent.authorUsername);
+              const pAuthorObj = users.find((u) => (pAuthorUid && u.uid === pAuthorUid) || (pAuthorUname && u.username?.toLowerCase() === pAuthorUname?.toLowerCase()));
+              if (pAuthorObj) {
+                enhancedParentAuthor = {
+                  ...(typeof enhancedParentAuthor === 'object' ? enhancedParentAuthor : {}),
+                  displayName: pAuthorObj.displayName || pAuthorObj.username,
+                  username: pAuthorObj.username,
+                  avatar: pAuthorObj.avatar || DEFAULT_AVATAR,
+                  isVerified: Boolean(pAuthorObj.isVerified || pAuthorObj.isPro || pAuthorObj.isFounder),
+                  isFounder: Boolean(pAuthorObj.isFounder)
+                };
+              }
+            }
 
             results.push({
 
-              id: comm.id || 'comm_' + Math.random().toString(36).substring(2, 9),
+              id: commId,
 
               postId,
 
@@ -3844,22 +3917,17 @@ export const storageService = {
 
                 ...comm,
 
+                id: commId,
+
                 likes: normalizedLikes,
 
-                author: liveAuthor ? { ...comm.author, ...liveAuthor } : comm.author
+                author: liveAuthor ? { ...comm.author, ...liveAuthor } : (comm.author || (isSovyTarget ? OFFICIAL_SOVYTHOS : null))
 
               },
 
-              parentPost: parentPost || comm.parentPost || {
-
-                id: postId,
-
-                content: comm.parentPostContent || '',
-
-                author: comm.parentPostAuthor || null,
-
-                createdAt: comm.parentPostCreatedAt || comm.createdAt
-
+              parentPost: {
+                ...resolvedParent,
+                author: enhancedParentAuthor
               }
 
             });
@@ -3870,7 +3938,7 @@ export const storageService = {
 
       });
 
-      return results.sort((a, b) => new Date(b.comment.createdAt || 0) - new Date(a.comment.createdAt || 0));
+      return results.sort((a, b) => new Date(b.comment?.createdAt || 0) - new Date(a.comment?.createdAt || 0));
 
     } catch (err) {
 
@@ -3886,7 +3954,12 @@ export const storageService = {
 
     if (!userId && !username) return () => {};
 
-    if (callback) callback(this.getUserReplies(userId, username));
+    // 1. Initial callback with current cached replies immediately (0ms)
+    if (typeof callback === 'function') {
+      try {
+        callback(this.getUserReplies(userId, username));
+      } catch {}
+    }
 
     try {
 
@@ -3899,12 +3972,33 @@ export const storageService = {
         if (val && typeof val === 'object') {
 
           const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS)) || {};
+          const targetUname = (username || '').toLowerCase();
+          const targetUid = userId;
+          const isSovy = targetUid === OFFICIAL_SOVYTHOS.uid || targetUname === 'sovythos';
+
+          const matchingPostIds = [];
 
           Object.entries(val).forEach(([pId, commsMap]) => {
 
             if (commsMap && typeof commsMap === 'object') {
 
-              all[pId] = Object.values(commsMap);
+              const commList = Object.values(commsMap);
+              all[pId] = commList;
+
+              // Check if any comment in this post belongs to target user
+              const hasUserComment = commList.some((c) => {
+                if (!c) return false;
+                const cUid = c.authorId || c.userId || c.author?.uid;
+                const cUname = (c.author?.username || c.authorUsername || '').toLowerCase();
+                return (targetUid && cUid === targetUid) ||
+                  (targetUname && cUname === targetUname) ||
+                  ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (cUname === 'my' || cUid === 'dev_mahmoud_yasser')) ||
+                  (isSovy && (cUname === 'sovythos' || cUid === OFFICIAL_SOVYTHOS.uid));
+              });
+
+              if (hasUserComment) {
+                matchingPostIds.push(pId);
+              }
 
             }
 
@@ -3912,7 +4006,48 @@ export const storageService = {
 
           this.safeSetItem(STORAGE_KEYS.COMMENTS, all);
 
-          if (callback) callback(this.getUserReplies(userId, username));
+          // Deliver updated replies
+          if (typeof callback === 'function') {
+            callback(this.getUserReplies(userId, username));
+          }
+
+          // Asynchronously fetch any missing parent posts from RTDB
+          const currentPosts = this.getPosts();
+          const missingIds = matchingPostIds.filter((id) => !currentPosts.some((p) => String(p.id) === String(id)));
+
+          if (missingIds.length > 0) {
+            Promise.all(
+              missingIds.map(async (mId) => {
+                try {
+                  const postSnap = await get(ref(database, `posts/${mId}`));
+                  if (postSnap.exists()) {
+                    const postVal = postSnap.val();
+                    const normalized = this._normalizePost(postVal, this.getUsers(), mId);
+                    return normalized;
+                  }
+                } catch {}
+                return null;
+              })
+            ).then((fetchedPosts) => {
+              const validPosts = fetchedPosts.filter(Boolean);
+              if (validPosts.length > 0) {
+                const refreshedPosts = this.getPosts();
+                let added = false;
+                validPosts.forEach((vp) => {
+                  if (!refreshedPosts.some((p) => String(p.id) === String(vp.id))) {
+                    refreshedPosts.unshift(vp);
+                    added = true;
+                  }
+                });
+                if (added) {
+                  this.safeSetItem(STORAGE_KEYS.POSTS, refreshedPosts);
+                  if (typeof callback === 'function') {
+                    callback(this.getUserReplies(userId, username));
+                  }
+                }
+              }
+            }).catch(() => {});
+          }
 
         }
 

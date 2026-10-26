@@ -41,15 +41,52 @@ export default function ChatConversationPage({
   const typingTimeoutRef = useRef(null);
 
   const conversationId = chatService.getConversationId(currentUser?.uid, recipient?.uid);
-  const isFounder = recipient?.isFounder || recipient?.username === 'my';
-  const isRecipientVerified = Boolean(
-    recipient?.isVerified || 
-    recipient?.isPro || 
-    recipient?.isFounder || 
-    recipient?.verificationStatus === 'verified'
-  );
 
   const isRecipientSovythos = recipient?.uid === 'user_1789917894698' || recipient?.username?.toLowerCase() === 'sovythos';
+
+  // Live real-time synchronized recipient user state
+  const [liveRecipient, setLiveRecipient] = useState(() => {
+    const cached = recipient?.uid 
+      ? storageService.getUser(recipient.uid) 
+      : (recipient?.username ? storageService.getUserByUsername(recipient.username) : null);
+    return {
+      ...(cached || {}),
+      ...(recipient || {})
+    };
+  });
+
+  // Real-time live user subscription for recipient (followers count, verification, bio, avatar)
+  useEffect(() => {
+    const targetUid = recipient?.uid || (recipient?.username ? storageService.getUserByUsername(recipient.username)?.uid : null);
+    if (!targetUid) return;
+
+    // 1. Immediate sync from local cache
+    const cached = storageService.getUser(targetUid);
+    if (cached) {
+      setLiveRecipient((prev) => ({ ...prev, ...cached }));
+    }
+
+    // 2. Realtime listener using storageService
+    const unsub = storageService.subscribeToUser(targetUid, (freshUser) => {
+      if (freshUser) {
+        setLiveRecipient((prev) => ({ ...prev, ...freshUser }));
+      }
+    });
+
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [recipient?.uid, recipient?.username]);
+
+  const isFounder = Boolean(liveRecipient?.isFounder || liveRecipient?.username === 'my' || liveRecipient?.uid === 'dev_mahmoud_yasser');
+  const isRecipientVerified = Boolean(
+    liveRecipient?.isVerified || 
+    liveRecipient?.isPro || 
+    liveRecipient?.isFounder || 
+    liveRecipient?.verificationStatus === 'verified' ||
+    isRecipientSovythos ||
+    isFounder
+  );
   const isCurrentUserPro = Boolean(
     currentUser?.isPro || 
     currentUser?.vipTier === 'pro' || 
@@ -242,11 +279,13 @@ export default function ChatConversationPage({
     return num.toLocaleString();
   };
 
-  const rawFollowersCount = recipient?.followersCount ?? (
-    Array.isArray(recipient?.followers) 
-      ? recipient.followers.length 
-      : (recipient?.followers ? Object.keys(recipient.followers).length : 0)
-  );
+  const rawFollowersCount = Number(liveRecipient?.followersCount) > 0
+    ? Number(liveRecipient.followersCount)
+    : (Array.isArray(liveRecipient?.followers) 
+        ? liveRecipient.followers.length 
+        : (liveRecipient?.followers && typeof liveRecipient.followers === 'object' 
+            ? Object.keys(liveRecipient.followers).length 
+            : (isRecipientSovythos ? 10 : 0)));
 
   return (
     <SwipeBackWrapper onBack={onBack} className="fixed inset-0 z-40">
@@ -267,13 +306,13 @@ export default function ChatConversationPage({
 
             {/* User Info Header: Avatar + Username + Verified Badge + Subtitle */}
             <div 
-              onClick={() => onOpenUserProfile && onOpenUserProfile(recipient)}
+              onClick={() => onOpenUserProfile && onOpenUserProfile(liveRecipient)}
               className="flex items-center gap-2.5 cursor-pointer tap-press min-w-0 group"
             >
               <div className="relative flex-shrink-0">
                 <img
-                  src={recipient?.avatar || DEFAULT_AVATAR}
-                  alt={recipient?.displayName}
+                  src={liveRecipient?.avatar || DEFAULT_AVATAR}
+                  alt={liveRecipient?.displayName}
                   className="w-10 h-10 rounded-full object-cover border border-[#26262B] aspect-square bg-[#121214]"
                 />
                 {isFounder && (
@@ -286,13 +325,13 @@ export default function ChatConversationPage({
               <div className="min-w-0 flex flex-col justify-center">
                 <div className="flex items-center gap-1.5 flex-nowrap">
                   <span className="text-sm font-bold text-white tracking-tight truncate" dir="ltr">
-                    {recipient?.username || recipient?.displayName}
+                    {liveRecipient?.username || liveRecipient?.displayName}
                   </span>
                   {isRecipientVerified && (
                     <VerifiedBadge size={14} />
                   )}
-                  {recipient?.pioneerNumber && (
-                    <PioneerBadge number={recipient.pioneerNumber} size="xs" />
+                  {liveRecipient?.pioneerNumber && (
+                    <PioneerBadge number={liveRecipient.pioneerNumber} size="xs" />
                   )}
                 </div>
 
@@ -302,7 +341,7 @@ export default function ChatConversationPage({
                       {isAr ? 'يكتب الآن...' : 'typing...'}
                     </span>
                   ) : (
-                    <span>{recipient?.displayName || recipient?.username}</span>
+                    <span>{liveRecipient?.displayName || liveRecipient?.username}</span>
                   )}
                 </div>
               </div>
@@ -355,12 +394,12 @@ export default function ChatConversationPage({
           <div className="pt-6 pb-4 px-4 text-center select-none flex flex-col items-center">
             {/* 88px Avatar */}
             <div 
-              onClick={() => onOpenUserProfile && onOpenUserProfile(recipient)}
+              onClick={() => onOpenUserProfile && onOpenUserProfile(liveRecipient)}
               className="w-[88px] h-[88px] rounded-full overflow-hidden mx-auto border border-[#2E2E33] bg-[#101012] cursor-pointer tap-press shadow-xl"
             >
               <img
-                src={recipient?.avatar || DEFAULT_AVATAR}
-                alt={recipient?.displayName}
+                src={liveRecipient?.avatar || DEFAULT_AVATAR}
+                alt={liveRecipient?.displayName}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -368,19 +407,19 @@ export default function ChatConversationPage({
             {/* Username + Official Blue Badge */}
             <div className="flex items-center justify-center gap-1.5 mt-3.5 flex-wrap">
               <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight" dir="ltr">
-                {recipient?.username || recipient?.displayName}
+                {liveRecipient?.username || liveRecipient?.displayName}
               </h2>
               {isRecipientVerified && (
                 <VerifiedBadge size={18} />
               )}
-              {recipient?.pioneerNumber && (
-                <PioneerBadge number={recipient.pioneerNumber} size="xs" />
+              {liveRecipient?.pioneerNumber && (
+                <PioneerBadge number={liveRecipient.pioneerNumber} size="xs" />
               )}
             </div>
 
             {/* Display Name Subtitle in Gray */}
             <p className="text-sm text-neutral-400 mt-0.5 font-normal">
-              {recipient?.displayName || recipient?.username}
+              {liveRecipient?.displayName || liveRecipient?.username}
             </p>
 
             {/* Social Proof Lines */}
@@ -391,9 +430,9 @@ export default function ChatConversationPage({
               <p>
                 {isAr ? 'متابع على PULSE منذ 2026' : 'Following on PULSE since 2026'}
               </p>
-              {recipient?.bio ? (
+              {liveRecipient?.bio ? (
                 <p className="text-neutral-500 text-xs max-w-xs mx-auto line-clamp-2 mt-1 font-normal">
-                  {recipient.bio}
+                  {liveRecipient.bio}
                 </p>
               ) : (
                 <p className="text-neutral-500 text-xs max-w-xs mx-auto mt-0.5">
@@ -406,7 +445,7 @@ export default function ChatConversationPage({
             <div className="mt-4">
               <button
                 type="button"
-                onClick={() => onOpenUserProfile && onOpenUserProfile(recipient)}
+                onClick={() => onOpenUserProfile && onOpenUserProfile(liveRecipient)}
                 className="px-6 py-1.5 rounded-full border border-[#333336] hover:border-neutral-500 bg-transparent text-white font-medium text-xs sm:text-sm tap-press transition-all active:scale-95"
               >
                 {isAr ? 'عرض الملف الشخصي' : 'View profile'}

@@ -1,138 +1,388 @@
-# -*- coding: utf-8 -*-
+import os
 import sys
 
-FILE_PATH = r'C:\Users\DELL\.gemini\antigravity\scratch\pulse-app\src\services\storageService.js'
+sys.stdout.reconfigure(encoding='utf-8')
+BASE_DIR = r"C:\Users\DELL\.gemini\antigravity\scratch\pulse-app"
+target_file = os.path.join(BASE_DIR, "src", "services", "storageService.js")
 
-with open(FILE_PATH, 'r', encoding='utf-8') as f:
+with open(target_file, 'r', encoding='utf-8') as f:
     content = f.read()
 
-target = "      return list;\n    } catch (err) {\n      console.warn('Firebase loadOlderPosts error:', err);\n      return [];\n    }\n  },"
-if target not in content:
-    target = "      return list;\r\n    } catch (err) {\r\n      console.warn('Firebase loadOlderPosts error:', err);\r\n      return [];\r\n    }\r\n  },"
+is_crlf = '\r\n' in content
+c_norm = content.replace('\r\n', '\n')
 
-if target not in content:
-    print("Error: Target not found in content!")
-    sys.exit(1)
+# 1. Update subscribeToUser
+new_sub_user = """  subscribeToUser(uid, callback) {
 
-new_code = target + """
+    if (!uid || uid === 'app_release' || uid === 'undefined') return () => {};
 
-  // Instant synchronous cache retrieval for profile posts (0ms latency on navigation)
-  getCachedUserPosts(targetUid, targetUsername) {
-    if (!targetUid && !targetUsername) return [];
-    const cacheKey = `pulse_user_posts_${targetUid || targetUsername}`;
-    try {
-      const raw = localStorage.getItem(cacheKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch {}
-    return [];
-  },
-
-  // Targeted Low-Bandwidth Profile Posts Synchronizer (Spark 10GB/mo optimized)
-  // Directly queries only the author's posts via indexed 'authorId' without downloading the full timeline
-  async fetchUserPosts(targetUid, targetUsername) {
-    if (!targetUid && !targetUsername) return [];
-
-    const cacheKey = `pulse_user_posts_${targetUid || targetUsername}`;
-    const cached = this.getCachedUserPosts(targetUid, targetUsername);
-    const users = this.getUsers();
-    const deletedSet = this._getDeletedPostIds();
-
-    const cleanUsername = (targetUsername || '').toLowerCase();
-    const isFounder = (cleanUsername === 'my' || targetUid === 'dev_mahmoud_yasser' || targetUid === 'my');
+    // 1. Immediate sync from local cache
+    const cached = this.getUser(uid);
+    if (cached && typeof callback === 'function') {
+      try { callback(cached); } catch {}
+    }
 
     try {
-      const uidsToQuery = new Set();
-      if (targetUid) uidsToQuery.add(targetUid);
-      if (isFounder) {
-        uidsToQuery.add('dev_mahmoud_yasser');
-        uidsToQuery.add('my');
-      }
-      if (cleanUsername === 'pulse' || targetUid === OFFICIAL_PULSE.uid) {
-        uidsToQuery.add(OFFICIAL_PULSE.uid);
-        uidsToQuery.add('pulse');
-      }
 
-      const combinedCloudPosts = {};
+      const userRef = ref(database, `users/${uid}`);
 
-      // Execute targeted O(1) indexed queries on Firebase RTDB
-      for (const uid of uidsToQuery) {
-        try {
-          const q = query(ref(database, 'posts'), orderByChild('authorId'), equalTo(uid));
-          const snap = await get(q);
-          if (snap.exists()) {
-            const val = snap.val();
-            if (val && typeof val === 'object') {
-              Object.entries(val).forEach(([k, v]) => {
-                combinedCloudPosts[k] = v;
-              });
-            }
+      return onValue(userRef, (snapshot) => {
+
+        const val = snapshot.val();
+
+        if (val && typeof val === 'object' && (val.username || val.displayName)) {
+
+          const isSovy = uid === OFFICIAL_SOVYTHOS.uid || val.username?.toLowerCase() === 'sovythos';
+          const isFounder = uid === OFFICIAL_FOUNDER.uid || val.username?.toLowerCase() === 'my' || uid === 'dev_mahmoud_yasser';
+          const isPulse = uid === OFFICIAL_PULSE.uid || val.username?.toLowerCase() === 'pulse';
+
+          const followersList = this._resolveEngagementArray(val.followers);
+          const followingList = this._resolveEngagementArray(val.following);
+
+          const followersCount = typeof val.followersCount === 'number'
+            ? val.followersCount
+            : followersList.length;
+
+          const followingCount = typeof val.followingCount === 'number'
+            ? val.followingCount
+            : followingList.length;
+
+          const normalized = {
+            ...val,
+            uid: val.uid || uid,
+            displayName: val.displayName || val.name || val.username,
+            avatar: isSovy ? SOVYTHOS_AVATAR : isPulse ? OFFICIAL_PULSE_AVATAR : resolveAvatar(val.avatar),
+            bio: val.bio ?? (isSovy ? OFFICIAL_SOVYTHOS.bio : isFounder ? OFFICIAL_FOUNDER.bio : ''),
+            isFounder: isFounder ? true : Boolean(val.isFounder),
+            isVerified: (isFounder || isSovy || isPulse) ? true : Boolean(val.isVerified || val.isPro || val.verificationStatus === 'verified'),
+            verificationStatus: (isFounder || isSovy || isPulse) ? 'verified' : (val.verificationStatus || (val.isVerified ? 'verified' : 'none')),
+            followers: followersList,
+            following: followingList,
+            followersCount: isSovy && followersCount === 0 ? 10 : followersCount,
+            followingCount: followingCount,
+            bookmarks: this._resolveEngagementArray(val.bookmarks)
+          };
+
+          const users = this.getUsers();
+
+          const existingIndex = users.findIndex((u) => u.uid === uid);
+
+          if (existingIndex >= 0) {
+
+            users[existingIndex] = { ...users[existingIndex], ...normalized };
+
+          } else {
+
+            users.push(normalized);
+
           }
-        } catch (qErr) {
-          console.warn('Query by authorId notice:', qErr);
+
+          try {
+
+            this.safeSetItem(STORAGE_KEYS.USERS, users);
+
+          } catch (e) {
+
+            console.warn('Storage quota notice on subscribeToUser:', e);
+
+          }
+
+          if (typeof callback === 'function') callback(normalized);
+
         }
-      }
 
-      // Check authorUsername fallback if needed
-      if (cleanUsername && Object.keys(combinedCloudPosts).length === 0) {
-        try {
-          const uQuery = query(ref(database, 'posts'), orderByChild('authorUsername'), equalTo(cleanUsername));
-          const uSnap = await get(uQuery);
-          if (uSnap.exists()) {
-            const val = uSnap.val();
-            if (val && typeof val === 'object') {
-              Object.entries(val).forEach(([k, v]) => {
-                combinedCloudPosts[k] = v;
-              });
-            }
-          }
-        } catch (uErr) {
-          console.warn('Query by authorUsername notice:', uErr);
-        }
-      }
+      }, (err) => {
 
-      // Normalize fetched cloud posts
-      const liveNormalized = Object.entries(combinedCloudPosts)
-        .filter(([k]) => !deletedSet.has(String(k)))
-        .map(([k, p]) => this._normalizePost(p, users, k))
-        .filter(Boolean)
-        .filter((p) => !deletedSet.has(String(p.id)) && (!p.isRepost || !deletedSet.has(String(p.originalPostId))));
+        console.warn('Firebase subscribeToUser error:', err);
 
-      // Merge cloud posts with local cache
-      const postMap = new Map();
-      if (Array.isArray(cached)) {
-        cached.forEach((p) => {
-          if (p && p.id && !deletedSet.has(String(p.id))) {
-            postMap.set(String(p.id), p);
-          }
-        });
-      }
-      liveNormalized.forEach((p) => {
-        postMap.set(String(p.id), p);
       });
 
-      const finalList = Array.from(postMap.values())
-        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } catch (e) {
 
-      // Cache locally with quota safety (max 60 posts)
-      try {
-        localStorage.setItem(cacheKey, JSON.stringify(finalList.slice(0, 60)));
-      } catch (cacheErr) {
-        console.warn('Local user posts cache quota notice:', cacheErr);
-      }
+      console.warn('Firebase subscribeToUser error:', e);
 
-      return finalList;
-    } catch (err) {
-      console.warn('fetchUserPosts notice:', err);
-      return cached;
+      return () => {};
+
     }
+
   },"""
 
-updated_content = content.replace(target, new_code, 1)
+idx_start = c_norm.find("  subscribeToUser(uid, callback) {")
+if idx_start != -1:
+    idx_end = c_norm.find("  saveFCMToken(uid, token) {", idx_start)
+    if idx_end != -1:
+        c_norm = c_norm[:idx_start] + new_sub_user + "\n\n" + c_norm[idx_end:]
+        print("Updated subscribeToUser successfully!", flush=True)
+    else:
+        print("Could not find saveFCMToken anchor", flush=True)
+else:
+    print("Could not find subscribeToUser anchor", flush=True)
 
-with open(FILE_PATH, 'w', encoding='utf-8') as f:
-    f.write(updated_content)
+# 2. Update getUserReplies and subscribeToUserReplies
+new_user_replies_code = """  getUserReplies(userId, username) {
 
-print("Successfully patched storageService.js!")
+    this.init();
+
+    try {
+
+      const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS)) || {};
+
+      const posts = this.getPosts();
+
+      const users = this.getUsers();
+
+      const targetUid = userId;
+
+      const targetUname = (username || '').toLowerCase();
+
+      const isSovyTarget = targetUid === OFFICIAL_SOVYTHOS.uid || targetUname === 'sovythos';
+
+      const results = [];
+      const seenCommentIds = new Set();
+
+      // Scan all stored comments by postId
+      Object.entries(all).forEach(([postId, commentsList]) => {
+
+        let actualList = commentsList;
+        if (!Array.isArray(actualList)) {
+          actualList = (actualList && typeof actualList === 'object') ? Object.values(actualList) : [];
+        }
+        if (actualList.length === 0) return;
+
+        let parentPost = posts.find((p) => String(p.id) === String(postId)) || null;
+
+        actualList.forEach((comm) => {
+
+          if (!comm || typeof comm !== 'object') return;
+
+          const commId = comm.id || `comm_${postId}_${comm.createdAt || Math.random()}`;
+          if (seenCommentIds.has(commId)) return;
+
+          const commAuthorUid = comm.authorId || comm.userId || comm.author?.uid;
+
+          const commAuthorUname = (comm.author?.username || comm.authorUsername || '').toLowerCase();
+
+          const isMatch = Boolean(
+
+            (targetUid && (commAuthorUid === targetUid || comm.userId === targetUid)) ||
+
+            (targetUname && (commAuthorUname === targetUname || comm.authorUsername?.toLowerCase() === targetUname)) ||
+
+            ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (commAuthorUname === 'my' || commAuthorUid === 'dev_mahmoud_yasser' || commAuthorUid === 'my')) ||
+
+            (isSovyTarget && (commAuthorUname === 'sovythos' || commAuthorUid === OFFICIAL_SOVYTHOS.uid))
+
+          );
+
+          if (isMatch) {
+
+            seenCommentIds.add(commId);
+
+            const normalizedLikes = this._resolveEngagementArray(comm.likes);
+
+            const liveAuthor = users.find((u) => u.uid === commAuthorUid || u.username?.toLowerCase() === commAuthorUname) || (isSovyTarget ? OFFICIAL_SOVYTHOS : null);
+
+            // Determine parent post with full author profile
+            const resolvedParent = parentPost || comm.parentPost || {
+              id: postId,
+              content: comm.parentPostContent || '',
+              author: comm.parentPostAuthor || null,
+              createdAt: comm.parentPostCreatedAt || comm.createdAt
+            };
+
+            // Enhance parent author if missing avatar or verification
+            let enhancedParentAuthor = resolvedParent.author;
+            if (enhancedParentAuthor) {
+              const pAuthorUid = resolvedParent.authorId || resolvedParent.userId || (typeof enhancedParentAuthor === 'object' ? enhancedParentAuthor.uid : null);
+              const pAuthorUname = typeof enhancedParentAuthor === 'string' ? enhancedParentAuthor : (enhancedParentAuthor.username || resolvedParent.authorUsername);
+              const pAuthorObj = users.find((u) => (pAuthorUid && u.uid === pAuthorUid) || (pAuthorUname && u.username?.toLowerCase() === pAuthorUname?.toLowerCase()));
+              if (pAuthorObj) {
+                enhancedParentAuthor = {
+                  ...(typeof enhancedParentAuthor === 'object' ? enhancedParentAuthor : {}),
+                  displayName: pAuthorObj.displayName || pAuthorObj.username,
+                  username: pAuthorObj.username,
+                  avatar: pAuthorObj.avatar || DEFAULT_AVATAR,
+                  isVerified: Boolean(pAuthorObj.isVerified || pAuthorObj.isPro || pAuthorObj.isFounder),
+                  isFounder: Boolean(pAuthorObj.isFounder)
+                };
+              }
+            }
+
+            results.push({
+
+              id: commId,
+
+              postId,
+
+              comment: {
+
+                ...comm,
+
+                id: commId,
+
+                likes: normalizedLikes,
+
+                author: liveAuthor ? { ...comm.author, ...liveAuthor } : (comm.author || (isSovyTarget ? OFFICIAL_SOVYTHOS : null))
+
+              },
+
+              parentPost: {
+                ...resolvedParent,
+                author: enhancedParentAuthor
+              }
+
+            });
+
+          }
+
+        });
+
+      });
+
+      return results.sort((a, b) => new Date(b.comment?.createdAt || 0) - new Date(a.comment?.createdAt || 0));
+
+    } catch (err) {
+
+      console.warn('getUserReplies error:', err);
+
+      return [];
+
+    }
+
+  },
+
+  subscribeToUserReplies(userId, username, callback) {
+
+    if (!userId && !username) return () => {};
+
+    // 1. Initial callback with current cached replies immediately (0ms)
+    if (typeof callback === 'function') {
+      try {
+        callback(this.getUserReplies(userId, username));
+      } catch {}
+    }
+
+    try {
+
+      const commentsRef = ref(database, 'comments');
+
+      return onValue(commentsRef, (snapshot) => {
+
+        const val = snapshot.val();
+
+        if (val && typeof val === 'object') {
+
+          const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS)) || {};
+          const targetUname = (username || '').toLowerCase();
+          const targetUid = userId;
+          const isSovy = targetUid === OFFICIAL_SOVYTHOS.uid || targetUname === 'sovythos';
+
+          const matchingPostIds = [];
+
+          Object.entries(val).forEach(([pId, commsMap]) => {
+
+            if (commsMap && typeof commsMap === 'object') {
+
+              const commList = Object.values(commsMap);
+              all[pId] = commList;
+
+              // Check if any comment in this post belongs to target user
+              const hasUserComment = commList.some((c) => {
+                if (!c) return false;
+                const cUid = c.authorId || c.userId || c.author?.uid;
+                const cUname = (c.author?.username || c.authorUsername || '').toLowerCase();
+                return (targetUid && cUid === targetUid) ||
+                  (targetUname && cUname === targetUname) ||
+                  ((targetUname === 'my' || targetUid === 'dev_mahmoud_yasser') && (cUname === 'my' || cUid === 'dev_mahmoud_yasser')) ||
+                  (isSovy && (cUname === 'sovythos' || cUid === OFFICIAL_SOVYTHOS.uid));
+              });
+
+              if (hasUserComment) {
+                matchingPostIds.push(pId);
+              }
+
+            }
+
+          });
+
+          this.safeSetItem(STORAGE_KEYS.COMMENTS, all);
+
+          // Deliver updated replies
+          if (typeof callback === 'function') {
+            callback(this.getUserReplies(userId, username));
+          }
+
+          // Asynchronously fetch any missing parent posts from RTDB
+          const currentPosts = this.getPosts();
+          const missingIds = matchingPostIds.filter((id) => !currentPosts.some((p) => String(p.id) === String(id)));
+
+          if (missingIds.length > 0) {
+            Promise.all(
+              missingIds.map(async (mId) => {
+                try {
+                  const postSnap = await get(ref(database, `posts/${mId}`));
+                  if (postSnap.exists()) {
+                    const postVal = postSnap.val();
+                    const normalized = this._normalizePost(postVal, this.getUsers(), mId);
+                    return normalized;
+                  }
+                } catch {}
+                return null;
+              })
+            ).then((fetchedPosts) => {
+              const validPosts = fetchedPosts.filter(Boolean);
+              if (validPosts.length > 0) {
+                const refreshedPosts = this.getPosts();
+                let added = false;
+                validPosts.forEach((vp) => {
+                  if (!refreshedPosts.some((p) => String(p.id) === String(vp.id))) {
+                    refreshedPosts.unshift(vp);
+                    added = true;
+                  }
+                });
+                if (added) {
+                  this.safeSetItem(STORAGE_KEYS.POSTS, refreshedPosts);
+                  if (typeof callback === 'function') {
+                    callback(this.getUserReplies(userId, username));
+                  }
+                }
+              }
+            }).catch(() => {});
+          }
+
+        }
+
+      }, (err) => {
+
+        console.warn('Firebase subscribeToUserReplies error:', err);
+
+      });
+
+    } catch (e) {
+
+      console.warn('Firebase subscribeToUserReplies exception:', e);
+
+      return () => {};
+
+    }
+
+  },"""
+
+idx_replies_start = c_norm.find("  getUserReplies(userId, username) {")
+if idx_replies_start != -1:
+    idx_replies_end = c_norm.find("  addComment(postId, comment, currentUser) {", idx_replies_start)
+    if idx_replies_end != -1:
+        c_norm = c_norm[:idx_replies_start] + new_user_replies_code + "\n\n" + c_norm[idx_replies_end:]
+        print("Updated getUserReplies and subscribeToUserReplies successfully!", flush=True)
+    else:
+        print("Could not find addComment anchor", flush=True)
+else:
+    print("Could not find getUserReplies anchor", flush=True)
+
+if is_crlf:
+    c_norm = c_norm.replace('\n', '\r\n')
+
+with open(target_file, 'w', encoding='utf-8') as f:
+    f.write(c_norm)
+
+print("Finished patch_storage_service.py successfully!", flush=True)

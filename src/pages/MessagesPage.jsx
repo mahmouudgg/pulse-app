@@ -74,7 +74,20 @@ export default function MessagesPage({
     if (!conversation || !conversation.participantDetails) return null;
     const details = conversation.participantDetails;
     const otherUid = Object.keys(details).find((uid) => uid !== currentUser?.uid);
-    return otherUid ? details[otherUid] : null;
+    if (!otherUid) return null;
+    const base = details[otherUid] || {};
+    const cached = storageService.getUser(otherUid) || (base.username ? storageService.getUserByUsername(base.username) : null);
+    const isSovy = otherUid === 'user_1789917894698' || base.username?.toLowerCase() === 'sovythos';
+    const isFounder = otherUid === 'dev_mahmoud_yasser' || base.username === 'my' || base.isFounder || cached?.isFounder;
+
+    return {
+      ...base,
+      ...(cached || {}),
+      avatar: cached?.avatar || base.avatar || DEFAULT_AVATAR,
+      displayName: cached?.displayName || base.displayName || base.username,
+      username: cached?.username || base.username,
+      isVerified: Boolean(cached?.isVerified || base.isVerified || base.isPro || isSovy || isFounder)
+    };
   }
 
   // Filtered list based on active tab, search, and filterType

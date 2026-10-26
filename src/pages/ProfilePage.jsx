@@ -141,6 +141,16 @@ export default function ProfilePage({
     };
   }, [profileUser?.uid, profileUser?.username]);
 
+  // Immediate sync when navigating into the replies tab
+  useEffect(() => {
+    if (activeTab === 'replies' && (profileUser?.uid || profileUser?.username)) {
+      const currentList = storageService.getUserReplies(profileUser?.uid, profileUser?.username);
+      if (Array.isArray(currentList) && currentList.length > 0) {
+        setUserReplies(currentList);
+      }
+    }
+  }, [activeTab, profileUser?.uid, profileUser?.username]);
+
   // Realtime & low-bandwidth auto-sync for full author pulse history
   const [syncedUserPosts, setSyncedUserPosts] = useState(() => {
     return storageService.getCachedUserPosts(profileUser?.uid, profileUser?.username);
@@ -757,8 +767,36 @@ export default function ProfilePage({
             userReplies.map((item) => {
               const parent = item.parentPost || {};
               const reply = item.comment || {};
-              const parentAuthor = parent.author || {};
-              const replyAuthor = reply.author || profileUser || {};
+              const rawParentAuthor = parent.author;
+              const parentAuthor = (typeof rawParentAuthor === 'object' && rawParentAuthor !== null)
+                ? rawParentAuthor
+                : (storageService.getUser(parent.authorId || rawParentAuthor) || storageService.getUserByUsername(parent.authorUsername || rawParentAuthor) || {});
+
+              const isParentVerified = Boolean(
+                parentAuthor.isVerified ||
+                parentAuthor.isPro ||
+                parentAuthor.isFounder ||
+                parentAuthor.username === 'my' ||
+                parentAuthor.uid === 'dev_mahmoud_yasser' ||
+                parentAuthor.username?.toLowerCase() === 'sovythos' ||
+                parentAuthor.uid === 'user_1789917894698'
+              );
+
+              const rawReplyAuthor = reply.author;
+              const replyAuthor = (typeof rawReplyAuthor === 'object' && rawReplyAuthor !== null)
+                ? rawReplyAuthor
+                : (storageService.getUser(reply.authorId || rawReplyAuthor) || profileUser || {});
+
+              const isReplyAuthorVerified = Boolean(
+                replyAuthor.isVerified ||
+                replyAuthor.isPro ||
+                replyAuthor.isFounder ||
+                replyAuthor.username === 'my' ||
+                replyAuthor.uid === 'dev_mahmoud_yasser' ||
+                replyAuthor.username?.toLowerCase() === 'sovythos' ||
+                replyAuthor.uid === 'user_1789917894698'
+              );
+
               const isReplyLiked = Array.isArray(reply.likes) && currentUser?.uid && reply.likes.includes(currentUser.uid);
               const replyLikesCount = Array.isArray(reply.likes) ? reply.likes.length : 0;
 
@@ -798,7 +836,7 @@ export default function ProfilePage({
                           <span className="font-bold text-white text-sm truncate">
                             {parentAuthor.displayName || parentAuthor.username || 'Pulse Pioneer'}
                           </span>
-                          {parentAuthor.isVerified && <VerifiedBadge size={14} />}
+                          {isParentVerified && <VerifiedBadge size={14} />}
                           <span className="text-xs text-neutral-500 font-mono" dir="ltr">
                             @{parentAuthor.username}
                           </span>
@@ -907,7 +945,7 @@ export default function ProfilePage({
                           <span className="font-bold text-white text-sm truncate">
                             {profileUser?.displayName}
                           </span>
-                          {profileUser?.isVerified && <VerifiedBadge size={14} />}
+                          {isReplyAuthorVerified && <VerifiedBadge size={14} />}
                           <span className="text-xs text-neutral-500 font-mono" dir="ltr">
                             @{profileUser?.username}
                           </span>
