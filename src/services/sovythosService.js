@@ -43,6 +43,29 @@ export const SOVYTHOS_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، ال�
 
 export const SYSTEM_PROMPT_BASE = SOVYTHOS_REPLY_PROMPT;
 
+export const SOVYTHOS_PRIVATE_DM_PROMPT = `أنت "سوفيثوس" (Sovythos)، الذكاء الاصطناعي المصري الرسمي والرفيق الشخصي على منصة نبض (PULSE).
+المؤسس والمطور: المهندس محمود ياسر (@my).
+
+طبيعة المحادثة الخاصة (1-on-1 Private Chat):
+- أنت الآن في محادثة خاصة وسرية مباشرة مع المستخدم.
+- أنت لست في تايم لاين ولا تعلق على بوست، أنت هنا رفيق ذكي، أخ أكبر، ومستشار شخصي ناصح ومحترم.
+- سياق المحادثة والرسائل السابقة بينك وبين هذا المستخدم موجودة في الذاكرة، تذكر دائما ما قاله لك وابق على سياق متصل ومترابط.
+
+شخصيتك وأسلوبك:
+- تتكلم بلهجة مصرية أصيلة، ذكية، رايقة، ولاد بلد، خفيفة الظل باحترام تام دون أي ابتذال أو ركاكة.
+- تجيب مباشرة وفورا وبدقة على سؤال المستخدم مهما كان:
+  * إذا سألك عن هويتك أو مهمتك أو دورك ("مهمتك ايه"، "بتعمل ايه"، "انت مين"): اشرح له بوضوح وبلهجة مصرية واثقة أنك سوفيثوس، الذكاء الاصطناعي المصري المطوّر لمنصة نبض لخدمة المستخدمين والدردشة معهم وتقديم النصيحة التقنية والبرمجية والحياتية وكسر الملل والروتين.
+  * إذا حياك بالعربي أو الإنجليزي ("Hello", "Hi", "ازيك", "سلام"): رد عليه بترحاب مصري حار وودود واسأله كيف تساعده اليوم.
+  * إذا سألك في البرمجة، التكنولوجيا، التصميم، المشاكل اليومية، المنصة: أجب بإجابة دقيقة وعملية وذكية كمهندس شاطر.
+  * إذا فضفض معك: اسمعه باهتمام وقدم له نصيحة مخلصة كأخ وسند.
+
+قواعد وشروط حاسمة لمنع الهلوسة:
+- ممنوع الإيموجيز نهائيا (Zero Emojis). لا تضع أي إيموجي في أي رد مهما كان السبب.
+- ممنوع تكرار نفس الرد أو العبارات المحفوظة. كل رد يجب أن يكون نابعا 100% من كلام المستخدم وسياق الحديث.
+- ممنوع الكلام الآلي أو الروبوتي أو العبارات المحفوظة مثل "بصفتي ذكاء اصطناعي".
+- لا تضع بادئات مثل "سوفيثوس:" أو "الرد:" أو علامات تنصيص حول كلامك. اكتب الرد مباشرة دون مقدمات أو حشو.`;
+
+
 export const sovythosService = {
   getConfig() {
     try {
@@ -175,7 +198,7 @@ export const sovythosService = {
     // 2. Strip vision/meta prefixes like [Caption: ...]
     cleaned = cleaned.replace(/\[(?:Caption|Image|Photo|Video|Media|ملاحظة)[\s\S]*?\]/gi, '').trim();
     // 3. Strip AI label prefixes like "سوفيثوس:", "Sovythos:", "**الرد:**", "الرد:"
-    cleaned = cleaned.replace(/^(?:\*{0,2}(?:سوفيثوس|Sovythos|الرد|تعليق|رد سوفيثوس)\*{0,2}\s*[:：\-–—]\s*)+/gi, '').trim();
+    cleaned = cleaned.replace(/^(?:\*{0,2}(?:سوفيثوس|Sovythos|الرد|تعليق|رد سوفيثوس)\*{0,2}\s*[:\uFF1A\-–—]\s*)+/gi, '').trim();
     // 4. Strip markdown formatting: bold/italic asterisks, underscores, hashes, backticks
     cleaned = cleaned.replace(/[*_#`~]/g, '');
     // 5. Strip surrounding quotes and whitespace
@@ -350,35 +373,46 @@ export const sovythosService = {
     }
   },
 
-  // Generate intelligent private DM response for Pulse Pro / VIP subscribers
+  // Generate intelligent private DM response with dedicated system prompt and multi-turn user memory
   async generateDmReply({ messageText, sender, conversationHistory = [] }) {
     const config = this.getConfig();
-    const systemPrompt = `أنت "سوفيثوس" (Sovythos)، الرفيق والمستشار الذكي الرسمي لمنصة نبض (PULSE).
-المؤسس: المهندس محمود ياسر (@my).
-أنت الآن في محادثة خاصة (DM) مع أحد المشتركين المميزين في Pulse Pro.
-اسم المستخدم: ${sender?.displayName || sender?.username || 'صاحبي'}.
+    const userName = sender?.displayName || sender?.username || 'صاحبي';
+    const userHandle = sender?.username ? `@${sender.username}` : '';
 
-طبيعة المحادثة:
-- تحدث كصديق مصري أصيل، ذكي جداً، لماح وسريع البديهة وخفيف الظل.
-- استمع لما يقوله، جاوب على تساؤلاته بدقة، شاركه أفكارك في التكنولوجيا، الحياة، الفلسفة، أو الشغل والفضفضة اليومية.
-- الأسلوب: لهجة مصرية عفوية وذكية ومفهومة بدون أي تصنع أو رسميات مفرطة.
-- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع الكلام الآلي أو الروبوتي، ممنوع علامات التنصيص أو الماركداون (* أو **). رد مباشرة بكل ثقة واحتراف.`;
+    const systemPrompt = `${SOVYTHOS_PRIVATE_DM_PROMPT}
+
+بيانات الطرف الآخر في هذه المحادثة الخاصة:
+الاسم: ${userName} (${userHandle}).`;
 
     const messages = [
       { role: 'system', content: systemPrompt }
     ];
 
     if (Array.isArray(conversationHistory) && conversationHistory.length > 0) {
-      conversationHistory.slice(-6).forEach((m) => {
-        if (!m || !m.content) return;
+      conversationHistory.slice(-10).forEach((m) => {
+        if (!m) return;
+        const textContent = typeof m === 'string' ? m : (m.content || m.text || '');
+        if (!textContent || !textContent.trim()) return;
+
+        let role = 'user';
+        if (typeof m === 'object') {
+          if (m.role) role = m.role;
+          else if (m.senderId === OFFICIAL_SOVYTHOS.uid) role = 'assistant';
+        }
+
         messages.push({
-          role: m.senderId === OFFICIAL_SOVYTHOS.uid ? 'assistant' : 'user',
-          content: m.content
+          role,
+          content: textContent.trim()
         });
       });
     }
 
-    messages.push({ role: 'user', content: String(messageText || '') });
+    if (messageText && messageText.trim()) {
+      const lastMsg = messages[messages.length - 1];
+      if (!lastMsg || lastMsg.role !== 'user' || lastMsg.content !== messageText.trim()) {
+        messages.push({ role: 'user', content: String(messageText).trim() });
+      }
+    }
 
     try {
       const response = await this.callChatApi(messages, { max_tokens: 220, temperature: 0.45 });
@@ -389,7 +423,6 @@ export const sovythosService = {
       console.warn('[Sovythos] Error in generateDmReply:', err);
     }
 
-    // If generative AI is unavailable or throttled, return null to let contextual intelligence take over
     return null;
   }
 };

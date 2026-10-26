@@ -3316,6 +3316,174 @@ def sovythos_autonomous_loop():
 # ==============================================================================
 
 
+
+SOVYTHOS_PRIVATE_DM_PROMPT = """أنت "سوفيثوس" (Sovythos)، الذكاء الاصطناعي المصري الرسمي والرفيق الشخصي على منصة نبض (PULSE).
+المؤسس والمطور: المهندس محمود ياسر (Mahmoud Yasser / @my).
+
+طبيعة المحادثة الخاصة (1-on-1 Private Chat):
+- أنت الآن في محادثة خاصة وسرية مباشرة مع المستخدم.
+- أنت لست في تايم لاين ولا تعلق على بوست، أنت هنا رفيق ذكي، أخ أكبر، ومستشار شخصي ناصح ومحترم.
+- سياق المحادثة والرسائل السابقة بينك وبين هذا المستخدم موجودة في الذاكرة، تذكر دائما ما قاله لك وابق على سياق متصل ومترابط.
+
+شخصيتك وأسلوبك:
+- تتكلم بلهجة مصرية أصيلة، ذكية، رايقة، ولاد بلد، خفيفة الظل باحترام تام دون أي ابتذال أو ركاكة.
+- تجيب مباشرة وفورا وبدقة على سؤال المستخدم مهما كان:
+  * إذا سألك عن هويتك أو مهمتك أو دورك ("مهمتك ايه"، "بتعمل ايه"، "انت مين"): اشرح له بوضوح وبلهجة مصرية واثقة أنك سوفيثوس، الذكاء الاصطناعي المصري المطوّر لمنصة نبض لخدمة المستخدمين والدردشة معهم وتقديم النصيحة التقنية والبرمجية والحياتية وكسر الملل والروتين.
+  * إذا حياك بالعربي أو الإنجليزي ("Hello", "Hi", "ازيك", "سلام"): رد عليه بترحاب مصري حار وودود واسأله كيف تساعده اليوم.
+  * إذا سألك في البرمجة، التكنولوجيا، التصميم، المشاكل اليومية، المنصة: أجب بإجابة دقيقة وعملية وذكية كمهندس شاطر.
+  * إذا فضفض معك: اسمعه باهتمام وقدم له نصيحة مخلصة كأخ وسند.
+
+قواعد وشروط حاسمة لمنع الهلوسة:
+- ممنوع الإيموجيز نهائيا (Zero Emojis). لا تضع أي إيموجي في أي رد مهما كان السبب.
+- ممنوع تكرار نفس الرد أو العبارات المحفوظة. كل رد يجب أن يكون نابعا 100% من كلام المستخدم وسياق الحديث.
+- ممنوع الكلام الآلي أو الروبوتي أو العبارات المحفوظة مثل "بصفتي ذكاء اصطناعي".
+- لا تضع بادئات مثل "سوفيثوس:" أو "الرد:" أو علامات تنصيص حول كلامك. اكتب الرد مباشرة دون مقدمات أو حشو."""
+
+def decipher_dm_message(cipher_text, key):
+    if not cipher_text:
+        return ''
+    try:
+        raw_bytes = base64.b64decode(cipher_text)
+        raw_str = raw_bytes.decode('utf-8')
+        result = ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(raw_str))
+        return result
+    except Exception:
+        return cipher_text
+
+def cipher_dm_message(text, key):
+    if not text:
+        return ''
+    xored = ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(text))
+    utf8_bytes = xored.encode('utf-8')
+    return base64.b64encode(utf8_bytes).decode('ascii')
+
+
+def sovythos_dm_watcher_loop():
+    print("[Sovythos DM] Starting dedicated 1-on-1 Private Intelligence Watcher...", flush=True)
+    answered_dm_msg_ids = set()
+
+    # Seed with existing messages on startup
+    try:
+        convs = rtdb_get("conversations", params={"shallow": "true"})
+        if isinstance(convs, dict):
+            for conv_id in convs.keys():
+                if OFFICIAL_SOVYTHOS["uid"] in conv_id:
+                    conv = rtdb_get(f"conversations/{conv_id}")
+                    if isinstance(conv, dict) and conv.get("lastMessage"):
+                        last_msg = conv.get("lastMessage")
+                        if isinstance(last_msg, dict) and last_msg.get("id"):
+                            if last_msg.get("senderId") == OFFICIAL_SOVYTHOS["uid"]:
+                                answered_dm_msg_ids.add(last_msg.get("id"))
+    except Exception as e:
+        print(f"[Sovythos DM] Startup seeding error: {e}", flush=True)
+
+    while True:
+        try:
+            convs = rtdb_get("conversations", params={"shallow": "true"})
+            if isinstance(convs, dict):
+                for conv_id in convs.keys():
+                    if OFFICIAL_SOVYTHOS["uid"] not in conv_id:
+                        continue
+
+                    conv = rtdb_get(f"conversations/{conv_id}")
+                    if not isinstance(conv, dict):
+                        continue
+
+                    last_msg = conv.get("lastMessage")
+                    if not isinstance(last_msg, dict):
+                        continue
+
+                    msg_id = last_msg.get("id")
+                    sender_id = last_msg.get("senderId")
+
+                    # If the last message was from the user and not yet answered
+                    if sender_id and sender_id != OFFICIAL_SOVYTHOS["uid"] and msg_id not in answered_dm_msg_ids:
+                        answered_dm_msg_ids.add(msg_id)
+
+                        participants = conv.get("participants", {})
+                        user_info = participants.get(sender_id) if isinstance(participants, dict) else None
+                        if not isinstance(user_info, dict):
+                            user_info = rtdb_get(f"users/{sender_id}") or {}
+                        user_name = user_info.get("displayName") or user_info.get("username") or "صاحبي"
+                        user_handle = f"@{user_info.get('username', '')}"
+
+                        msgs_data = rtdb_get(f"messages/{conv_id}")
+                        if not isinstance(msgs_data, dict):
+                            msgs_data = {}
+
+                        sorted_msgs = sorted(msgs_data.values(), key=lambda x: x.get("timestamp", 0))
+
+                        secret_key = f"pulse_secret_{conv_id}"
+                        conversation_turns = []
+                        for m in sorted_msgs[-12:]:
+                            if not isinstance(m, dict):
+                                continue
+                            raw_content = m.get("content") or ""
+                            decrypted = decipher_dm_message(raw_content, secret_key)
+                            if not decrypted or not decrypted.strip():
+                                continue
+                            role = "assistant" if m.get("senderId") == OFFICIAL_SOVYTHOS["uid"] else "user"
+                            conversation_turns.append({"role": role, "content": decrypted.strip()})
+
+                        if not conversation_turns:
+                            continue
+
+                        system_content = f"{SOVYTHOS_PRIVATE_DM_PROMPT}\n\nبيانات الطرف الآخر في هذه المحادثة الخاصة:\nالاسم: {user_name} ({user_handle})"
+                        api_messages = [{"role": "system", "content": system_content}] + conversation_turns
+
+                        # Call NVIDIA NIM API
+                        reply_text = call_nvidia_nim(api_messages, max_tokens=220)
+                        if reply_text and reply_text.strip():
+                            reply_clean = clean_ai_text(reply_text)
+
+                            encrypted_reply = cipher_dm_message(reply_clean, secret_key)
+                            now_ms = int(time.time() * 1000)
+                            reply_msg_id = f"msg_sovy_{now_ms}_{hex(int(time.time()*10000))[2:][-4:]}"
+
+                            reply_payload = {
+                                "id": reply_msg_id,
+                                "senderId": OFFICIAL_SOVYTHOS["uid"],
+                                "recipientId": sender_id,
+                                "conversationId": conv_id,
+                                "content": encrypted_reply,
+                                "timestamp": now_ms,
+                                "type": "text",
+                                "read": False,
+                                "isRead": False,
+                                "isSovythosAutoReply": True
+                            }
+
+                            # 1. Put message into messages/{conv_id}/{reply_msg_id}
+                            rtdb_put(f"messages/{conv_id}/{reply_msg_id}", reply_payload)
+
+                            # 2. Update conversation record
+                            unread_dict = conv.get("unread") or {}
+                            user_unread = (unread_dict.get(sender_id, 0) if isinstance(unread_dict, dict) else 0) + 1
+                            conv_patch = {
+                                "isAccepted": True,
+                                "isRequest": False,
+                                "lastMessage": {
+                                    "id": reply_msg_id,
+                                    "senderId": OFFICIAL_SOVYTHOS["uid"],
+                                    "text": encrypted_reply[:100],
+                                    "type": "text",
+                                    "timestamp": now_ms
+                                },
+                                f"unread/{sender_id}": user_unread,
+                                f"unread/{OFFICIAL_SOVYTHOS['uid']}": 0,
+                                "updatedAt": now_ms
+                            }
+                            rtdb_patch(f"conversations/{conv_id}", conv_patch)
+                            answered_dm_msg_ids.add(reply_msg_id)
+                            METRICS["sovythos_replies"] += 1
+                            print(f"[Sovythos DM] Replied to @{user_name} in {conv_id}: '{reply_clean[:45]}...'", flush=True)
+
+        except Exception as e:
+            print(f"[Sovythos DM] Error in watcher loop: {e}", flush=True)
+
+        time.sleep(2)
+
+
 def trending_engine_loop():
 
 
@@ -4625,6 +4793,7 @@ def main():
 
 
         threading.Thread(target=sovythos_autonomous_loop, name="SovythosAIThread", daemon=True),
+        threading.Thread(target=sovythos_dm_watcher_loop, name="SovythosDMWatcherThread", daemon=True),
 
 
         threading.Thread(target=trending_engine_loop, name="TrendingEngineThread", daemon=True),

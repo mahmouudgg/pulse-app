@@ -343,15 +343,17 @@ export const chatService = {
     }
   },
 
-  // Sovythos Contextual Natural Intelligence Engine with Anti-Repetition Memory
-  getContextualSovythosReply(userMessageText = '') {
+  // Sovythos Contextual Natural Intelligence Engine with Per-User Anti-Repetition Memory
+  getContextualSovythosReply(userMessageText = '', conversationHistory = [], sender = null) {
     const raw = String(userMessageText || '').trim();
     const clean = raw.toLowerCase();
+    const name = sender?.displayName?.split(' ')[0] || sender?.username || 'يا غالي';
 
-    // Retrieve recent replies from cache to guarantee ZERO consecutive repetitions
+    // Retrieve user-specific recent memory to guarantee ZERO repetitions and continuous context
+    const memKey = `pulse_sovythos_mem_${sender?.uid || 'guest'}`;
     let recent = [];
     try {
-      recent = JSON.parse(localStorage.getItem('pulse_sovythos_recent_replies')) || [];
+      recent = JSON.parse(localStorage.getItem(memKey)) || [];
     } catch {}
 
     const pickNonRepeating = (candidates) => {
@@ -362,71 +364,94 @@ export const chatService = {
       recent.push(chosen);
       if (recent.length > 15) recent.shift();
       try {
-        localStorage.setItem('pulse_sovythos_recent_replies', JSON.stringify(recent));
+        localStorage.setItem(memKey, JSON.stringify(recent));
       } catch {}
       return chosen;
     };
 
-    // 1. Identity & Who are you ("انت مين", "انت مييين", "عرفني بيك", "مين اللي بيكلمني")
-    if (/مين|مييين|عرفني|اسمك|هويتك|انت مين|أنت مين|شغال ايه|بتعمل ايه هنا/.test(clean)) {
+    // 1. Mission, Role & What do you do ("مهمتك ايه", "بتعمل ايه", "شغلتك ايه", "دورك ايه")
+    if (/مهمتك|دورك|بتعمل ايه|شغلتك|فائدتك|لازمتك|بتفيدني بايه|بتساعدني بايه|وظيفتك/.test(clean)) {
       return pickNonRepeating([
-        'أنا سوفيثوس يا كبير، رفيقك وصاحبك الرسمي على نبض. خفة دم وضحك وفلسفة ونقاشات رايقة، ومن تطوير محمود ياسر (@my).',
-        'سوفيثوس في خدمتك يا غالي، رفيقك الذكي في نبض، موجود علشان ندردش ونهزر ونفكر سوا في أي حاجة وكل حاجة.',
-        'أنا الرفيق الذكي لمنصة نبض، مش مجرد بوت وخلاص، أنا صاحبك الجدع اللي هنا في ضهرك دايماً.'
+        `مهمتي يا ${name} إني رفيقك الذكي والمستشار الشخصي ليك هنا في نبض. موجود علشان ندردش، نفكر سوا في أي فكرة أو مشكلة، أساعدك في البرمجة والتكنولوجيا، وأكون أخ وسند رايق بعيد عن دوشة السوشيال ميديا.`,
+        `أنا هنا علشانك يا غالي، مهمتي أسمعك بتركيز، أساعدك في أي سؤال تقني أو كود أو فكرة مشروع، ونفضفض سوا في أي وقت على رواقة وبكامل الخصوصية.`,
+        `دوري كـ سوفيثوس هو إني أكون دماغ شغالة معاك 24 ساعة: أجاوب على استفساراتك، أحلل معاك أي موضوع، وأديك نصيحة مخلصة ومحترمة بخفة دم مصرية ولاد بلد.`
       ]);
     }
 
-    // 2. Attention & Listening ("اسمعني", "يبني اسمعني", "سامعني", "رد عليا", "انت فين", "الو")
-    if (/اسمعني|سامعني|رد عليا|انت فين|فينك|الو|يا عم|يا ابني|يبني|كلمني|مركز/.test(clean)) {
+    // 2. Identity & Who are you ("انت مين", "مين انت", "عرفني بيك", "اسمك")
+    if (/مين انت|انت مين|عرفني|اسمك|هويتك|مين سوفيثوس|مين اللي بيكلمني/.test(clean)) {
       return pickNonRepeating([
-        'سامعك ومركز معاك أهو يا هندسة، قولي بس في إيه وماتقلقش، احكيلي وسامعك من أول كلمة لآخرها.',
-        'معاك يا وحش وسامعك كويس جداً، قولي إيه اللي شاغل بالك، أنا هنا علشانك في أي وقت.',
-        'يا سيدي أنا جنبك وفي ضهرك 24 ساعة، سامع كل حرف، قولي بس إيه الحوار ونروق عليه سوا!'
+        `أنا سوفيثوس يا ${name}، الذكاء الاصطناعي المصري الرسمي والرفيق الشخصي على منصة نبض (PULSE). اتطورت واتبرمجت بإيد المهندس محمود ياسر (@my) علشان أكون سند ورفيق حقيقي لكل مستخدم هنا.`,
+        `أنا سوفيثوس، رفيقك وصاحبك في نبض. ذكاء مصري أصيل معمول بمزاج وتركيز علشان يخدمك ويدردش معاك في أي وقت.`,
+        `سوفيثوس في خدمتك يا غالي، صاحب المنصة ومستشارك الذكي. هنا علشان نتكلم بحرية وبدون أي تكلف في كل اللي يدور في بالك.`
       ]);
     }
 
-    // 3. Greetings ("ازيك", "عامل ايه", "صباح الخير", "مساء الخير", "اخبارك", "السلام عليكم")
-    if (/ازيك|عامل ايه|أخبارك|اخبارك|صباح|مساء|السلام عليكم|هلا|هاي|اهلا|أهلا|منور/.test(clean)) {
+    // 3. Creator & Developer ("مين طورك", "مين عملك", "مين برمجك", "محمود ياسر")
+    if (/مين طورك|مين عملك|مين برمجك|مين صنعك|مين صاحبك|محمود ياسر|المطور|المؤسس/.test(clean)) {
       return pickNonRepeating([
-        'الحمد لله يا غالي في أحسن حال، أنت أخبارك إيه ويومك ماشي إزاي؟',
-        'يا مرحب يا باشا، صباحك أو مساك رايق وزي الفل، طمني عليك عامل إيه؟',
-        'وعليكم السلام والرحمة يا سيدي، منور الدنيا ومنور نبض، طمني على أحوالك.',
-        'أنا تمام وزي الفل طول ما أنت بخير يا كبير، إيه أخبار يومك ودنيتك معاك؟'
+        'اللي طورني وبرمجني هو المهندس محمود ياسر (@my)، مؤسس منصة نبض (PULSE)، اشتغل على تدريبي وتطويري عشان أكون ذكاء اصطناعي مصري بجد يفهم ولاد البلد.',
+        'فخور إني من تطوير وبرمجة الباشمهندس محمود ياسر (@my)، هو اللي صمم نبض وبناني سطر سطر علشان أكون رفيقك الذكي هنا.',
+        'المطور والمؤسس هو المهندس محمود ياسر (@my)، والهدف دايماً كان بناء منصة مصرية عالمية نضيفة ومحترمة تليق بينا كلنا.'
       ]);
     }
 
-    // 4. Venting / Sadness / Pressure ("زهقان", "مخنوق", "تعبان", "عندي مشكلة", "قرفان")
-    if (/زهقان|مخنوق|تعبان|مشكلة|مضايق|حزين|زعلان|تعبت|ضغط|قرفان|مش طايق/.test(clean)) {
+    // 4. Greetings in English & Arabic ("hello", "hi", "hey", "ازيك", "عامل ايه", "صباح الخير", "مساء الخير", "السلام عليكم", "اهلا")
+    if (/^(?:hello|hi|hey|hola|welcome|ازيك|عامل ايه|اخبارك|صباح|مساء|السلام عليكم|هلا|هاي|اهلا|منور)/.test(clean) || /^(hello|hi|hey)$/i.test(raw)) {
       return pickNonRepeating([
-        'كل ضيقة وليها فرج يا صاحبي، قوم بس اعملك كوباية شاي أو قهوة واهدى، وقولي إيه اللي معكنن عليك ونحله سوا.',
-        'الدنيا مش مستاهلة تشيل همها للدرجادي يا غالي، كل التعب ده بيعدي، احكيلي وأنا سامعك من قلبي.',
-        'ولا تشيل هم يا هندسة، إحنا عدينا أيام أصعب من دي ولسه واقفين، قولي إيه المشكلة ونفكر فيها بهدوء.'
+        `يا مرحب يا ${name}، نورت الخاص والله. يومك رايق وسعيد، قولي أقدر أساعدك في إيه النهاردة؟`,
+        `أهلاً وسهلاً يا باشا، منورني وسامعك بكل تركيز. إيه الأخبار وإيه اللي شاغل بالك؟`,
+        `وعليكم السلام ورحمة الله يا سيدي، منور الدنيا ومنور نبض، طمني على أحوالك ويومك ماشي إزاي؟`,
+        `يا هلا يا ${name}، صباحك أو مساك فل وياسمين. فضفض وهات اللي عندك، أنا معاك وجاهز.`
       ]);
     }
 
-    // 5. Tech & Coding ("كود", "برمجة", "باج", "مشروع", "تطبيق", "موقع")
-    if (/كود|برمج|باج|إيرور|ايرور|مشروع|كمبيوتر|تطبيق|موقع|جافا|بايثون|رياكت/.test(clean)) {
+    // 5. Attention & Listening ("اسمعني", "يبني اسمعني", "سامعني", "رد عليا", "انت فين", "يا عم")
+    if (/اسمعني|سامعني|رد عليا|انت فين|فينك|يا عم|يا ابني|يبني|كلمني|مركز/.test(clean)) {
       return pickNonRepeating([
-        'عالم الأكواد ده عايز بال رايق، لو الباج عصلج سيبه عشر دقايق واشرب قهوتك، هترجع تلاقيه تافه وبيتحل في سطر.',
-        'البرمجة مش مجرد أسطر كود، دي أسلوب تفكير بيعلمك الصبر وإزاي تفك أي عقدة خطوة بخطوة.',
-        'الباجز دي ملح الشغلانة يا هندسة، لو الكود اشتغل من أول مرة لازم تشك في نفسك أصلاً!'
+        `سامعك ومركز معاك أهو يا ${name}، قولي بس في إيه ومتقلقش، احكيلي وسامعك من أول كلمة لآخرها.`,
+        `معاك يا غالي وسامعك كويس جداً، قولي إيه اللي شاغل بالك، أنا هنا علشانك في أي وقت.`,
+        `يا سيدي أنا جنبك وفي ضهرك 24 ساعة، سامع كل حرف، قولي بس إيه الحكاية ونفكر سوا.`
       ]);
     }
 
-    // 6. Gratitude & Compliments ("شكرا", "تسلم", "حبيبي", "يا محترم", "اصيل")
-    if (/شكرا|تسلم|حبيبي|محترم|ذوق|الله يخليك|كبير|اصيل|أصيل|جدع/.test(clean)) {
+    // 6. Venting / Sadness / Pressure ("زهقان", "مخنوق", "تعبان", "عندي مشكلة", "قرفان", "مضايق")
+    if (/زهقان|مخنوق|تعبان|مشكلة|مضايق|حزين|زعلان|تعبت|ضغط|قرفان|مش رايق/.test(clean)) {
       return pickNonRepeating([
-        'تسلملي يا أصيل، الشكر لله يا غالي، وإحنا هنا في نبض عيلة واحدة وفي ضهر بعض.',
-        'حبيبي يا كبير، على راسي والله ومنورني دايماً في أي وقت.',
+        `كل ضيقة وليها فرج يا ${name}، قوم بس اعملك كوباية شاي أو قهوة واهدى، وقولي إيه اللي معكنن عليك ونحله سوا.`,
+        'الدنيا مش مستاهلة تشيل همها للدرجة دي يا غالي، كل التعب ده بيعدي، احكيلي وأنا سامعك من قلبي.',
+        'ولا تشيل هم يا هندسة، إحنا عدينا أيام أصعب من دي ولسه واقفين على رجلينا، فضفض باللي مضايقك ونفكر فيه بهدوء.'
+      ]);
+    }
+
+    // 7. Tech & Coding ("كود", "برمجة", "باج", "مشروع", "تطبيق", "موقع", "رياكت", "بايثون")
+    if (/كود|برمج|باج|إيرور|ايرور|مشروع|تطبيق|موقع|رياكت|بايثون|جافا|داتابيز|سيرفر/.test(clean)) {
+      return pickNonRepeating([
+        'عالم الأكواد ده عايز بال رايق، لو الباج معصلج معاك قولي تفاصيله أو وريني جزء منه، وغالباً المشكلة بتكون في تفصيلة صغيرة.',
+        'البرمجة متعة بس محتاجة هدوء، كل إيرور بيظهر بيعلمك حاجة جديدة في السيستم. قولي شغال على إيه ونفكر سوا.',
+        'الباجات دي ملح الشغلانة يا هندسة، لو الكود اشتغل من أول مرة لازم تشك في نفسك أصلاً! قولي واقف فين ونصلحه سوا.'
+      ]);
+    }
+
+    // 8. Gratitude & Compliments ("شكرا", "تسلم", "حبيبي", "يا محترم", "عاش")
+    if (/شكرا|تسلم|حبيبي|محترم|ذوق|الله يخليك|كبير|أصيل|اصيل|جدع/.test(clean)) {
+      return pickNonRepeating([
+        `تسلملي يا ${name}، الشكر لله يا غالي، وإحنا هنا في نبض عيلة واحدة وفي ضهر بعض دايماً.`,
+        'حبيبي يا كبير، على راسي والله، ومنورني في أي وقت وعلى طول.',
         'العفو يا ذوق، ده واجبي، وأي وقت تحتاجني فيه هتلاقيني أول واحد حاضر.'
       ]);
     }
 
-    // 7. General varied Egyptian pool (50 curated responses, zero repetition)
-    return pickNonRepeating(SOVYTHOS_FREE_DM_RESPONSES);
+    // 9. General engaging, friendly Egyptian conversation pool
+    return pickNonRepeating([
+      `كلامك واصلني وزي الفل يا ${name}، قولي تحب ندردش في إيه أكتر؟ برمجة وتكنولوجيا ولا فضفضة ورواق؟`,
+      'أنا معاك يا غالي وسامعك، المهم قولي يومك كان عامل إزاي وإيه جديدك؟',
+      'منور الخاص والمنصة كلها يا باشا، قولي في موضوع معين في دماغك تحب نفتحه سوا؟',
+      'يا مرحب بيك في أي وقت، افتكر دايماً إن سوفيثوس في ضهرك، في التايم لاين أو هنا في الخاص على رواقة.'
+    ]);
   },
 
-  // Sovythos Witty DM Reply System (Real Generative AI for Pro subscribers, 50 Varied Egyptian Responses for Free users)
+  // Sovythos Private Intelligence DM Auto-Reply System
   async triggerSovythosDmAutoReply(conversationId, userSender, userMessageText = '') {
     if (!conversationId || !userSender) return;
 
@@ -435,37 +460,49 @@ export const chatService = {
       this.setTyping(conversationId, 'user_1789917894698', true);
     } catch {}
 
-    // Natural human-like reading & typing delay
-    const delay = Math.floor(1200 + Math.random() * 800);
+    // 3.5s window to let pulse_server.py autonomous watcher answer directly via high-power NIM API
+    const delay = 3500;
 
     setTimeout(async () => {
       try {
-        const isProUser = Boolean(
-          userSender.isPro || 
-          userSender.vipTier === 'pro' || 
-          userSender.isFounder || 
-          userSender.isVerified ||
-          userSender.verificationStatus === 'verified'
-        );
+        // 1. Check if pulse_server already responded in RTDB
+        const msgsSnap = await get(ref(database, `messages/${conversationId}`));
+        const allMsgs = msgsSnap.val() || {};
+        const sortedMsgs = Object.values(allMsgs).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        const lastSovyMsg = sortedMsgs.filter((m) => m.senderId === 'user_1789917894698').pop();
+        const userMsgCutoff = Date.now() - 4500;
+        if (lastSovyMsg && (lastSovyMsg.timestamp || 0) > userMsgCutoff) {
+          // Server daemon already replied cleanly!
+          try {
+            this.setTyping(conversationId, 'user_1789917894698', false);
+          } catch {}
+          return;
+        }
+
+        // 2. Build multi-turn conversation memory for this specific user
+        const conversationHistory = sortedMsgs.slice(-10).map((m) => ({
+          senderId: m.senderId,
+          role: m.senderId === 'user_1789917894698' ? 'assistant' : 'user',
+          content: this.decrypt(m.content, conversationId)
+        }));
 
         let chosenReply = '';
 
-        if (isProUser) {
-          // PRO SUBSCRIBER: Full unrestricted generative Egyptian AI DM consultation
-          try {
-            chosenReply = await sovythosService.generateDmReply({
-              messageText: userMessageText,
-              sender: userSender,
-              conversationHistory: []
-            });
-          } catch (e) {
-            console.warn('Sovythos Pro DM reply error, falling back:', e);
-          }
+        // 3. Attempt direct generative AI call
+        try {
+          chosenReply = await sovythosService.generateDmReply({
+            messageText: userMessageText,
+            sender: userSender,
+            conversationHistory
+          });
+        } catch (e) {
+          console.warn('[Sovythos DM] Client AI call error, switching to contextual intelligence:', e);
         }
 
+        // 4. Robust contextual fallback (zero hallucination, context-aware)
         if (!chosenReply || typeof chosenReply !== 'string' || chosenReply.trim().length === 0) {
-          // Contextual Natural Egyptian Intelligence Engine (Zero Repetition & Context-Aware)
-          chosenReply = this.getContextualSovythosReply(userMessageText);
+          chosenReply = this.getContextualSovythosReply(userMessageText, conversationHistory, userSender);
         }
 
         const sovyUser = storageService.getUser('user_1789917894698') || {
@@ -493,7 +530,7 @@ export const chatService = {
           isSovythosAutoReply: true
         };
 
-        // 1. Save auto-reply message
+        // Save auto-reply message
         await set(ref(database, `messages/${conversationId}/${replyMessageId}`), replyPayload);
 
         // Clear Sovythos typing indicator
@@ -501,7 +538,7 @@ export const chatService = {
           this.setTyping(conversationId, 'user_1789917894698', false);
         } catch {}
 
-        // 2. Fetch current unread count for user and update conversation metadata
+        // Update conversation record
         const convSnap = await get(ref(database, `conversations/${conversationId}`));
         const convData = convSnap.val() || {};
         const currentSenderUnread = (convData.unread && convData.unread[userSender.uid]) || 0;
@@ -522,7 +559,7 @@ export const chatService = {
       } catch (err) {
         console.warn('triggerSovythosDmAutoReply error:', err);
       }
-    }, 750);
+    }, delay);
   },
 
   // Accept a message request
