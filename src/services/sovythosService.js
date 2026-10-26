@@ -19,7 +19,7 @@ const LAST_POST_TIMESTAMP_KEY = 'pulse_sovythos_last_post_timestamp';
 export const SOVYTHOS_DEFAULTS = {
   apiKey: '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',
   baseUrl: 'https://integrate.api.nvidia.com/v1',
-  model: 'meta/llama-3.2-90b-vision-instruct',
+  model: 'meta/llama-3.2-11b-vision-instruct',
   fallbackModel: 'meta/llama-3.2-11b-vision-instruct',
   tone: 'balanced', // 'balanced' | 'grok' | 'serious'
   enabled: true
@@ -49,7 +49,7 @@ export const sovythosService = {
       const saved = localStorage.getItem(STORAGE_CONFIG_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (!parsed.model || parsed.model.includes('deepseek') || parsed.model === 'meta/llama-3.2-11b-vision-instruct') {
+        if (!parsed.model || parsed.model.includes('deepseek') || parsed.model === 'meta/llama-3.2-90b-vision-instruct') {
           parsed.model = SOVYTHOS_DEFAULTS.model;
           parsed.fallbackModel = SOVYTHOS_DEFAULTS.fallbackModel;
         }
@@ -389,7 +389,7 @@ export const sovythosService = {
       console.warn('[Sovythos] Error in generateDmReply:', err);
     }
 
-    // Graceful intelligent fallback
-    return 'معاك يا غالي وسامعك كويس. فضفض وقولي كل اللي في بالك، أنا هنا علشانك في أي وقت.';
+    // If generative AI is unavailable or throttled, return null to let contextual intelligence take over
+    return null;
   }
 };
