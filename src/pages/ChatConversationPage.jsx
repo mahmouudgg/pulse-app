@@ -142,6 +142,23 @@ export default function ChatConversationPage({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOtherTyping]);
 
+  // Auto-catchup: If user previously messaged Sovythos and Sovythos hasn't responded yet, trigger response
+  const hasTriggeredCatchupRef = useRef(false);
+  useEffect(() => {
+    if (!isRecipientSovythos || messages.length === 0 || !currentUser?.uid || hasTriggeredCatchupRef.current) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg && lastMsg.senderId === currentUser.uid && lastMsg.type === 'text') {
+      const timeSinceLast = Date.now() - (lastMsg.timestamp || 0);
+      if (timeSinceLast > 1000 && !String(lastMsg.id).startsWith('opt_')) {
+        hasTriggeredCatchupRef.current = true;
+        const timer = setTimeout(() => {
+          chatService.triggerSovythosDmAutoReply(conversationId, currentUser, lastMsg.content);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [conversationId, isRecipientSovythos, messages, currentUser]);
+
   // Determine Message Request Status & Block Shield
   const isAccepted = conversationMeta?.isAccepted === true;
   const isRequest = Boolean(conversationMeta?.isRequest && !isAccepted);

@@ -233,8 +233,11 @@ export const chatService = {
     let isRequest = false;
     let isAccepted = existingConv.isAccepted === true;
 
+    const isSovythosRecipient = recipient.uid === 'user_1789917894698' || recipient.username?.toLowerCase() === 'sovythos';
+    const isSovythosSender = sender.uid === 'user_1789917894698' || sender.username?.toLowerCase() === 'sovythos';
+
     if (!isAccepted) {
-      if (recipientFollowsSender || sender.uid === 'dev_mahmoud_yasser' || sender.username === 'my') {
+      if (isSovythosRecipient || isSovythosSender || recipientFollowsSender || sender.uid === 'dev_mahmoud_yasser' || sender.username === 'my') {
         isAccepted = true;
         isRequest = false;
       } else {
@@ -329,7 +332,8 @@ export const chatService = {
       // Check if recipient is Sovythos — trigger intelligent Pro DM or varied Free response
       const isRecipientSovythos = recipient.uid === 'user_1789917894698' || recipient.username?.toLowerCase() === 'sovythos';
       if (isRecipientSovythos && sender.uid !== 'user_1789917894698') {
-        this.triggerSovythosDmAutoReply(conversationId, sender, text);
+        const messageText = isVoice ? '' : (typeof content === 'string' ? content : '');
+        this.triggerSovythosDmAutoReply(conversationId, sender, messageText);
       }
 
       return messagePayload;
@@ -343,7 +347,14 @@ export const chatService = {
   async triggerSovythosDmAutoReply(conversationId, userSender, userMessageText = '') {
     if (!conversationId || !userSender) return;
 
-    // Natural reading & typing delay
+    // Immediately show Sovythos typing indicator
+    try {
+      this.setTyping(conversationId, 'user_1789917894698', true);
+    } catch {}
+
+    // Natural human-like reading & typing delay
+    const delay = Math.floor(1200 + Math.random() * 800);
+
     setTimeout(async () => {
       try {
         const isProUser = Boolean(
@@ -404,6 +415,11 @@ export const chatService = {
 
         // 1. Save auto-reply message
         await set(ref(database, `messages/${conversationId}/${replyMessageId}`), replyPayload);
+
+        // Clear Sovythos typing indicator
+        try {
+          this.setTyping(conversationId, 'user_1789917894698', false);
+        } catch {}
 
         // 2. Fetch current unread count for user and update conversation metadata
         const convSnap = await get(ref(database, `conversations/${conversationId}`));

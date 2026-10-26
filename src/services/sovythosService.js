@@ -381,7 +381,7 @@ export const sovythosService = {
     messages.push({ role: 'user', content: String(messageText || '') });
 
     try {
-      const response = await this.callApi(messages, config);
+      const response = await this.callChatApi(messages, { max_tokens: 220, temperature: 0.45 });
       if (response && response.trim()) {
         return response.trim();
       }
