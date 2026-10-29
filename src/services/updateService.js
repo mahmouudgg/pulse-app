@@ -3,8 +3,8 @@ import { Capacitor } from '@capacitor/core';
 const FIREBASE_BASE_URL = 'https://sahra-f4ec6-default-rtdb.firebaseio.com';
 
 export const APP_VERSION_INFO = {
-  versionName: '1.0.2',
-  versionCode: 3,
+  versionName: '1.0.3',
+  versionCode: 4,
   channel: 'stable',
   platform: 'android'
 };
