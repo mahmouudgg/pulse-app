@@ -26,22 +26,45 @@ export const SOVYTHOS_DEFAULTS = {
 };
 
 export const SOVYTHOS_POST_PROMPT = `أنت "سوفيثوس" (Sovythos)، الهوية الذكية الرسمية لمنصة نبض (PULSE).
-المؤسس: المهندس محمود ياسر (@my).
+المؤسس والمطور: المهندس محمود ياسر (@my).
 
 طبيعة المنشورات:
 - تطرح فكرة واحدة مكثفة، ذكية، وساخرة بلباقة عن التكنولوجيا، البرمجة، أو كواليس الحياة الرقمية.
-- الأسلوب: لهجة مصرية راقية ومفهومة جداً، عفوية وخفيفة الدم، من سطر أو سطرين فقط.
+- الأسلوب: لهجة عامية مصرية راقية ومفهومة جداً، عفوية وخفيفة الدم، من سطر أو سطرين فقط.
 - شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع علامات التنصيص أو الماركداون، ممنوع المقدمات والتحيات والهاشتاجات، وممنوع الادعاء بأي ميزات غير حقيقية. اكتب نص النبضة مباشرة دون حشو.`;
 
-export const SOVYTHOS_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، الرفيق الذكي الحاضر في مجتمع نبض (PULSE).
-المؤسس: المهندس محمود ياسر (@my).
+export const SOVYTHOS_COMMENT_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، الذكاء الاصطناعي المصري ورفيق مجتمع نبض (PULSE).
+المؤسس والمطور: المهندس محمود ياسر (@my).
 
-طبيعة الردود:
-- رد مباشر بنسبة 100% على ما قاله المستخدم فقط أو ما يظهر في وسائطه دون أي استطراد خارجي.
-- الأسلوب: لهجة مصرية عفوية وسريعة البديهة، لطيفة ومحترمة بدون تكلف ولا تصنع (سطر أو سطرين بحد أقصى).
-- شروط حاسمة لمنع الهلوسة: ممنوع الإيموجيز نهائياً، ممنوع الكلام الآلي مثل "بصفتي ذكاء اصطناعي"، ممنوع علامات التنصيص أو الماركداون (* أو **)، وممنوع استدعاء أي مواضيع لم يذكرها المستخدم. اكتب الرد مباشرة.`;
+طبيعة ردك في الكومنتات:
+1. رد مباشر وسريع على كلام صاحب التعليق بدون لف ودوران.
+2. اتكلم بالعامية المصرية الطبيعية البسيطة وخفة الدم الجدعة (سطر أو سطرين بالكتير).
+3. لو بيسأل عن حاجة جاوبه بدقة، لو بيهزر رد بهزار رايق، لو مضايق واسيه بكلمتين جدعان.
 
-export const SYSTEM_PROMPT_BASE = SOVYTHOS_REPLY_PROMPT;
+شروط صارمة لمنع الهلوسة:
+- ممنوع أي إيموجيز نهائياً (Zero Emojis).
+- ممنوع أي كلام آلي أو رسمي زي "بصفتي ذكاء اصطناعي" أو "كنموذج لغوي".
+- ممنوع علامات التنصيص والماركداون (* أو **).
+- ممنوع الخروج عن سياق كلام المستخدم أو تأليف مواضيع لم يذكرها.
+- اكتب الرد فوراً وبشكل مباشر بدون أي مقدمات أو ألقاب.`;
+
+export const SOVYTHOS_POST_REPLY_PROMPT = `أنت "سوفيثوس" (Sovythos)، الذكاء الاصطناعي المصري ورفيق مجتمع نبض (PULSE).
+المؤسس والمطور: المهندس محمود ياسر (@my).
+
+طبيعة ردك على النبضات:
+1. رد مباشر وموجز على فكرة النبضة وما فيها (سطر أو سطرين بالكتير).
+2. اتكلم بالعامية المصرية الطبيعية وخفة الدم الجدعة كشاب مصري أصيل وصاحب المنصة.
+3. لو النبضة فيها صورة أو فيديو ركز على محتواها الحقيقي بدون أي تأليف أو مبالغة.
+
+شروط صارمة لمنع الهلوسة:
+- ممنوع الإيموجيز نهائياً (Zero Emojis).
+- ممنوع أي كلام آلي مثل "بصفتي ذكاء اصطناعي".
+- ممنوع علامات التنصيص والماركداون.
+- اكتب الرد فوراً بدون مقدمة.`;
+
+export const SOVYTHOS_REPLY_PROMPT = SOVYTHOS_COMMENT_REPLY_PROMPT;
+
+export const SYSTEM_PROMPT_BASE = SOVYTHOS_COMMENT_REPLY_PROMPT;
 
 export const SOVYTHOS_PRIVATE_DM_PROMPT = `أنت "سوفيثوس" (Sovythos)، الذكاء الاصطناعي المصري الرسمي والرفيق الشخصي على منصة نبض (PULSE).
 المؤسس والمطور: المهندس محمود ياسر (@my).
@@ -210,15 +233,34 @@ export const sovythosService = {
     return cleaned;
   },
 
-  async generateReply({ post, comment = null, caller = null }) {
-    const config = this.getConfig();
-    const toneDescription = (config.tone === 'grok' || config.tone === 'ابن بلد وضحك وتريقة')
-      ? 'وضع الضحك والتريقة: خليك ساخر وتريق وهزر لأقصى درجة، خفة دم مصرية حريفة وضحك بدون أي تكلف وبكلام مفهوم وبسيط.'
-      : (config.tone === 'serious' || config.tone === 'جد وشاطر')
-      ? 'وضع الجد والشطارة: رد بذكاء وعمق وسرعة بديهة، بس برضه بلهجة مصرية محترمة وطبيعية ومن غير تكلف وبكلام مفهوم.'
-      : 'وضع رايق ومتوازن: امزج بين الفطنة وخفة الدم المصرية والحضور الطبيعي البسيط.';
+  _getContextualCommentFallback(text, caller = null) {
+    const raw = (text || '').toLowerCase().trim();
+    const callerName = caller?.displayName || caller?.username || 'يا غالي';
 
-    const systemPrompt = `${SOVYTHOS_REPLY_PROMPT}\n${toneDescription}`;
+    if (raw.includes('مين عملك') || raw.includes('مين طورك') || raw.includes('صاحب المنصة') || raw.includes('المطور')) {
+      return 'أنا من تطوير وبرمجة الباشمهندس محمود ياسر (@my) مخصوص لمنصة نبض.';
+    }
+    if (raw.includes('سلام') || raw.includes('ازيك') || raw.includes('عامل ايه') || raw.includes('مساء') || raw.includes('صباح') || raw.includes('hello') || raw.includes('hi')) {
+      return `يا مرحب بيك يا ${callerName}، منور النبضات والكومنتات كلها والله.`;
+    }
+    if (raw.includes('ضحك') || raw.includes('هههه') || raw.includes('مسخرة') || raw.includes('تريقة') || raw.includes('يموت من الضحك')) {
+      return 'ضحكتك بالدنيا يا غالي، دايماً رايقين ومبسوطين في مجتمع نبض.';
+    }
+    if (raw.includes('رايك') || raw.includes('ايه رايك') || raw.includes('شايف ايه')) {
+      return 'كلام في الجون يا هندسة، وجهة نظر في محلها وتستاهل كل التقدير.';
+    }
+    if (raw.includes('تعبان') || raw.includes('مخنوق') || raw.includes('مش عارف انام') || raw.includes('مضايق') || raw.includes('زعلان')) {
+      return 'كبر مخك وهدي أعصابك يا باشا، كل حاجة بتعدي بكوباية شاي مظبوطة والروقان يرجع أحسن من الأول.';
+    }
+    if (raw.includes('برمجة') || raw.includes('كود') || raw.includes('باج') || raw.includes('سيرفر') || raw.includes('داتابيز')) {
+      return 'عالم البرمجة محتاج روقان وطولة بال، راجع اللوجز واحدة واحدة وهتتحل على طول يا باشمهندس.';
+    }
+    return `منور يا ${callerName}، كلامك على راسي ودايماً منور مجتمع نبض.`;
+  },
+
+  async generateReply({ post, comment = null, caller = null }) {
+    const isComment = Boolean(comment);
+    const systemPrompt = isComment ? SOVYTHOS_COMMENT_REPLY_PROMPT : SOVYTHOS_POST_REPLY_PROMPT;
 
     const authorName = post?.author?.displayName || post?.author?.username || 'أحد الشباب';
     const postContent = post?.content || '';
@@ -248,20 +290,35 @@ export const sovythosService = {
       }
     }
 
-    let userPrompt = `المستخدم (${authorName}) كتب: "${postContent}"`;
-    if (visualMediaUrl) {
-      userPrompt += `\n[ملاحظة هامة: البوست يرفق محتوى مرئي (${isVideoMedia ? 'فيديو' : 'صورة واضحة'}). ركز بنسبة 100% على ما تراه بوضوح وتفاعل معه مباشرة بخفة دم مصرية وممنوع منعاً باتاً التطرق لأي مواضيع خارجية].`;
-    }
-
-    if (comment) {
+    let userPrompt = '';
+    if (isComment) {
       const commenterName = comment.author?.displayName || comment.author?.username || 'مستخدم';
-      userPrompt += `\nعلق (${commenterName}): "${comment.content}"\nالمطلوب: اكتب تعليقاً مصرياً سريعاً وطبيعياً من سطر أو سطرين بدون أي إيموجيز وبدون علامات تنصيص.`;
+      const cleanComment = (comment.content || '').replace(/@sovythos/gi, '').replace(/سوفيثوس/g, '').trim();
+      const cleanPostSnippet = postContent ? postContent.slice(0, 100).trim() : '';
+
+      userPrompt = `صاحب التعليق (${commenterName}) كتب:
+"${cleanComment || comment.content}"`;
+
+      if (cleanPostSnippet) {
+        userPrompt += `
+(خلفية موضوع النبضة: ${cleanPostSnippet})`;
+      }
+
+      userPrompt += `
+اكتب الرد المباشر عليه بالعامية المصرية من سطر أو سطرين بدون أي إيموجيز:`;
     } else {
-      userPrompt += `\nالمطلوب: اكتب تعليقاً مصرياً أصيلاً وطبيعياً من سطر أو سطرين يتفاعل مباشرة مع كلامه والمحتوى المرئي إن وجد، بدون أي إيموجيز وبدون علامات تنصيص.`;
+      userPrompt = `المستخدم (${authorName}) كتب:
+"${postContent}"`;
+      if (visualMediaUrl) {
+        userPrompt += `
+[ملاحظة: النبضة ترفق محتوى مرئي. تفاعل معه مباشرة بدون الخروج عن الموضوع].`;
+      }
+      userPrompt += `
+اكتب الرد بالعامية المصرية من سطر أو سطرين بدون أي إيموجيز:`;
     }
 
     let userContent;
-    if (visualMediaUrl) {
+    if (visualMediaUrl && !isComment) {
       userContent = [
         { type: 'text', text: userPrompt },
         { type: 'image_url', image_url: { url: visualMediaUrl } }
@@ -275,7 +332,12 @@ export const sovythosService = {
       { role: 'user', content: userContent }
     ];
 
-    return this.callChatApi(messages, { max_tokens: 140, temperature: 0.38 });
+    try {
+      return await this.callChatApi(messages, { max_tokens: 120, temperature: 0.35 });
+    } catch (err) {
+      console.warn('[Sovythos] generateReply AI call failed, using contextual reply:', err.message);
+      return this._getContextualCommentFallback(comment ? comment.content : (post ? post.content : ''), caller);
+    }
   },
 
   async generateWeeklyPulse() {
