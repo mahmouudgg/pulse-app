@@ -11,6 +11,7 @@
 
 import { database } from './firebase';
 import { ref, get, set, runTransaction, onValue } from 'firebase/database';
+import { subscriptionService } from './subscriptionService';
 
 const STORAGE_KEYS = {
   ADS: 'pulse_ads_v1',
@@ -365,13 +366,7 @@ class AdService {
     if (!Array.isArray(posts) || posts.length === 0) return [];
 
     // Pulse Pro / VIP / Verified users enjoy a 100% clean ad-free experience
-    const isProUser = Boolean(
-      currentUser?.isPro ||
-      currentUser?.vipTier === 'pro' ||
-      currentUser?.isFounder ||
-      currentUser?.isVerified ||
-      currentUser?.verificationStatus === 'verified'
-    );
+    const isProUser = subscriptionService.isAdFree(currentUser);
     if (isProUser) {
       return posts.filter((p) => !p.isAd);
     }

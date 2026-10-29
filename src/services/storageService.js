@@ -192,24 +192,56 @@ export const storageService = {
 
   _inMemoryUsers: [],
 
+  _stripUndefined(obj) {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) {
+      return obj.map((i) => this._stripUndefined(i)).filter((i) => i !== undefined);
+    }
+    const clean = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k === '__proto__' || k === 'constructor' || k === 'prototype') continue;
+      if (v === undefined) continue;
+      clean[k] = (v !== null && typeof v === 'object') ? this._stripUndefined(v) : v;
+    }
+    return clean;
+  },
+
+  cleanupDanglingData() {
+    try {
+      const posts = this.getPosts();
+      const postIds = new Set(posts.map((p) => p.id));
+
+      // Clean orphan notifications referencing deleted posts
+      const notifKey = 'pulse_notifications_v1';
+      const rawNotifs = localStorage.getItem(notifKey);
+      if (rawNotifs) {
+        try {
+          const notifs = JSON.parse(rawNotifs);
+          if (Array.isArray(notifs)) {
+            const cleanedNotifs = notifs.filter((n) => !n.postId || postIds.has(n.postId));
+            if (cleanedNotifs.length !== notifs.length) {
+              localStorage.setItem(notifKey, JSON.stringify(cleanedNotifs));
+            }
+          }
+        } catch {}
+      }
+    } catch (err) {
+      console.warn('[StorageService] cleanupDanglingData notice:', err);
+    }
+  },
+
   cleanLegacyStorage() {
-
     const legacyKeys = [
-
       'pulse_users_v1', 'pulse_users_v2', 'pulse_users_v3', 'pulse_users_v4',
-
       'pulse_posts_v1', 'pulse_posts_v2', 'pulse_posts_v3', 'pulse_posts_v4',
-
       'pulse_comments_v1', 'pulse_comments_v2', 'pulse_comments_v3', 'pulse_comments_v4'
-
     ];
-
     legacyKeys.forEach((k) => {
-
       try { localStorage.removeItem(k); } catch (e) {}
-
     });
-
+    try {
+      this.cleanupDanglingData();
+    } catch {}
   },
 
   safeSetItem(key, rawData) {
@@ -3088,7 +3120,7 @@ export const storageService = {
   },
 
   savePost(post) {
-
+    const cleanPost = this._stripUndefined(post);
     const posts = this.getPosts();
 
     posts.unshift(post);
@@ -3099,7 +3131,7 @@ export const storageService = {
 
     try {
 
-      set(ref(database, `posts/${post.id}`), post).catch((err) => {
+      set(ref(database, `posts/${cleanPost.id}`), cleanPost).catch((err) => {
 
         console.warn('Firebase save post notice:', err);
 

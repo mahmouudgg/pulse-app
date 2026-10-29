@@ -5,31 +5,83 @@ import { sovythosService } from './sovythosService';
 
 const CHATS_LOCAL_CACHE = 'pulse_chats_cache_v1';
 
-// Lightweight Client-Side Cipher to guarantee E2E privacy from database inspectors
-function cipher(str, key) {
-  if (!str) return '';
-  let result = '';
+// Dual-Layer Chat Cipher with Key Derivation & Tamper Verification
+// Backward compatible with legacy v1 cipher
+function _simpleHash(str) {
+  let hash = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) {
-    result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    hash ^= str.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
   }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function _deriveKey(conversationId) {
+  const salt = 'pulse_e2e_hardened_salt_v2';
+  const combined = `${conversationId}:${salt}`;
+  let key = '';
+  for (let round = 0; round < 4; round++) {
+    key += _simpleHash(`${combined}:${round}`);
+  }
+  return key; // 32-char hex string
+}
+
+function cipher(str, conversationId) {
+  if (!str) return '';
   try {
-    return btoa(unescape(encodeURIComponent(result)));
+    const key = _deriveKey(conversationId);
+    const utf8 = encodeURIComponent(str);
+    let obfuscated = '';
+    for (let i = 0; i < utf8.length; i++) {
+      const kChar = key.charCodeAt(i % key.length);
+      const charCode = utf8.charCodeAt(i) ^ kChar;
+      obfuscated += String.fromCharCode(charCode);
+    }
+    const payload = btoa(unescape(obfuscated));
+    const checksum = _simpleHash(payload).slice(0, 4);
+    return `v2:${checksum}:${payload}`;
   } catch {
     return str;
   }
 }
 
-function decipher(cipherText, key) {
-  if (!cipherText) return '';
+function decipher(cipherText, conversationId) {
+  if (!cipherText || typeof cipherText !== 'string') return '';
+  
+  // V2 Encrypted Message
+  if (cipherText.startsWith('v2:')) {
+    const parts = cipherText.split(':');
+    if (parts.length === 3) {
+      const checksum = parts[1];
+      const payload = parts[2];
+      // Verify integrity
+      if (_simpleHash(payload).slice(0, 4) === checksum) {
+        try {
+          const key = _deriveKey(conversationId);
+          const raw = decodeURIComponent(escape(atob(payload)));
+          let decryptedUtf8 = '';
+          for (let i = 0; i < raw.length; i++) {
+            const kChar = key.charCodeAt(i % key.length);
+            decryptedUtf8 += String.fromCharCode(raw.charCodeAt(i) ^ kChar);
+          }
+          return decodeURIComponent(decryptedUtf8);
+        } catch {
+          // Fall through to fallback
+        }
+      }
+    }
+  }
+
+  // Legacy V1 Fallback
   try {
     const decoded = decodeURIComponent(escape(atob(cipherText)));
     let result = '';
     for (let i = 0; i < decoded.length; i++) {
-      result += String.fromCharCode(decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+      result += String.fromCharCode(decoded.charCodeAt(i) ^ conversationId.charCodeAt(i % conversationId.length));
     }
     return result;
   } catch {
-    // If already raw or plaintext fallback
+    // Plaintext fallback
     return cipherText;
   }
 }

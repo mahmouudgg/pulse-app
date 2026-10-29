@@ -840,10 +840,10 @@ class PulseHttpHandler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
 
 
-        self.send_header("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, HEAD, POST, OPTIONS")
 
 
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Range")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, Range")
 
 
         self.send_header("Accept-Ranges", "bytes")
@@ -1048,12 +1048,41 @@ class PulseHttpHandler(SimpleHTTPRequestHandler):
 
 
     def do_OPTIONS(self):
-
-
         self.send_response(204)
-
-
         self.end_headers()
+
+    def do_POST(self):
+        clean_path = self.path.split("?")[0]
+        if clean_path == "/api/sovythos/chat":
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 0:
+                raw_body = self.rfile.read(content_length)
+                try:
+                    payload = json.loads(raw_body.decode('utf-8'))
+                    messages = payload.get("messages", [])
+                    max_tokens = payload.get("max_tokens", 140)
+                    
+                    reply = call_nvidia_nim(messages, max_tokens=max_tokens)
+                    resp_data = {"content": reply or ""}
+                    body = json.dumps(resp_data, ensure_ascii=False).encode('utf-8')
+                    
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
+                except Exception as e:
+                    err_body = json.dumps({"error": str(e)}).encode('utf-8')
+                    self.send_response(500)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Content-Length", str(len(err_body)))
+                    self.end_headers()
+                    self.wfile.write(err_body)
+                    return
+            self.send_error(400, "Bad Request")
+            return
+        self.send_error(404, "Endpoint Not Found")
 
 
 

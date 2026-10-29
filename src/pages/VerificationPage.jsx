@@ -11,6 +11,7 @@ import SwipeBackWrapper from '../components/SwipeBackWrapper';
 import { hapticsService } from '../services/hapticsService';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 import VerifiedBadge from '../components/VerifiedBadge';
+import { subscriptionService } from '../services/subscriptionService';
 
 export default function VerificationPage({ onBack, onOpenCompose }) {
   const { currentUser, requestVerification, updateProfile } = useAuth();
@@ -26,12 +27,7 @@ export default function VerificationPage({ onBack, onOpenCompose }) {
   const VERIFICATION_PHONE = '01100627772';
   const BackIcon = isAr ? ArrowRight : ArrowLeft;
 
-  const isPro = Boolean(
-    currentUser?.isVerified || 
-    currentUser?.isFounder || 
-    currentUser?.isPro || 
-    currentUser?.verificationStatus === 'verified'
-  );
+  const isPro = subscriptionService.isPro(currentUser);
   const isPending = (currentUser?.verificationStatus === 'pending' || submitted) && !isPro;
   const isDeveloper = currentUser?.username === 'my' || currentUser?.isFounder;
 

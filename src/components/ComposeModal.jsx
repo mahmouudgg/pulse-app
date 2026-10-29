@@ -25,6 +25,8 @@ import ImageEditorModal from './ImageEditorModal';
 import { cloudinaryService } from '../services/cloudinaryService';
 import { draftService } from '../services/draftService';
 import { processVideoPreUpload, formatVideoDuration } from '../utils/videoOptimizer';
+import { subscriptionService } from '../services/subscriptionService';
+import { inputSanitizer } from '../utils/inputSanitizer';
 
 export const POPULAR_TOPICS = [
   'تقنية',
@@ -54,9 +56,9 @@ export default function ComposeModal({
   const isAr = lang === 'ar';
   const { showToast } = useToast();
 
-  const isProUser = Boolean(currentUser?.isVerified || currentUser?.isFounder || currentUser?.isPro);
-  const maxChars = isProUser ? 4000 : 500;
-  const maxRecordingSeconds = isProUser ? 120 : 30;
+  const isProUser = subscriptionService.isPro(currentUser);
+  const maxChars = subscriptionService.getMaxPulseLength(currentUser);
+  const maxRecordingSeconds = subscriptionService.getMaxVoiceDuration(currentUser);
 
   const [content, setContent] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');

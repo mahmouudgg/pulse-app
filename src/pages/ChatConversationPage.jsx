@@ -18,6 +18,7 @@ import { database } from '../services/firebase';
 import { ref, onValue } from 'firebase/database';
 import { moderationService } from '../services/moderationService';
 import RichTextRenderer from '../components/RichTextRenderer';
+import { subscriptionService } from '../services/subscriptionService';
 
 export default function ChatConversationPage({
   recipient,
@@ -79,21 +80,8 @@ export default function ChatConversationPage({
   }, [recipient?.uid, recipient?.username]);
 
   const isFounder = Boolean(liveRecipient?.isFounder || liveRecipient?.username === 'my' || liveRecipient?.uid === 'dev_mahmoud_yasser');
-  const isRecipientVerified = Boolean(
-    liveRecipient?.isVerified || 
-    liveRecipient?.isPro || 
-    liveRecipient?.isFounder || 
-    liveRecipient?.verificationStatus === 'verified' ||
-    isRecipientSovythos ||
-    isFounder
-  );
-  const isCurrentUserPro = Boolean(
-    currentUser?.isPro || 
-    currentUser?.vipTier === 'pro' || 
-    currentUser?.isFounder || 
-    currentUser?.isVerified ||
-    currentUser?.verificationStatus === 'verified'
-  );
+  const isRecipientVerified = subscriptionService.hasVerifiedBadge(liveRecipient) || isRecipientSovythos || isFounder;
+  const isCurrentUserPro = subscriptionService.isPro(currentUser);
 
   const BackIcon = isAr ? ArrowRight : ArrowLeft;
 

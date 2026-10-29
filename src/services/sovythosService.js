@@ -164,7 +164,25 @@ export const sovythosService = {
 
         data = typeof nativeRes.data === 'string' ? JSON.parse(nativeRes.data) : nativeRes.data;
       } else {
-        // 2. Web browser fallback execution with 8s abort timeout
+        // 2. Web browser: attempt secure server proxy first
+        try {
+          const proxyRes = await fetch('/api/sovythos/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages, max_tokens: payload.max_tokens }),
+            signal: AbortSignal.timeout(8000)
+          });
+          if (proxyRes.ok) {
+            const proxyData = await proxyRes.json();
+            if (proxyData.content) {
+              return this._cleanResponseText(proxyData.content);
+            }
+          }
+        } catch {
+          // Fall through to direct fetch
+        }
+
+        // 3. Web browser direct execution with 8s abort timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
 
