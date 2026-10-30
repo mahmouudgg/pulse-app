@@ -15,8 +15,24 @@ import { database } from './firebase';
 import { ref, set, get, onValue, push } from 'firebase/database';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
-// Verified platform sounds registry (Wiped clean - zero preloaded songs)
-export const VERIFIED_PLATFORM_SOUNDS = [];
+// Verified platform sounds registry
+export const VERIFIED_PLATFORM_SOUNDS = [
+  {
+    id: 'pulse_sound_ayat_alkursi',
+    title: 'آية الكرسي - سورة البقرة',
+    artist: 'الشيخ عبد الباسط عبد الصمد',
+    duration: '1:58',
+    coverUrl: 'https://res.cloudinary.com/dgskw7nki/image/upload/v1793361732/pulse_sound_covers/wgtk8yuni5uqzmtsetki.jpg',
+    audioUrl: 'https://res.cloudinary.com/dgskw7nki/video/upload/v1793361728/pulse_sounds/twgjsske6uszft7hljau.mp3',
+    isCustom: false,
+    isVerified: true,
+    isOfficial: true,
+    creatorUid: 'dev_mahmoud_yasser',
+    creatorUsername: 'my',
+    usesCount: 100,
+    createdAt: '2026-10-30T12:00:00.000Z'
+  }
+];
 
 let globalAudioElement = null;
 let currentPlayingSoundId = null;
@@ -64,16 +80,11 @@ export const soundService = {
       }
     } catch {}
 
-    // Combine verified platform sounds with custom sounds
-    const existingAudioUrls = new Set(custom.map(s => s.audioUrl));
-    const combined = [...custom];
-    VERIFIED_PLATFORM_SOUNDS.forEach(v => {
-      if (!existingAudioUrls.has(v.audioUrl)) {
-        combined.push(v);
-      }
-    });
-
-    return combined;
+    // Combine verified platform sounds with custom sounds (verified always prioritized first)
+    const verifiedAudioUrls = new Set(VERIFIED_PLATFORM_SOUNDS.map(v => v.audioUrl));
+    const verifiedIds = new Set(VERIFIED_PLATFORM_SOUNDS.map(v => v.id));
+    const otherCustom = custom.filter(s => !verifiedAudioUrls.has(s.audioUrl) && !verifiedIds.has(s.id));
+    return [...VERIFIED_PLATFORM_SOUNDS, ...otherCustom];
   },
 
   /**
@@ -81,7 +92,11 @@ export const soundService = {
    */
   async getTrendingSounds() {
     const all = await this.getAllSounds();
-    return all.sort((a, b) => (b.usesCount || 0) - (a.usesCount || 0));
+    return all.sort((a, b) => {
+      if (a.id === 'pulse_sound_ayat_alkursi') return -1;
+      if (b.id === 'pulse_sound_ayat_alkursi') return 1;
+      return (b.usesCount || 0) - (a.usesCount || 0);
+    });
   },
 
   /**
