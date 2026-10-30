@@ -297,7 +297,7 @@ export default function PulseMediaViewer({
     const nextReposted = !isReposted;
     setIsReposted(nextReposted);
     setRepostsCount((prev) => (nextReposted ? prev + 1 : Math.max(0, prev - 1)));
-    if (onRepost) onRepost(post);
+    if (onRepost) onRepost(post.id, post);
   };
 
   const handleBookmarkClick = (e) => {

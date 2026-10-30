@@ -897,7 +897,7 @@ export default function ProfilePage({
                           type="button" 
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (onRepost && parent.id) onRepost(parent.id);
+                            if (onRepost && parent.id) onRepost(parent.id, parent);
                           }}
                           className="hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"
                         >
@@ -1006,7 +1006,7 @@ export default function ProfilePage({
                           type="button" 
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (onRepost && parent.id) onRepost(parent.id);
+                            if (onRepost && parent.id) onRepost(parent.id, parent);
                           }}
                           className="hover:text-blue-400 transition-colors flex items-center gap-1 text-xs"
                         >

@@ -297,7 +297,7 @@ export default function PostDetailPage({
     const nextState = !localReposted;
     setLocalReposted(nextState);
     setLocalRepostsCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
-    if (onRepost) onRepost(post.id);
+    if (onRepost) onRepost(post.id, post);
   };
 
   const handleToggleBookmark = () => {

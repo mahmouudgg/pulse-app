@@ -22,7 +22,7 @@ export const VERIFIED_PLATFORM_SOUNDS = [
     title: 'آية الكرسي - سورة البقرة',
     artist: 'الشيخ عبد الباسط عبد الصمد',
     duration: '1:58',
-    coverUrl: 'https://res.cloudinary.com/dgskw7nki/image/upload/v1793361732/pulse_sound_covers/wgtk8yuni5uqzmtsetki.jpg',
+    coverUrl: 'https://res.cloudinary.com/dgskw7nki/image/upload/v1793365435/pulse_sound_covers/g0fuu2ibotq5p9tqigpw.png',
     audioUrl: 'https://res.cloudinary.com/dgskw7nki/video/upload/v1793361728/pulse_sounds/twgjsske6uszft7hljau.mp3',
     isCustom: false,
     isVerified: true,

@@ -1337,98 +1337,72 @@ function MainApp() {
 
   // 0ms Optimistic Repost handler with real timeline entry
 
-  const handleRepost = (postId) => {
-
+  const handleRepost = (postOrId, postObj = null) => {
     if (!currentUser) {
-
       setShowAuthModal(true);
-
       return;
+    }
 
+    let postId = postOrId;
+    let postData = postObj;
+    if (typeof postOrId === 'object' && postOrId !== null) {
+      postData = postOrId;
+      postId = postOrId.id;
     }
 
     hapticsService.medium();
 
     try {
-
-      const result = storageService.toggleRepost(postId, currentUser) || {};
-
-      const { repostEntry, isRepostedNow } = result;
+      const result = storageService.toggleRepost(postId, currentUser, postData) || {};
+      const { repostEntry, isRepostedNow, actualOriginalId = postId } = result;
 
       setPosts((prev) => {
-
         let next = prev.map((p) => {
-
-          if (p.id !== postId) return p;
+          const isTarget = p.id === postId || p.id === actualOriginalId || (p.isRepost && (p.originalPostId === postId || p.originalPostId === actualOriginalId));
+          if (!isTarget) return p;
 
           const currentReposts = storageService._resolveEngagementArray(p.reposts);
-
           const hasReposted = Array.isArray(currentReposts) && currentUser?.uid ? currentReposts.includes(currentUser.uid) : false;
-
           const nextReposts = isRepostedNow
-
             ? (hasReposted ? currentReposts : [...(Array.isArray(currentReposts) ? currentReposts : []), currentUser.uid])
-
             : currentReposts.filter((id) => id !== currentUser.uid);
 
           const updated = { ...p, reposts: nextReposts };
-
           delete updated.repostsCount;
-
           return updated;
-
         });
 
         if (isRepostedNow && repostEntry) {
-
           next = [repostEntry, ...next];
-
         } else if (!isRepostedNow) {
-
           next = next.filter(
-
-            (p) => !(p.isRepost && p.originalPostId === postId && (p.repostedBy?.uid === currentUser.uid || p.authorId === currentUser.uid))
-
+            (p) => !(p.isRepost && (p.originalPostId === postId || p.originalPostId === actualOriginalId) && (p.repostedBy?.uid === currentUser.uid || p.authorId === currentUser.uid))
           );
-
         }
-
         return next;
-
       });
 
-      if (selectedPost && selectedPost.id === postId) {
+      if (selectedPost) {
+        const isSelectedTarget = selectedPost.id === postId || selectedPost.id === actualOriginalId || (selectedPost.isRepost && (selectedPost.originalPostId === postId || selectedPost.originalPostId === actualOriginalId));
+        if (isSelectedTarget) {
+          setSelectedPost((prev) => {
+            if (!prev) return prev;
+            const currentReposts = storageService._resolveEngagementArray(prev.reposts);
+            const hasReposted = Array.isArray(currentReposts) && currentUser?.uid ? currentReposts.includes(currentUser.uid) : false;
+            const nextReposts = isRepostedNow
+              ? (hasReposted ? currentReposts : [...(Array.isArray(currentReposts) ? currentReposts : []), currentUser.uid])
+              : currentReposts.filter((id) => id !== currentUser.uid);
 
-        setSelectedPost((prev) => {
-
-          const currentReposts = storageService._resolveEngagementArray(prev.reposts);
-
-          const hasReposted = Array.isArray(currentReposts) && currentUser?.uid ? currentReposts.includes(currentUser.uid) : false;
-
-          const nextReposts = isRepostedNow
-
-            ? (hasReposted ? currentReposts : [...(Array.isArray(currentReposts) ? currentReposts : []), currentUser.uid])
-
-            : currentReposts.filter((id) => id !== currentUser.uid);
-
-          const updated = { ...prev, reposts: nextReposts };
-
-          delete updated.repostsCount;
-
-          return updated;
-
-        });
-
+            const updated = { ...prev, reposts: nextReposts };
+            delete updated.repostsCount;
+            return updated;
+          });
+        }
       }
-
     } catch (err) {
-
       console.warn('Optimistic repost rollback:', err);
-
       setPosts(storageService.getPosts());
-
     }
-
   };
 
   // 0ms Optimistic Publish new post

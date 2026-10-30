@@ -161,13 +161,28 @@ export default function PostCard({
   }, [post?.id, currentUserId]);
 
   const resolveEngagementList = (raw) => {
-    if (Array.isArray(raw)) return raw.filter((v) => typeof v === 'string');
-    if (typeof raw === 'object' && raw !== null) {
-      const keys = Object.keys(raw);
-      if (keys.length === 0) return [];
-      const isNumeric = keys.every((k) => /^\d+$/.test(k));
-      if (isNumeric) return Object.values(raw).filter((v) => typeof v === 'string' && v);
-      return keys.filter((k) => raw[k]);
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === 'string' ? v.trim() : (v && v.uid ? String(v.uid).trim() : '')))
+        .filter((v) => v.length > 0);
+    }
+    if (typeof raw === 'object') {
+      const result = new Set();
+      for (const [key, val] of Object.entries(raw)) {
+        if (/^\d+$/.test(key)) {
+          if (typeof val === 'string' && val.trim().length > 0) {
+            result.add(val.trim());
+          } else if (val && typeof val === 'object' && val.uid) {
+            result.add(String(val.uid).trim());
+          }
+        } else {
+          if (val && typeof key === 'string' && key.trim().length > 0) {
+            result.add(key.trim());
+          }
+        }
+      }
+      return Array.from(result);
     }
     return [];
   };
@@ -178,7 +193,12 @@ export default function PostCard({
   const likesArr = resolveEngagementList(post.likes);
   const repostsArr = resolveEngagementList(post.reposts);
   const isLiked = currentUserId ? likesArr.includes(currentUserId) : false;
-  const isReposted = currentUserId ? repostsArr.includes(currentUserId) : false;
+  const isReposted = Boolean(
+    currentUserId && (
+      repostsArr.includes(currentUserId) ||
+      (post.isRepost && post.repostedBy?.uid === currentUserId)
+    )
+  );
   // Always derive count dynamically from the resolved list to prevent UI freeze
   const likesCount = likesArr.length;
   const repostsCount = repostsArr.length;
@@ -227,7 +247,7 @@ export default function PostCard({
     setRepostAnimating(true);
     setTimeout(() => setRepostAnimating(false), 500);
     affinityEngine.trackEngagement(currentUser.uid, post, 'repost');
-    if (onRepost) onRepost(targetPostId);
+    if (onRepost) onRepost(targetPostId, post);
   };
 
   const handleBookmarkClick = (e) => {
