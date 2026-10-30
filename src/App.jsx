@@ -21,6 +21,7 @@ import { sovythosService } from './services/sovythosService';
 import { soundService } from './services/soundService';
 
 import { App as CapApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
 import { Wifi, WifiOff } from 'lucide-react';
 
@@ -258,7 +259,7 @@ function MainApp() {
     screenSecurity.init();
 
     // Initialize Google Mobile Ads SDK on native mobile platforms
-    if (Capacitor.isNativePlatform()) {
+    if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) {
       import('@capacitor-community/admob').then(({ AdMob }) => {
         AdMob.initialize().catch((err) => console.warn('AdMob init notice:', err));
       }).catch(() => {});

@@ -236,5 +236,23 @@
     </noscript>
 
     <script type="module" src="./src/main.jsx"></script>
+    <script>
+      // Fallback boot safety: guarantees the boot splash never permanently blocks the UI
+      (function() {
+        var dissolve = function() {
+          var s = document.getElementById('pulse-boot-splash');
+          if (s) {
+            s.style.opacity = '0';
+            s.style.pointerEvents = 'none';
+            setTimeout(function() { try { s.remove(); } catch(e) {} }, 400);
+          }
+        };
+        if (document.readyState === 'complete') {
+          setTimeout(dissolve, 1200);
+        } else {
+          window.addEventListener('load', function() { setTimeout(dissolve, 1200); });
+        }
+      })();
+    </script>
   </body>
 </html>

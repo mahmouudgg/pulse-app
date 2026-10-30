@@ -192,24 +192,48 @@ export const storageService = {
 
   _inMemoryUsers: [],
 
-  _stripUndefined(obj) {
+  _isInitialized: false,
+
+  _hasCleanedLegacy: false,
+
+  _isCleaningDangling: false,
+
+  _stripUndefined(obj, seen = new WeakSet()) {
     if (!obj || typeof obj !== 'object') return obj;
+    if (obj instanceof Date || obj instanceof RegExp || (typeof Blob !== 'undefined' && obj instanceof Blob)) {
+      return obj;
+    }
+    if (seen.has(obj)) {
+      return Array.isArray(obj) ? [] : {};
+    }
+    seen.add(obj);
     if (Array.isArray(obj)) {
-      return obj.map((i) => this._stripUndefined(i)).filter((i) => i !== undefined);
+      return obj.map((i) => this._stripUndefined(i, seen)).filter((i) => i !== undefined);
     }
     const clean = {};
     for (const [k, v] of Object.entries(obj)) {
       if (k === '__proto__' || k === 'constructor' || k === 'prototype') continue;
       if (v === undefined) continue;
-      clean[k] = (v !== null && typeof v === 'object') ? this._stripUndefined(v) : v;
+      clean[k] = (v !== null && typeof v === 'object') ? this._stripUndefined(v, seen) : v;
     }
     return clean;
   },
 
   cleanupDanglingData() {
+    if (this._isCleaningDangling) return;
+    this._isCleaningDangling = true;
     try {
-      const posts = this.getPosts();
-      const postIds = new Set(posts.map((p) => p.id));
+      // Direct raw read from localStorage — NEVER call this.getPosts() here to prevent boot recursion
+      const rawPosts = localStorage.getItem(STORAGE_KEYS.POSTS);
+      let postIds = new Set();
+      if (rawPosts) {
+        try {
+          const parsed = JSON.parse(rawPosts);
+          if (Array.isArray(parsed)) {
+            postIds = new Set(parsed.filter(Boolean).map((p) => p && p.id).filter(Boolean));
+          }
+        } catch {}
+      }
 
       // Clean orphan notifications referencing deleted posts
       const notifKey = 'pulse_notifications_v1';
@@ -227,10 +251,14 @@ export const storageService = {
       }
     } catch (err) {
       console.warn('[StorageService] cleanupDanglingData notice:', err);
+    } finally {
+      this._isCleaningDangling = false;
     }
   },
 
   cleanLegacyStorage() {
+    if (this._hasCleanedLegacy) return;
+    this._hasCleanedLegacy = true;
     const legacyKeys = [
       'pulse_users_v1', 'pulse_users_v2', 'pulse_users_v3', 'pulse_users_v4',
       'pulse_posts_v1', 'pulse_posts_v2', 'pulse_posts_v3', 'pulse_posts_v4',
@@ -345,6 +373,8 @@ export const storageService = {
   },
 
   init() {
+    if (this._isInitialized) return;
+    this._isInitialized = true;
 
     this.cleanLegacyStorage();
 

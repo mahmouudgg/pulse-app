@@ -184,7 +184,7 @@
         100% { transform: scaleY(1.08); opacity: 1; }
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-CeM2ri-l.js"></script>
+    <script type="module" crossorigin src="./assets/index-ByWzrxJc.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/vendor-react-ebxS2RN4.js">
     <link rel="modulepreload" crossorigin href="./assets/vendor-capacitor-BdmprwJh.js">
     <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-Qa3uwvj4.js">
@@ -240,6 +240,24 @@
         <p>يرجى تفعيل الجافاسكريبت في متصفحك للحصول على كامل تجربة PULSE التفاعلية، أو تصفح الروابط المباشرة.</p>
       </div>
     </noscript>
-
+
+    <script>
+      // Fallback boot safety: guarantees the boot splash never permanently blocks the UI
+      (function() {
+        var dissolve = function() {
+          var s = document.getElementById('pulse-boot-splash');
+          if (s) {
+            s.style.opacity = '0';
+            s.style.pointerEvents = 'none';
+            setTimeout(function() { try { s.remove(); } catch(e) {} }, 400);
+          }
+        };
+        if (document.readyState === 'complete') {
+          setTimeout(dissolve, 1200);
+        } else {
+          window.addEventListener('load', function() { setTimeout(dissolve, 1200); });
+        }
+      })();
+    </script>
   </body>
 </html>
