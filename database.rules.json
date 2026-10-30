@@ -9,7 +9,8 @@
         "releaseDate",
         "isMandatory",
         "channel",
-        "platform"
+        "platform",
+        "minSupportedVersionCode"
       ]
     },
     "users": {
@@ -63,7 +64,9 @@
         "lastActive",
         "lastSeen",
         "uid",
-        "id"
+        "id",
+        "proExpiresAt",
+        "proPlan"
       ],
       "$userId": {
         ".read": true,
@@ -269,6 +272,14 @@
         "lastSeen": {
           ".read": true,
           ".write": true
+        },
+        "proExpiresAt": {
+          ".read": true,
+          ".write": true
+        },
+        "proPlan": {
+          ".read": true,
+          ".write": true
         }
       }
     },
@@ -333,7 +344,9 @@
         "type",
         "isPromoted",
         "sponsorBadge",
-        "parentId"
+        "parentId",
+        "author/isPro",
+        "pinnedAt"
       ],
       "$postId": {
         ".read": true,
@@ -492,7 +505,8 @@
           "replyTo/id",
           "replyTo/username",
           "isAIReply",
-          "id"
+          "id",
+          "isAutonomousAI"
         ],
         "$commentId": {
           ".read": true,
@@ -514,7 +528,12 @@
             ".write": true
           }
         }
-      }
+      },
+      ".indexOn": [
+        "createdAt",
+        "timestamp",
+        "postId"
+      ]
     },
     "follow_requests": {
       ".read": true,
@@ -612,12 +631,13 @@
           "isRead",
           "type",
           "status",
-          "id"
+          "id",
+          "isSovythosAutoReply"
         ],
         "$messageId": {
           ".read": true,
           ".write": true,
-          ".validate": "!newData.exists() || newData.hasChild('isRead') || (newData.hasChildren(['senderId', 'recipientId']) && (!newData.child('content').exists() || (newData.child('content').isString() && newData.child('content').val().length <= 50000)))",
+          ".validate": "!newData.exists() || newData.hasChild('isRead') || newData.hasChild('status') || (newData.hasChildren(['senderId', 'recipientId']) && (!newData.child('content').exists() || (newData.child('content').isString() && newData.child('content').val().length <= 50000)))",
           "isRead": {
             ".read": true,
             ".write": true
@@ -652,7 +672,12 @@
           "lastSeen",
           "lastChanged"
         ]
-      }
+      },
+      ".indexOn": [
+        "isOnline",
+        "lastSeen",
+        "lastChanged"
+      ]
     },
     "notifications": {
       ".read": true,

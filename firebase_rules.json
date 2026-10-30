@@ -9,7 +9,8 @@
         "releaseDate",
         "isMandatory",
         "channel",
-        "platform"
+        "platform",
+        "minSupportedVersionCode"
       ]
     },
     "users": {
@@ -17,6 +18,8 @@
       ".indexOn": [
         "username",
         "email",
+        "googleUid",
+        "authProvider",
         "phone",
         "fullPhone",
         "countryCode",
@@ -42,7 +45,9 @@
         "trustScore",
         "trustTier",
         "birthDate",
+        "birthdate",
         "birthDatePrivacy",
+        "sensitiveContentPref",
         "twoFactorEnabled",
         "fcmToken",
         "usernameLastChangedAt",
@@ -59,12 +64,30 @@
         "lastActive",
         "lastSeen",
         "uid",
-        "id"
+        "id",
+        "proExpiresAt",
+        "proPlan"
       ],
       "$userId": {
         ".read": true,
         ".write": true,
         ".validate": "!newData.exists() || !newData.hasChild('username') || (newData.child('username').isString() && newData.child('username').val().length >= 1 && newData.child('username').val().length <= 35)",
+        "birthDate": {
+          ".read": true,
+          ".write": true
+        },
+        "birthdate": {
+          ".read": true,
+          ".write": true
+        },
+        "sensitiveContentPref": {
+          ".read": true,
+          ".write": true
+        },
+        "contentPreferences": {
+          ".read": true,
+          ".write": true
+        },
         "passwordResetOtp": {
           ".read": true,
           ".write": true,
@@ -85,7 +108,9 @@
             "platform",
             "ip",
             "loginMethod",
-            "updatedAt"
+            "updatedAt",
+            "location",
+            "browser"
           ],
           "$sessionId": {
             ".read": true,
@@ -216,11 +241,43 @@
           ".read": true,
           ".write": true
         },
+        "googleProfile": {
+          ".read": true,
+          ".write": true
+        },
+        "googleUid": {
+          ".read": true,
+          ".write": true
+        },
+        "twoFactorEnabled": {
+          ".read": true,
+          ".write": true
+        },
+        "twoFactorSecret": {
+          ".read": true,
+          ".write": true
+        },
+        "backupCodes": {
+          ".read": true,
+          ".write": true
+        },
+        "weakPasswordNotice": {
+          ".read": true,
+          ".write": true
+        },
         "lastActive": {
           ".read": true,
           ".write": true
         },
         "lastSeen": {
+          ".read": true,
+          ".write": true
+        },
+        "proExpiresAt": {
+          ".read": true,
+          ".write": true
+        },
+        "proPlan": {
           ".read": true,
           ".write": true
         }
@@ -246,6 +303,7 @@
         "createdAt",
         "timestamp",
         "authorId",
+        "authorUsername",
         "author/uid",
         "author/username",
         "author/displayName",
@@ -253,6 +311,7 @@
         "userId",
         "voiceListens",
         "viewsCount",
+        "sharesCount",
         "likesCount",
         "repostsCount",
         "repliesCount",
@@ -266,6 +325,9 @@
         "repostedBy/uid",
         "isAIReply",
         "isAutonomousAI",
+        "isSensitive",
+        "sensitiveType",
+        "contentWarning",
         "topic",
         "category",
         "status",
@@ -282,12 +344,22 @@
         "type",
         "isPromoted",
         "sponsorBadge",
-        "parentId"
+        "parentId",
+        "author/isPro",
+        "pinnedAt"
       ],
       "$postId": {
         ".read": true,
         ".write": true,
-        ".validate": "!newData.exists() || newData.hasChild('createdAt') || newData.hasChild('timestamp') || newData.hasChild('content') || newData.hasChild('authorId') || newData.hasChild('viewsCount') || newData.hasChild('voiceListens') || newData.hasChild('repliesCount') || newData.hasChild('likesCount') || newData.hasChild('repostsCount') || newData.hasChild('isEdited') || newData.hasChild('topic') || newData.hasChild('views') || newData.hasChild('likes') || newData.hasChild('reposts')",
+        ".validate": "!newData.exists() || newData.hasChild('createdAt') || newData.hasChild('timestamp') || newData.hasChild('content') || newData.hasChild('authorId') || newData.hasChild('viewsCount') || newData.hasChild('voiceListens') || newData.hasChild('repliesCount') || newData.hasChild('likesCount') || newData.hasChild('repostsCount') || newData.hasChild('isEdited') || newData.hasChild('topic') || newData.hasChild('views') || newData.hasChild('likes') || newData.hasChild('reposts') || newData.hasChild('isSensitive')",
+        "isSensitive": {
+          ".read": true,
+          ".write": true
+        },
+        "sensitiveType": {
+          ".read": true,
+          ".write": true
+        },
         "likes": {
           ".read": true,
           ".write": true
@@ -359,6 +431,22 @@
         "isEdited": {
           ".read": true,
           ".write": true
+        },
+        "editedAt": {
+          ".read": true,
+          ".write": true
+        },
+        "content": {
+          ".read": true,
+          ".write": true
+        },
+        "media": {
+          ".read": true,
+          ".write": true
+        },
+        "isPinned": {
+          ".read": true,
+          ".write": true
         }
       }
     },
@@ -417,7 +505,8 @@
           "replyTo/id",
           "replyTo/username",
           "isAIReply",
-          "id"
+          "id",
+          "isAutonomousAI"
         ],
         "$commentId": {
           ".read": true,
@@ -439,7 +528,12 @@
             ".write": true
           }
         }
-      }
+      },
+      ".indexOn": [
+        "createdAt",
+        "timestamp",
+        "postId"
+      ]
     },
     "follow_requests": {
       ".read": true,
@@ -478,6 +572,7 @@
         "createdAt",
         "id",
         "lastMessageTime",
+        "lastMessage/timestamp",
         "participant1",
         "participant2",
         "isRequest",
@@ -535,12 +630,14 @@
           "recipientId",
           "isRead",
           "type",
-          "status"
+          "status",
+          "id",
+          "isSovythosAutoReply"
         ],
         "$messageId": {
           ".read": true,
           ".write": true,
-          ".validate": "!newData.exists() || newData.hasChild('isRead') || (newData.hasChildren(['senderId', 'recipientId']) && (!newData.child('content').exists() || (newData.child('content').isString() && newData.child('content').val().length <= 50000)))",
+          ".validate": "!newData.exists() || newData.hasChild('isRead') || newData.hasChild('status') || (newData.hasChildren(['senderId', 'recipientId']) && (!newData.child('content').exists() || (newData.child('content').isString() && newData.child('content').val().length <= 50000)))",
           "isRead": {
             ".read": true,
             ".write": true
@@ -575,7 +672,12 @@
           "lastSeen",
           "lastChanged"
         ]
-      }
+      },
+      ".indexOn": [
+        "isOnline",
+        "lastSeen",
+        "lastChanged"
+      ]
     },
     "notifications": {
       ".read": true,
@@ -744,6 +846,38 @@
         ".validate": "!newData.exists() || newData.hasChildren(['userId', 'category']) || newData.hasChild('status')"
       }
     },
+    "account_appeals": {
+      ".read": true,
+      ".write": true,
+      "$userId": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "status",
+          "category",
+          "id"
+        ],
+        "$appealId": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "device_appeals": {
+      ".read": true,
+      ".write": true,
+      "$deviceFingerprint": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "createdAt",
+          "status",
+          "reason",
+          "id"
+        ]
+      }
+    },
     "ads": {
       ".read": true,
       ".write": true,
@@ -764,7 +898,31 @@
       "$adId": {
         ".read": true,
         ".write": true,
-        ".validate": "!newData.exists() || newData.hasChildren(['brandName', 'ownerId']) || newData.hasChild('status')"
+        ".validate": "!newData.exists() || newData.hasChildren(['brandName', 'ownerId']) || newData.hasChild('status') || newData.hasChild('impressionsCount') || newData.hasChild('clicksCount')",
+        "status": {
+          ".read": true,
+          ".write": true
+        },
+        "approvedAt": {
+          ".read": true,
+          ".write": true
+        },
+        "rejectionReason": {
+          ".read": true,
+          ".write": true
+        },
+        "impressionsCount": {
+          ".read": true,
+          ".write": true
+        },
+        "clicksCount": {
+          ".read": true,
+          ".write": true
+        },
+        "budgetRemaining": {
+          ".read": true,
+          ".write": true
+        }
       }
     },
     "qr_auth": {
@@ -794,7 +952,8 @@
         "maintenance",
         "minAppVersion",
         "updatedAt",
-        "google_ads_config"
+        "google_ads_config",
+        "sovythos_last_pulse_timestamp"
       ]
     },
     "banned_devices": {

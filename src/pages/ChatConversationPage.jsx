@@ -299,7 +299,7 @@ export default function ChatConversationPage({
         {/* ======================================================== */}
         {/* Top Header (1:1 with media_1792328088248_572ba54c.png)   */}
         {/* ======================================================== */}
-        <div className="sticky top-0 z-30 bg-black/90 backdrop-blur-md border-b border-[#1C1C22] px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between">
+        <div className="sticky top-0 z-30 bg-black/85 backdrop-blur-3xl border-b border-white/[0.06] px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={onBack}
@@ -613,7 +613,7 @@ export default function ChatConversationPage({
         {/* ======================================================== */}
         {isRecipient ? (
           /* Recipient Message Request Review Bar */
-          <div className="sticky bottom-0 z-30 bg-black/95 backdrop-blur-md border-t border-[#1C1C22] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3">
+          <div className="sticky bottom-0 z-30 bg-black/85 backdrop-blur-3xl border-t border-white/[0.06] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3">
             <p className="text-center text-xs text-neutral-400">
               {isAr ? 'هل تريد السماح لـ @' + recipient?.username + ' بمراسلتك؟' : 'Allow @' + recipient?.username + ' to message you?'}
             </p>
@@ -643,7 +643,7 @@ export default function ChatConversationPage({
           </div>
         ) : (
           /* Normal Input Area with 1:1 Threads Notice Banner Above It */
-          <div className="sticky bottom-0 z-30 bg-black/95 backdrop-blur-md border-t border-[#1C1C22] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="sticky bottom-0 z-30 bg-black/85 backdrop-blur-3xl border-t border-white/[0.06] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {isBlocked ? (
               <div className="p-3 text-center rounded-2xl bg-[#141418] border border-[#2B2B32] text-xs text-red-400 font-medium">
                 {isAr 

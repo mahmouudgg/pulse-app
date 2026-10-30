@@ -96,37 +96,14 @@ aside::-webkit-scrollbar {
   scrollbar-width: none !important;
 }
 
-/* Touch micro-physics */
-.tap-press {
-  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
-}
-.tap-press:active {
-  transform: scale(0.93);
-  opacity: 0.88;
-}
-
-.spring-bounce {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Like Heart Pop */
-@keyframes heartPop {
-  0% { transform: scale(1); }
-  35% { transform: scale(1.4) rotate(-8deg); }
-  65% { transform: scale(0.88) rotate(4deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-.animate-heart-pop {
-  animation: heartPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-/* Repost Twist */
-/* High-Performance 120 FPS / 144 Hz Hardware Acceleration */
+/* High-Performance 120 FPS / 144 Hz Hardware Acceleration & Spring Curves */
 :root {
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring-snappy: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-bounce-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-sheet-snap: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-gentle: cubic-bezier(0.22, 1, 0.36, 1);
+  --hairline: rgba(255, 255, 255, 0.06);
 }
 
 .gpu-accelerated {
@@ -136,9 +113,27 @@ aside::-webkit-scrollbar {
   -webkit-backface-visibility: hidden;
 }
 
+/* Hairline borders for minimal OLED look */
+.hairline-border {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.hairline-border-b {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+.hairline-border-t {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Frosted glass dock */
+.glass-dock {
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
 /* Touch micro-physics */
 .tap-press {
-  transition: transform 0.14s var(--ease-spring), opacity 0.14s ease;
+  transition: transform 0.16s var(--ease-spring), opacity 0.16s ease;
   transform: translateZ(0);
 }
 .tap-press:active {
@@ -147,7 +142,7 @@ aside::-webkit-scrollbar {
 }
 
 .card-press {
-  transition: transform 0.15s var(--ease-spring), background-color 0.15s ease;
+  transition: transform 0.18s var(--ease-spring), background-color 0.18s ease;
   transform: translateZ(0);
 }
 .card-press:active {
@@ -157,6 +152,41 @@ aside::-webkit-scrollbar {
 .spring-bounce {
   transition: transform 0.35s var(--ease-bounce-pop);
 }
+
+/* Double-Tap Floating Heart */
+@keyframes doubleTapHeart {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 1) rotate(-10deg);
+  }
+  30% {
+    opacity: 1;
+    transform: scale3d(1.28, 1.28, 1) rotate(5deg);
+  }
+  50% {
+    transform: scale3d(1, 1, 1) rotate(-2deg);
+  }
+  75% {
+    opacity: 0.95;
+    transform: scale3d(1.06, 1.06, 1) translateY(-14px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale3d(0.85, 0.85, 1) translateY(-36px);
+  }
+}
+.animate-double-tap-heart {
+  animation: doubleTapHeart 0.75s var(--ease-spring) forwards;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Stagger delay helpers for cascade feeds */
+.stagger-1 { animation-delay: 0.03s; }
+.stagger-2 { animation-delay: 0.06s; }
+.stagger-3 { animation-delay: 0.09s; }
+.stagger-4 { animation-delay: 0.12s; }
+.stagger-5 { animation-delay: 0.15s; }
 
 /* Like Heart Pop + Concentric Ripple */
 @keyframes heartPop {

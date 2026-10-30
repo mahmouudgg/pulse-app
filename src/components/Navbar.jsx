@@ -71,7 +71,7 @@ export default function Navbar({
   return (
     <>
       {/* ================= DESKTOP HEADER NAVBAR (md:flex) ================= */}
-      <nav className="hidden md:block fixed top-0 left-0 right-0 z-40 bg-black/90 backdrop-blur-2xl border-b border-[#18181A] px-6 py-2.5 gpu-accelerated select-none">
+      <nav className="hidden md:block fixed top-0 left-0 right-0 z-40 bg-black/85 backdrop-blur-3xl border-b border-white/[0.06] px-6 py-2.5 gpu-accelerated select-none">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           
           {/* Brand Logo & Title */}
@@ -196,7 +196,7 @@ export default function Navbar({
       </nav>
 
       {/* ================= MOBILE BOTTOM NAVBAR (md:hidden) ================= */}
-      <nav className="fixed bottom-0 md:hidden left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-[#18181A] px-6 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] gpu-accelerated select-none">
+      <nav className="fixed bottom-0 md:hidden left-0 right-0 z-40 bg-black/85 backdrop-blur-3xl border-t border-white/[0.06] px-6 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] gpu-accelerated select-none">
         <div className="max-w-md mx-auto flex items-center justify-between">
           {tabs.map((tab) => {
             if (tab.isAction) {
@@ -204,7 +204,7 @@ export default function Navbar({
                 <button
                   key="mobile-compose"
                   onClick={handleComposeClick}
-                  className="w-12 h-9 rounded-xl bg-[#141416] hover:bg-[#1C1C20] active:bg-[#24242A] border border-[#242428] text-white flex items-center justify-center card-press transition-all mx-1 shadow-[0_2px_10px_rgba(255,255,255,0.04)]"
+                  className="w-12 h-9 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] active:scale-90 border border-white/[0.1] text-white flex items-center justify-center tap-press transition-all mx-1 shadow-[0_2px_12px_rgba(255,255,255,0.06)]"
                   aria-label="New Post"
                 >
                   <Plus size={20} className="stroke-[2.5]" />
@@ -270,7 +270,7 @@ export default function Navbar({
 
                 {/* Sub-pixel Active Indicator Dot */}
                 {isActive && (
-                  <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-white/90 animate-fade-in" />
+                  <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.7)] animate-tab-pop" />
                 )}
               </button>
             );

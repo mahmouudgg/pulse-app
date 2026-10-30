@@ -45,6 +45,7 @@ export default function PostCard({
   const { showToast } = useToast();
   const [likeAnimating, setLikeAnimating] = useState(false);
   const [repostAnimating, setRepostAnimating] = useState(false);
+  const [bookmarkAnimating, setBookmarkAnimating] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [viewerMedia, setViewerMedia] = useState(null);
@@ -233,6 +234,8 @@ export default function PostCard({
     if (e && e.stopPropagation) e.stopPropagation();
     if (!currentUser) return;
     hapticsService.medium();
+    setBookmarkAnimating(true);
+    setTimeout(() => setBookmarkAnimating(false), 450);
     affinityEngine.trackEngagement(currentUser.uid, post, 'bookmark');
     if (onToggleBookmark) onToggleBookmark(targetPostId);
   };
@@ -373,7 +376,7 @@ export default function PostCard({
       onTouchMove={handleCardTouchMove}
       onTouchEnd={handleCardTouchEnd}
       style={{ animationDelay: `${Math.min(animationIndex * 0.04, 0.25)}s` }}
-      className="border-b border-[#181818] py-4 px-4 hover:bg-[#070707] active:bg-[#0C0C0C] transition-colors cursor-pointer select-none animate-fade-in-up relative overflow-hidden card-press gpu-accelerated"
+      className="border-b border-white/[0.05] py-4 px-4 hover:bg-white/[0.015] active:bg-white/[0.03] transition-all duration-200 cursor-pointer select-none animate-fade-in-up relative overflow-hidden card-press gpu-accelerated"
     >
       {/* Repost Header Banner - Monochrome */}
       {post.isRepost && post.repostedBy && (
@@ -390,7 +393,7 @@ export default function PostCard({
       {/* Floating Heart Burst on Double Tap */}
       {showHeartBurst && (
         <div 
-          className="absolute pointer-events-none z-40 animate-heart-burst"
+          className="absolute pointer-events-none z-40 animate-double-tap-heart"
           style={{
             left: `${burstCoords.x}px`,
             top: `${burstCoords.y}px`
@@ -1152,6 +1155,22 @@ export default function PostCard({
               aria-label="مشاركة"
             >
               <Send size={17} className="stroke-[1.75] -rotate-12" />
+            </button>
+
+            {/* 5. Bookmark (Far end) */}
+            <button
+              onClick={handleBookmarkClick}
+              className={`ms-auto flex items-center gap-1.5 tap-press group p-1 -m-1 transition-colors ${
+                isSaved ? 'text-white' : 'hover:text-white'
+              }`}
+              aria-label="حفظ النبضة"
+            >
+              <Bookmark
+                size={17}
+                className={`transition-all duration-150 ${
+                  isSaved ? 'fill-white stroke-white text-white' : 'stroke-[1.75]'
+                } ${bookmarkAnimating ? 'animate-bookmark-bounce' : ''}`}
+              />
             </button>
           </div>
         </div>

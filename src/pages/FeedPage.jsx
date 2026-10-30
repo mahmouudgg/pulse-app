@@ -36,13 +36,13 @@ function FeedSkeleton() {
   return (
     <div className="animate-pulse" aria-hidden="true">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="px-4 py-4 border-b border-[#181818] flex gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#141416] flex-shrink-0" />
+        <div key={i} className="px-4 py-4 border-b border-white/[0.05] flex gap-3">
+          <div className="w-10 h-10 rounded-full bg-white/[0.05] flex-shrink-0" />
           <div className="flex-1 space-y-2.5 pt-1">
-            <div className="h-3 w-1/3 rounded-full bg-[#141416]" />
-            <div className="h-3 w-full rounded-full bg-[#101012]" />
-            <div className="h-3 w-5/6 rounded-full bg-[#101012]" />
-            {i % 2 === 0 && <div className="h-36 w-full rounded-2xl bg-[#0E0E10] mt-3" />}
+            <div className="h-3 w-1/3 rounded-full bg-white/[0.05]" />
+            <div className="h-3 w-full rounded-full bg-white/[0.03]" />
+            <div className="h-3 w-5/6 rounded-full bg-white/[0.03]" />
+            {i % 2 === 0 && <div className="h-36 w-full rounded-2xl bg-white/[0.02] border border-white/[0.04] mt-3" />}
           </div>
         </div>
       ))}
@@ -582,7 +582,7 @@ export default function FeedPage({
           style={{ transform: 'translateY(-50px) scale(0)', opacity: 0 }}
           aria-hidden="true"
         >
-          <div className="relative w-10 h-10 rounded-full bg-[#121214] border border-[#26262B] shadow-2xl flex items-center justify-center">
+          <div className="relative w-10 h-10 rounded-full bg-black/90 backdrop-blur-xl border border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.8)] flex items-center justify-center">
             {/* SVG Progress Ring */}
             <svg className="absolute inset-0 w-10 h-10 -rotate-90 pointer-events-none" viewBox="0 0 40 40">
               <circle
@@ -626,7 +626,7 @@ export default function FeedPage({
                 try { hapticsService.light?.(); } catch { /* noop */ }
                 onOpenCompose();
               }}
-              className="px-4 py-3.5 border-b border-[#18181A] flex items-center gap-3.5 cursor-pointer active:bg-[#0C0C0E] transition-colors"
+              className="px-4 py-3.5 border-b border-white/[0.05] flex items-center gap-3.5 cursor-pointer active:bg-white/[0.02] transition-colors"
               role="button"
               aria-label={isAr ? 'نبضة جديدة' : 'New pulse'}
             >
@@ -700,7 +700,7 @@ export default function FeedPage({
 
           {/* Posts, ads and suggestion carousels — content-visibility windowing */}
           <div>
-            {feedItems.map((item) => {
+            {feedItems.map((item, index) => {
               if (item.isSuggestion) {
                 return (
                   <SuggestedProfilesStrip
@@ -728,6 +728,7 @@ export default function FeedPage({
                 <VirtualPostItem key={item.id} minHeight={190}>
                   <PostCard
                     post={item}
+                    animationIndex={index}
                     currentUserId={currentUser?.uid}
                     currentUser={currentUser}
                     onLike={onLike}

@@ -550,7 +550,7 @@ export default function PostDetailPage({
         {/* ======================================================== */}
         {/* 1. TOP HEADER (PULSE Official Matching Screenshot 2)        */}
         {/* ======================================================== */}
-        <div className="sticky top-0 z-40 bg-black/95 backdrop-blur-xl border-b border-[#18181C] px-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between">
+        <div className="sticky top-0 z-40 bg-black/85 backdrop-blur-3xl border-b border-white/[0.06] px-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between">
           {/* Left: Back Button + Author Info + Views (Screenshot 2 exact) */}
           <div className="flex items-center gap-2.5 min-w-0">
             <button
@@ -903,7 +903,7 @@ export default function PostDetailPage({
           {/* ======================================================== */}
           {/* 4. SEPARATOR: TOP SORT & VIEW ACTIVITY (Image 5 exact)   */}
           {/* ======================================================== */}
-          <div className="border-t border-[#1C1C20] mt-3.5 pt-3 pb-1 flex items-center justify-between text-xs text-neutral-400">
+          <div className="border-t border-white/[0.06] mt-3.5 pt-3 pb-1 flex items-center justify-between text-xs text-neutral-400">
             {/* Left: Sort Filter Dropdown */}
             <button
               onClick={() => {
@@ -931,7 +931,7 @@ export default function PostDetailPage({
         </div>
 
         {/* Hairline Divider */}
-        <div className="h-[1px] bg-[#18181C] mb-2" />
+        <div className="h-[1px] bg-white/[0.06] mb-2" />
 
         {/* ======================================================== */}
         {/* 5. REPLIES LIST (Threads Connecting Line Layout)         */}
